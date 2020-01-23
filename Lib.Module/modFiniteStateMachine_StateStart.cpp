@@ -14,7 +14,7 @@ tFiniteStateMachine::tStateStart::tStateStart(tObjectState* obj, const std::stri
 	GetObject<tFiniteStateMachine>()->m_pDataSet->SetDataValue1("tState-Start");
 }
 
-void tFiniteStateMachine::tStateStart::DoSomeWork()
+void tFiniteStateMachine::tStateStart::operator()()
 {
 	auto TimeStart = std::chrono::high_resolution_clock::now();
 

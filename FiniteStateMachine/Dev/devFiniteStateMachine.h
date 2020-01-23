@@ -85,6 +85,11 @@ public:
 
 	void operator()();
 
+	void Start();
+	void Halt();
+
+	mod::tFiniteStateMachineStatus GetStatus();
+
 	mod::tFiniteStateMachineDataSet* GetDataSet()//[TBD] STUPID, THAT'S WHY HERE
 	{
 		return &m_DataSet;

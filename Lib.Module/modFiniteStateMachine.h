@@ -15,12 +15,13 @@
 #include <utilsLog.h>
 #include <utilsPatternState.h>
 
+#include <mutex>
+
 namespace mod
 {
 
 class tFiniteStateMachine :public utils::pattern_State::tObjectState
 {
-private:
 	class tState :public utils::pattern_State::tObjectState::tStateBase
 	{
 	protected:
@@ -29,10 +30,12 @@ private:
 	public:
 		tState(tObjectState* obj);
 
-		bool IsReady() { return false; }
-		bool IsHalted() { return false; }
+		virtual void operator()() { }
 
-		virtual void DoSomeWork() { }
+		virtual bool Start() { return false; }
+		virtual bool Halt();
+
+		virtual tFiniteStateMachineStatus GetStatus() = 0;
 	};
 
 	class tStateError :public tState
@@ -40,13 +43,20 @@ private:
 	public:
 		tStateError(tObjectState* obj, const std::string& value);
 
-		virtual void DoSomeWork();
+		void operator()() override;
+
+		tFiniteStateMachineStatus GetStatus() override { return tFiniteStateMachineStatus::Error; }
 	};
 
 	class tStateHalt :public tState
 	{
 	public:
 		tStateHalt(tObjectState* obj, const std::string& value);
+
+		bool Start() override { return false; }
+		bool Halt() override { return true; }
+
+		tFiniteStateMachineStatus GetStatus() override { return tFiniteStateMachineStatus::Halted; }
 	};
 
 	class tStateOperation :public tState
@@ -54,7 +64,9 @@ private:
 	public:
 		tStateOperation(tObjectState* obj, const std::string& value);
 		
-		virtual void DoSomeWork();
+		void operator()() override;
+
+		tFiniteStateMachineStatus GetStatus() override { return tFiniteStateMachineStatus::Operation; }
 	};
 
 	class tStateStart :public tState
@@ -63,14 +75,25 @@ private:
 	public:
 		tStateStart(tObjectState* obj, const std::string& value);
 
-		virtual void DoSomeWork();
+		void operator()() override;
+
+		tFiniteStateMachineStatus GetStatus() override { return tFiniteStateMachineStatus::Init; }
 	};
 
 	class tStateStop :public tState
 	{
 	public:
 		tStateStop(tObjectState* obj, const std::string& value);
+
+		void operator()() override;
+
+		bool Start() override { return false; }
+		bool Halt() override { return true; }
+
+		tFiniteStateMachineStatus GetStatus() override { return tFiniteStateMachineStatus::Deinit; }
 	};
+
+	mutable std::mutex m_Mtx;
 
 	utils::tLog* m_pLog = nullptr;
 
@@ -87,8 +110,10 @@ public:
 
 	tFiniteStateMachineError operator()();
 
-	//bool IsReady(); via DataSet or Property!!! or Mutexes are needed!!
-	//bool IsHalted(); via DataSet or Property!!!
+	void Start();
+	void Halt();
+
+	tFiniteStateMachineStatus GetStatus();
 
 	tFiniteStateMachineSettings GetSettings();
 	void SetSettings(const tFiniteStateMachineSettings& settings);
@@ -106,7 +131,12 @@ public:
 	//virtual void OnGSV(GnssMTK::PacketNMEA::tMsgGSV value) { }
 	//virtual void OnRMC(GnssMTK::PacketNMEA::tMsgRMC value) { }
 
-	void DoSomeWork_Main();
+//protected:
+//	virtual void Board_PowerSupply(bool state) = 0;
+//	virtual void Board_Reset(bool state) = 0;
+//
+//	virtual bool Board_Send(std::vector<char>& data) = 0;
+//	void Board_OnReceived(std::vector<char>& data);
 };
 
 }

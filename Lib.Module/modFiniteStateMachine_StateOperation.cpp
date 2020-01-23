@@ -14,7 +14,7 @@ tFiniteStateMachine::tStateOperation::tStateOperation(tObjectState* obj, const s
 	GetObject<tFiniteStateMachine>()->m_pDataSet->SetDataValue1("tState-Operation");
 }
 
-void tFiniteStateMachine::tStateOperation::DoSomeWork()
+void tFiniteStateMachine::tStateOperation::operator()()
 {
 	if (++m_Counter < 10)
 	{

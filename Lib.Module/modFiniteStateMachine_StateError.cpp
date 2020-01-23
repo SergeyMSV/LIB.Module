@@ -11,7 +11,7 @@ tFiniteStateMachine::tStateError::tStateError(tObjectState* obj, const std::stri
 	GetObject<tFiniteStateMachine>()->m_pDataSet->SetDataValue1("tState-Operation");
 }
 
-void tFiniteStateMachine::tStateError::DoSomeWork()
+void tFiniteStateMachine::tStateError::operator()()
 {
 	if (++m_Counter < 10)
 	{

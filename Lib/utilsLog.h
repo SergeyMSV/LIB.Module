@@ -69,9 +69,14 @@ class tLog
 {
 	mutable std::mutex m_Mtx;
 
+	bool m_ColourEnabled = false;
+
 public:
-	tLog() { }
+	tLog() = delete;
+	explicit tLog(bool colourEnabled = false);
 	virtual ~tLog() { }
+
+	void ColourEnabled(bool state);
 
 	void Write(bool timestamp, tLogColour textColour, const std::string& msg);
 	void Write(bool timestamp, tLogColour textColour, const char* format, ...);
@@ -94,8 +99,11 @@ private:
 class tLog
 {
 public:
-	tLog() { }
+	tLog() = delete;
+	explicit tLog(bool colourEnabled = false) { }
 	virtual ~tLog() { }
+
+	void ColourEnabled(bool state) { }
 
 	void Write(bool timestamp, tLogColour textColour, const std::string& msg) { }
 	void Write(bool timestamp, tLogColour textColour, const char* format, ...) { }

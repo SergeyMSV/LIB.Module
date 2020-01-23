@@ -28,6 +28,16 @@ public:
 	void SetDataValue1(const std::string& value);
 };
 
+enum class tFiniteStateMachineStatus : unsigned char
+{
+	Init,
+	Operation,
+	Deinit,
+	Halted,
+	Error,
+	Unknown
+};
+
 union tFiniteStateMachineSettings
 {
 

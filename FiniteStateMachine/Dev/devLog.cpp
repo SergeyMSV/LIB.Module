@@ -8,6 +8,7 @@ namespace dev
 tLog::tSettings tLog::LogSettings;
 
 tLog::tLog(unsigned int id)
+	:utils::tLog(true)
 {
 	m_Id = id;
 }

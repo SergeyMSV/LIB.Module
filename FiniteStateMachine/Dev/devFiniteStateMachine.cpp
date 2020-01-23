@@ -31,6 +31,32 @@ void tDevFiniteStateMachine::operator()()
 	}
 }
 
+void tDevFiniteStateMachine::Start()
+{
+	if (m_pModFSMachine)
+	{
+		m_pModFSMachine->Start();
+	}
+}
+
+void tDevFiniteStateMachine::Halt()
+{
+	if (m_pModFSMachine)
+	{
+		m_pModFSMachine->Halt();
+	}
+}
+
+mod::tFiniteStateMachineStatus tDevFiniteStateMachine::GetStatus()
+{
+	if (m_pModFSMachine)
+	{
+		return m_pModFSMachine->GetStatus();
+	}
+
+	return mod::tFiniteStateMachineStatus::Unknown;
+}
+
 //tGnss::tGnss()
 //{
 //	p_log = new tLog(tLog::LogId_Dev_ModGnss);
