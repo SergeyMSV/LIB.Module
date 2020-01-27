@@ -145,6 +145,7 @@
     <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStart.cpp" />
     <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStop.cpp" />
     <ClCompile Include="..\Lib\utilsLog.cpp" />
+    <ClCompile Include="..\Lib\utilsPacketNMEAPayload.cpp" />
     <ClCompile Include="..\Lib\utilsShell.cpp" />
     <ClCompile Include="Dev\devFiniteStateMachine.cpp" />
     <ClCompile Include="Dev\devFiniteStateMachine_ModFiniteStateMachine.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="..\Lib\utilsLog.h" />
     <ClInclude Include="..\Lib\utilsPacket.h" />
     <ClInclude Include="..\Lib\utilsPacketNMEA.h" />
+    <ClInclude Include="..\Lib\utilsPacketNMEAPayload.h" />
     <ClInclude Include="..\Lib\utilsPatternCommand.h" />
     <ClInclude Include="..\Lib\utilsPatternState.h" />
     <ClInclude Include="..\Lib\utilsShell.h" />

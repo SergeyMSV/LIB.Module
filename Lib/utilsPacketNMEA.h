@@ -1,11 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // utilsPacketNMEA.h
 //
-// Created by Sergey Maslennikov
-// Tel.:   
-// E-mail: maslennikovserge@yandex.ru
-//
-// Standard ISO/IEC 114882, C++17
+// Standard ISO/IEC 114882, C++14
 //
 // |   version  |    release    | Description
 // |------------|---------------|---------------------------------

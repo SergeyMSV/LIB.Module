@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/LIB.Module/v16
+/DuperStateMachine/x64/Debug
+/x64/Debug

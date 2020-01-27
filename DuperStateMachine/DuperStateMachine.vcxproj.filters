@@ -59,6 +59,9 @@
     <ClCompile Include="..\Lib\utilsLog.cpp">
       <Filter>Lib</Filter>
     </ClCompile>
+    <ClCompile Include="..\Lib\utilsPacketNMEAPayload.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Lib.Module\modFiniteStateMachine.h">
@@ -97,6 +100,9 @@
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="..\Lib\utilsCRC.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsPacketNMEAPayload.h">
       <Filter>Lib</Filter>
     </ClInclude>
   </ItemGroup>

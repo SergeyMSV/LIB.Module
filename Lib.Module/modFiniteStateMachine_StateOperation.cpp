@@ -1,6 +1,7 @@
 #include "modFiniteStateMachine.h"
 
 #include <utilsPacketNMEA.h>
+#include <utilsPacketNMEAPayload.h>
 
 #include <chrono>
 #include <thread>
@@ -16,50 +17,6 @@ tFiniteStateMachine::tStateOperation::tStateOperation(tObjectState* obj, const s
 	GetObject<tFiniteStateMachine>()->m_pDataSet->SetDataValue1("tState-Operation");
 }
 
-
-///////
-template <std::size_t Size>
-struct tDupertura
-{
-	double Value = 0;
-
-	//tDupertura() = default;
-	explicit tDupertura(double val) :Value(val) { }
-	explicit tDupertura(const std::string& val)
-	{
-		if (val.size() == Size)
-		{
-		}
-		//exception
-	}
-	std::string ToString()
-	{
-		//Size
-		return "";
-	}
-};
-
-struct tDuperPack1
-{
-	tDupertura<9> m_Dup1;
-};
-
-struct tDuperPack2
-{
-	tDupertura<11> m_Dup1;
-};
-
-//auto Handle1 = []<class T>(const std::vector<std::string>& packetData)->bool
-//{
-//	if (packetData.size() == 13 && packetData[0] == "GNRMC")
-//	{
-//		ds1.A = 123.02;
-//		return true;
-//	}
-//
-//	return false;
-//};
-///////
 void tFiniteStateMachine::tStateOperation::operator()()
 {
 	if (++m_Counter < 10)
@@ -96,8 +53,9 @@ void tFiniteStateMachine::tStateOperation::operator()()
 		{
 			if (packetData.size() == 13 && packetData[0] == "GNRMC")
 			{
-				if (packetData[0].size() > 0)
+				if (packetData[9].size() > 0)
 				{
+					utils::packet_NMEA::Payload::tDate Date(packetData[9]);
 					ds1.A = 123.02;
 				}
 				else
