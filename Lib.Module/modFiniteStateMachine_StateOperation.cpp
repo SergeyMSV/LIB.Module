@@ -16,6 +16,50 @@ tFiniteStateMachine::tStateOperation::tStateOperation(tObjectState* obj, const s
 	GetObject<tFiniteStateMachine>()->m_pDataSet->SetDataValue1("tState-Operation");
 }
 
+
+///////
+template <std::size_t Size>
+struct tDupertura
+{
+	double Value = 0;
+
+	//tDupertura() = default;
+	explicit tDupertura(double val) :Value(val) { }
+	explicit tDupertura(const std::string& val)
+	{
+		if (val.size() == Size)
+		{
+		}
+		//exception
+	}
+	std::string ToString()
+	{
+		//Size
+		return "";
+	}
+};
+
+struct tDuperPack1
+{
+	tDupertura<9> m_Dup1;
+};
+
+struct tDuperPack2
+{
+	tDupertura<11> m_Dup1;
+};
+
+//auto Handle1 = []<class T>(const std::vector<std::string>& packetData)->bool
+//{
+//	if (packetData.size() == 13 && packetData[0] == "GNRMC")
+//	{
+//		ds1.A = 123.02;
+//		return true;
+//	}
+//
+//	return false;
+//};
+///////
 void tFiniteStateMachine::tStateOperation::operator()()
 {
 	if (++m_Counter < 10)
@@ -40,9 +84,42 @@ void tFiniteStateMachine::tStateOperation::operator()()
 
 	if (tPacketNMEA::Find(DataVector, Packet))
 	{
-		GetObject<tFiniteStateMachine>()->m_pLog->Write(true, utils::tLogColour::LightYellow, "");
-
 		std::vector<std::string> PacketData = Packet.GetPayload();
+
+		struct DataSet1
+		{
+			double A = 0;
+			double B = 0;
+		}ds1;
+
+		auto Handle1 = [&ds1](const std::vector<std::string>& packetData)->bool
+		{
+			if (packetData.size() == 13 && packetData[0] == "GNRMC")
+			{
+				if (packetData[0].size() > 0)
+				{
+					ds1.A = 123.02;
+				}
+				else
+				{
+					ds1.A = 1;
+				}
+
+				return true;
+			}
+
+			return false;
+		};
+
+		Handle1(PacketData);
+
+		//auto f = []<typename ...Ts>(Ts && ...ts) {
+		//	return foo(std::forward<Ts>(ts)...);
+		//};
+		//auto glambda = []<class T>(T a, auto && b) { return a < b; };
+
+
+		GetObject<tFiniteStateMachine>()->m_pLog->Write(true, utils::tLogColour::LightYellow, "");
 
 		for (std::string i : PacketData)
 		{
