@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Lib.Module">
+      <UniqueIdentifier>{c05a8fe6-3d88-4f8b-98b7-3c6adf985878}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dev">
+      <UniqueIdentifier>{59634b88-191d-4c3f-b606-d7533dbde411}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_State.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateError.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateHalt.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateInitialize.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateOperation.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStart.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStop.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib\utilsShell.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_Attribute.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modFiniteStateMachine.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="Dev\devFiniteStateMachine.cpp">
+      <Filter>Dev</Filter>
+    </ClCompile>
+    <ClCompile Include="Dev\devFiniteStateMachine_ModFiniteStateMachine.cpp">
+      <Filter>Dev</Filter>
+    </ClCompile>
+    <ClCompile Include="Dev\devFiniteStateMachine_ModFiniteStateMachine_Board.cpp">
+      <Filter>Dev</Filter>
+    </ClCompile>
+    <ClCompile Include="Dev\devLog.cpp">
+      <Filter>Dev</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib\utilsLog.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Lib.Module\modFiniteStateMachine.h">
+      <Filter>Lib.Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib.Module\modFiniteStateMachine_Attribute.h">
+      <Filter>Lib.Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsBase.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsPatternState.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsShell.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Dev\devFiniteStateMachine.h">
+      <Filter>Dev</Filter>
+    </ClInclude>
+    <ClInclude Include="Dev\devLog.h">
+      <Filter>Dev</Filter>
+    </ClInclude>
+    <ClInclude Include="devConfig.h" />
+    <ClInclude Include="libConfig.h" />
+    <ClInclude Include="..\Lib\utilsLog.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsPatternCommand.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsPacketNMEA.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsPacket.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib\utilsCRC.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DuperStateMachine.exe.ini" />
+  </ItemGroup>
+</Project>

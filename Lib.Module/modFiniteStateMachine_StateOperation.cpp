@@ -1,5 +1,7 @@
 #include "modFiniteStateMachine.h"
 
+#include <utilsPacketNMEA.h>
+
 #include <chrono>
 #include <thread>
 
@@ -30,7 +32,29 @@ void tFiniteStateMachine::tStateOperation::operator()()
 		return;
 	}
 
-	GetObject<tFiniteStateMachine>()->m_pLog->Write(false, utils::tLogColour::LightRed, "o");
+	std::string Data = "$GNRMC,090210.000,A,5539.564975,N,03732.411956,E,0.03,274.40,120517,,,A*71\xd\xa";
+
+	utils::tVectorUInt8 DataVector(Data.cbegin(), Data.cend());
+
+	tPacketNMEA Packet;
+
+	if (tPacketNMEA::Find(DataVector, Packet))
+	{
+		GetObject<tFiniteStateMachine>()->m_pLog->Write(true, utils::tLogColour::LightYellow, "");
+
+		std::vector<std::string> PacketData = Packet.GetPayload();
+
+		for (std::string i : PacketData)
+		{
+			GetObject<tFiniteStateMachine>()->m_pLog->Write(false, utils::tLogColour::LightYellow, i + " ");
+		}
+
+		GetObject<tFiniteStateMachine>()->m_pLog->WriteLine();
+	}
+	else
+	{
+		GetObject<tFiniteStateMachine>()->m_pLog->Write(false, utils::tLogColour::LightRed, "o");
+	}
 }
 
 }

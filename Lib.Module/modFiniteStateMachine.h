@@ -13,12 +13,15 @@
 #include <modFiniteStateMachine_Attribute.h>
 
 #include <utilsLog.h>
+#include <utilsPacketNMEA.h>
 #include <utilsPatternState.h>
 
 #include <mutex>
 
 namespace mod
 {
+
+typedef utils::packet::tPacket<utils::packet_NMEA::tFormatNMEA, utils::packet_NMEA::tPayloadCommon> tPacketNMEA;
 
 class tFiniteStateMachine :public utils::pattern_State::tObjectState
 {
