@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Lib">
+    <Filter Include="Lib.Utils">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
@@ -35,8 +35,8 @@
     <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStop.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lib\utilsShell.cpp">
-      <Filter>Lib</Filter>
+    <ClCompile Include="..\Lib.Utils\utilsShell.cpp">
+      <Filter>Lib.Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Lib.Module\modFiniteStateMachine_Attribute.cpp">
       <Filter>Lib.Module</Filter>
@@ -56,11 +56,11 @@
     <ClCompile Include="Dev\devLog.cpp">
       <Filter>Dev</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lib\utilsLog.cpp">
-      <Filter>Lib</Filter>
+    <ClCompile Include="..\Lib.Utils\utilsLog.cpp">
+      <Filter>Lib.Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lib\utilsPacketNMEAPayload.cpp">
-      <Filter>Lib</Filter>
+    <ClCompile Include="..\Lib.Utils\utilsPacketNMEAPayload.cpp">
+      <Filter>Lib.Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,14 +70,14 @@
     <ClInclude Include="..\Lib.Module\modFiniteStateMachine_Attribute.h">
       <Filter>Lib.Module</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsBase.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsBase.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsPatternState.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsPatternState.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsShell.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsShell.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
     <ClInclude Include="Dev\devFiniteStateMachine.h">
       <Filter>Dev</Filter>
@@ -87,23 +87,23 @@
     </ClInclude>
     <ClInclude Include="devConfig.h" />
     <ClInclude Include="libConfig.h" />
-    <ClInclude Include="..\Lib\utilsLog.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsLog.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsPatternCommand.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsPatternCommand.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsPacketNMEA.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsPacketNMEA.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsPacket.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsPacket.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsCRC.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsCRC.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib\utilsPacketNMEAPayload.h">
-      <Filter>Lib</Filter>
+    <ClInclude Include="..\Lib.Utils\utilsPacketNMEAPayload.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
