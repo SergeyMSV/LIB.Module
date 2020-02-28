@@ -1,7 +1,7 @@
 del /Q *.cpp
 del /Q *.h
 
-set PATH_SOURCE=..\..\Lib\Lib
+set PATH_SOURCE=..\..\LIB.Utils\Lib.Utils
 
 xcopy /Y %PATH_SOURCE%\utilsBase.*
 xcopy /Y %PATH_SOURCE%\utilsCRC.*
