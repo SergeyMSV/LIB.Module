@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Lib;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Lib.Utils;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -90,7 +90,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Lib;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Lib.Utils;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -106,7 +106,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Lib;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Lib.Utils;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -124,7 +124,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Lib;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Lib.Utils;..\Lib.Module;Dev;.;$(BOOST_ROOT)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -144,9 +144,9 @@
     <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateOperation.cpp" />
     <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStart.cpp" />
     <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStop.cpp" />
-    <ClCompile Include="..\Lib\utilsLog.cpp" />
-    <ClCompile Include="..\Lib\utilsPacketNMEAPayload.cpp" />
-    <ClCompile Include="..\Lib\utilsShell.cpp" />
+    <ClCompile Include="..\Lib.Utils\utilsLog.cpp" />
+    <ClCompile Include="..\Lib.Utils\utilsPacketNMEAPayload.cpp" />
+    <ClCompile Include="..\Lib.Utils\utilsShell.cpp" />
     <ClCompile Include="Dev\devFiniteStateMachine.cpp" />
     <ClCompile Include="Dev\devFiniteStateMachine_ModFiniteStateMachine.cpp" />
     <ClCompile Include="Dev\devFiniteStateMachine_ModFiniteStateMachine_Board.cpp" />
@@ -156,15 +156,15 @@
   <ItemGroup>
     <ClInclude Include="..\Lib.Module\modFiniteStateMachine.h" />
     <ClInclude Include="..\Lib.Module\modFiniteStateMachine_Attribute.h" />
-    <ClInclude Include="..\Lib\utilsBase.h" />
-    <ClInclude Include="..\Lib\utilsCRC.h" />
-    <ClInclude Include="..\Lib\utilsLog.h" />
-    <ClInclude Include="..\Lib\utilsPacket.h" />
-    <ClInclude Include="..\Lib\utilsPacketNMEA.h" />
-    <ClInclude Include="..\Lib\utilsPacketNMEAPayload.h" />
-    <ClInclude Include="..\Lib\utilsPatternCommand.h" />
-    <ClInclude Include="..\Lib\utilsPatternState.h" />
-    <ClInclude Include="..\Lib\utilsShell.h" />
+    <ClInclude Include="..\Lib.Utils\utilsBase.h" />
+    <ClInclude Include="..\Lib.Utils\utilsCRC.h" />
+    <ClInclude Include="..\Lib.Utils\utilsLog.h" />
+    <ClInclude Include="..\Lib.Utils\utilsPacket.h" />
+    <ClInclude Include="..\Lib.Utils\utilsPacketNMEA.h" />
+    <ClInclude Include="..\Lib.Utils\utilsPacketNMEAPayload.h" />
+    <ClInclude Include="..\Lib.Utils\utilsPatternCommand.h" />
+    <ClInclude Include="..\Lib.Utils\utilsPatternState.h" />
+    <ClInclude Include="..\Lib.Utils\utilsShell.h" />
     <ClInclude Include="devConfig.h" />
     <ClInclude Include="Dev\devFiniteStateMachine.h" />
     <ClInclude Include="Dev\devLog.h" />
