@@ -13,7 +13,7 @@
 #include <devConfig.h>
 #include <devLog.h>
 
-#include <modFiniteStateMachine.h>
+#include <modDuperStateMachine.h>
 
 namespace dev
 {

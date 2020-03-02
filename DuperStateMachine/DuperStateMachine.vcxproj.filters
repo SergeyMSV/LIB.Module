@@ -14,35 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_State.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateError.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateHalt.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateInitialize.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateOperation.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStart.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStop.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
     <ClCompile Include="..\Lib.Utils\utilsShell.cpp">
       <Filter>Lib.Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_Attribute.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine.cpp">
-      <Filter>Lib.Module</Filter>
     </ClCompile>
     <ClCompile Include="Dev\devFiniteStateMachine.cpp">
       <Filter>Dev</Filter>
@@ -62,14 +35,35 @@
     <ClCompile Include="..\Lib.Utils\utilsPacketNMEAPayload.cpp">
       <Filter>Lib.Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_Attribute.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_State.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateError.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateHalt.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateInitialize.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateOperation.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateStart.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateStop.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Lib.Module\modFiniteStateMachine.h">
-      <Filter>Lib.Module</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Lib.Module\modFiniteStateMachine_Attribute.h">
-      <Filter>Lib.Module</Filter>
-    </ClInclude>
     <ClInclude Include="..\Lib.Utils\utilsBase.h">
       <Filter>Lib.Utils</Filter>
     </ClInclude>
@@ -104,6 +98,12 @@
     </ClInclude>
     <ClInclude Include="..\Lib.Utils\utilsPacketNMEAPayload.h">
       <Filter>Lib.Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib.Module\modDuperStateMachine.h">
+      <Filter>Lib.Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib.Module\modDuperStateMachine_Attribute.h">
+      <Filter>Lib.Module</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

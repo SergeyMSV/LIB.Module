@@ -135,15 +135,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_Attribute.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_State.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateError.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateHalt.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateInitialize.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateOperation.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStart.cpp" />
-    <ClCompile Include="..\Lib.Module\modFiniteStateMachine_StateStop.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_Attribute.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_State.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateError.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateHalt.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateInitialize.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateOperation.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateStart.cpp" />
+    <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateStop.cpp" />
     <ClCompile Include="..\Lib.Utils\utilsLog.cpp" />
     <ClCompile Include="..\Lib.Utils\utilsPacketNMEAPayload.cpp" />
     <ClCompile Include="..\Lib.Utils\utilsShell.cpp" />
@@ -154,8 +154,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Lib.Module\modFiniteStateMachine.h" />
-    <ClInclude Include="..\Lib.Module\modFiniteStateMachine_Attribute.h" />
+    <ClInclude Include="..\Lib.Module\modDuperStateMachine.h" />
+    <ClInclude Include="..\Lib.Module\modDuperStateMachine_Attribute.h" />
     <ClInclude Include="..\Lib.Utils\utilsBase.h" />
     <ClInclude Include="..\Lib.Utils\utilsCRC.h" />
     <ClInclude Include="..\Lib.Utils\utilsLog.h" />
