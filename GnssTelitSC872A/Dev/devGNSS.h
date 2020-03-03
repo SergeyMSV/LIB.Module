@@ -24,12 +24,12 @@ class tGNSS
 	class tModGnssTelitSC872A : public mod::tGnssTelitSC872A
 	{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-		//class tBoard : public board::tBoardModFSMachine
+		//class tBoard// : public board::tBoardModFSMachine
 		//{
 		//	tModGnssTelitSC872A* p_obj;
 
 		//public:
-		//	tBoard(tModGnssTelitSC872A* obj);
+		//	explicit tBoard(tModGnssTelitSC872A* obj);
 		//	virtual ~tBoard();
 
 		//protected:

@@ -114,6 +114,7 @@
     <ClInclude Include="..\LIB.Utils\utilsPacketNMEAType.h">
       <Filter>Lib.Utils</Filter>
     </ClInclude>
+    <ClInclude Include="comSerialPort.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GnssTelitSC872A.exe.ini" />

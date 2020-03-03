@@ -168,6 +168,7 @@
     <ClInclude Include="..\Lib.Utils\utilsPatternCommand.h" />
     <ClInclude Include="..\Lib.Utils\utilsPatternState.h" />
     <ClInclude Include="..\Lib.Utils\utilsShell.h" />
+    <ClInclude Include="comSerialPort.h" />
     <ClInclude Include="devConfig.h" />
     <ClInclude Include="Dev\devGNSS.h" />
     <ClInclude Include="Dev\devLog.h" />

@@ -1,3 +1,5 @@
+#include "comSerialPort.h"
+
 #include <devGNSS.h>
 
 #include <iostream>
@@ -62,6 +64,41 @@ void ThreadFun(int tmErr_ms, int tmPause_ms)
 int main(int argc, char* argv[])
 {
 	std::thread Thread_5(ThreadFun, 1000, 50);
+
+	try
+	{
+		//if (argc != 2)
+		//{
+		//	std::cerr << "Usage: async_udp_echo_server <port>\n";
+		//	return 1;
+		//}
+
+		boost::asio::io_context IO;
+
+		boost::asio::serial_port Port(IO);
+
+		tCommunication<> SerialPort(IO, "COM4");
+
+		std::thread Thread_1([&]()
+			{
+				IO.run();
+			});
+
+		std::thread Thread_2([&]()
+			{
+				IO.run();
+			});
+
+		IO.run();
+
+		//ThreadConsole.join();
+		Thread_1.join();
+		Thread_2.join();
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Exception: " << e.what() << "\n";
+	}
 
 
 	//for (int i = 0; i < 10; ++i)
