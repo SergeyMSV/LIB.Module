@@ -30,6 +30,10 @@ public:
 	typedef typename TPayload::value_type payload_value_type;
 
 	tPacket() { }
+	explicit tPacket(const payload_value_type& value)
+	{
+		TPayload::Data = value;
+	}
 
 	static bool Find(tVectorUInt8& receivedData, tPacket& packet)
 	{

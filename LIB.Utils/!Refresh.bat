@@ -9,6 +9,9 @@ xcopy /Y %PATH_SOURCE%\utilsLog.*
 xcopy /Y %PATH_SOURCE%\utilsPacket.*
 xcopy /Y %PATH_SOURCE%\utilsPacketNMEA.*
 xcopy /Y %PATH_SOURCE%\utilsPacketNMEAPayload.*
+xcopy /Y %PATH_SOURCE%\utilsPacketNMEAPayloadPMTK.*
+xcopy /Y %PATH_SOURCE%\utilsPacketNMEAPayloadPTWS.*
+xcopy /Y %PATH_SOURCE%\utilsPacketNMEAType.*
 xcopy /Y %PATH_SOURCE%\utilsPatternCommand.*
 xcopy /Y %PATH_SOURCE%\utilsPatternState.*
 xcopy /Y %PATH_SOURCE%\utilsShell.*

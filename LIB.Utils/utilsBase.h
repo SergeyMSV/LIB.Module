@@ -22,6 +22,7 @@ namespace utils
 {
 
 typedef unsigned char tUInt8;
+typedef unsigned short tUInt16;
 typedef unsigned int tUInt32;
 typedef std::vector<tUInt8> tVectorUInt8;
 
