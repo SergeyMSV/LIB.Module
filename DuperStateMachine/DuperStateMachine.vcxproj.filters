@@ -62,6 +62,9 @@
     <ClCompile Include="..\Lib.Module\modDuperStateMachine_StateStop.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
+    <ClCompile Include="..\LIB.Utils\utilsPacketNMEAType.cpp">
+      <Filter>Lib.Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Lib.Utils\utilsBase.h">
@@ -104,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="..\Lib.Module\modDuperStateMachine_Attribute.h">
       <Filter>Lib.Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LIB.Utils\utilsPacketNMEAType.h">
+      <Filter>Lib.Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

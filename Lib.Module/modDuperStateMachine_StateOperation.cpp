@@ -55,7 +55,7 @@ void tFiniteStateMachine::tStateOperation::operator()()
 			{
 				if (packetData[9].size() > 0)
 				{
-					utils::packet_NMEA::Payload::tDate Date(packetData[9]);
+					utils::packet_NMEA::Type::tDate Date(packetData[9]);
 					ds1.A = 123.02;
 				}
 				else
