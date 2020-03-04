@@ -1,24 +1,30 @@
 #include "comSerialPort.h"
 
 #include <devGNSS.h>
+//#include <devShell.h>
 
 #include <iostream>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
-void ThreadFun_Dev(dev::tGNSS* dev)
+namespace dev
 {
-	while (true)
-	{
-		(*dev)();
-
-		if (dev->GetStatus() == mod::tGnssTelitSC872AStatus::Halted)
-		{
-			break;
-		}
-	}
+	void ThreadFunShell();
 }
+
+//void ThreadFun_Dev(dev::tGNSS* dev)
+//{
+//	while (true)
+//	{
+//		(*dev)();
+//
+//		if (dev->GetStatus() == mod::tGnssTelitSC872AStatus::Halted)
+//		{
+//			break;
+//		}
+//	}
+//}
 
 void ThreadFun(int tmErr_ms, int tmPause_ms)
 {
@@ -30,7 +36,7 @@ void ThreadFun(int tmErr_ms, int tmPause_ms)
 
 	mod::tGnssTelitSC872ADataSet* DataSet = Dev.GetDataSet();
 
-	std::thread Thread_Dev(ThreadFun_Dev, &Dev);
+	//std::thread Thread_Dev(ThreadFun_Dev, &Dev);
 
 	while (true)
 	{
@@ -51,17 +57,17 @@ void ThreadFun(int tmErr_ms, int tmPause_ms)
 
 		if (Dev.GetStatus() == mod::tGnssTelitSC872AStatus::Halted)
 		{
-			Thread_Dev.join();
+			//Thread_Dev.join();
 
 			std::this_thread::sleep_for(std::chrono::seconds(5));
 
-			Thread_Dev = std::thread(ThreadFun_Dev, &Dev);
+			//Thread_Dev = std::thread(ThreadFun_Dev, &Dev);
 
 			Dev.Start();
 		}
 	}
 
-	Thread_Dev.join();
+	//Thread_Dev.join();
 }
 
 int main(int argc, char* argv[])
@@ -69,43 +75,35 @@ int main(int argc, char* argv[])
 	std::string ComPortID;
 	unsigned int ComPortBR = 0;
 
-	if (argc == 3)//FileName + COMn + BR
+	try
 	{
-		//[TBD]
+		boost::property_tree::ptree PTree;
+		boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
+
+		ComPortID = PTree.get<std::string>("SerialPort.ID");
+		ComPortBR = PTree.get<unsigned int>("SerialPort.BR");
 	}
-	else//if there is no args, try to find config file
+	catch (std::exception & e)
 	{
-		try
-		{
-			boost::property_tree::ptree PTree;
-			boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
+		std::cerr << "Exception: " << e.what() << "\n";
 
-			ComPortID = PTree.get<std::string>("SerialPort.ID");
-			ComPortBR = PTree.get<unsigned int>("SerialPort.BR");
-		}
-		catch (std::exception & e)
-		{
-			std::cerr << "Exception: " << e.what() << "\n";
-
-			return 1;//ERROR
-		}
+		return 1;//ERROR
 	}
+
+	std::thread Thread_Shell(dev::ThreadFunShell);
+	////////////////////////////////
 
 	std::thread Thread_5(ThreadFun, 1000, 50);
 
+	////////////////////////////////
+
 	try
 	{
-		//if (argc != 2)
-		//{
-		//	std::cerr << "Usage: async_udp_echo_server <port>\n";
-		//	return 1;
-		//}
-
 		boost::asio::io_context IO;
 
 		boost::asio::serial_port Port(IO);
 
-		tCommunication<> SerialPort(IO, "COM4");
+		tCommunication<> SerialPort(IO, ComPortID);
 
 		std::thread Thread_1([&]()
 			{
@@ -140,6 +138,7 @@ int main(int argc, char* argv[])
 	//std::thread::id Thread_5_ID = Thread_5.get_id();
 
 	Thread_5.join();//it's not needed if the thread is detached
+	Thread_Shell.join();
 
 	return 0;
 }

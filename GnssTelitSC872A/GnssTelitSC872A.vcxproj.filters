@@ -62,6 +62,9 @@
     <ClCompile Include="..\LIB.Utils\utilsPacketNMEAType.cpp">
       <Filter>Lib.Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Dev\devShell.cpp">
+      <Filter>Dev</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Lib.Utils\utilsBase.h">
@@ -115,6 +118,9 @@
       <Filter>Lib.Utils</Filter>
     </ClInclude>
     <ClInclude Include="comSerialPort.h" />
+    <ClInclude Include="Dev\devShell.h">
+      <Filter>Dev</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="GnssTelitSC872A.exe.ini" />

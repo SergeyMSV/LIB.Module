@@ -151,6 +151,7 @@
     <ClCompile Include="Dev\devGNSS_ModGnssTelitSC872A.cpp" />
     <ClCompile Include="Dev\devGNSS_ModGnssTelitSC872A_Board.cpp" />
     <ClCompile Include="Dev\devLog.cpp" />
+    <ClCompile Include="Dev\devShell.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +173,7 @@
     <ClInclude Include="devConfig.h" />
     <ClInclude Include="Dev\devGNSS.h" />
     <ClInclude Include="Dev\devLog.h" />
+    <ClInclude Include="Dev\devShell.h" />
     <ClInclude Include="libConfig.h" />
   </ItemGroup>
   <ItemGroup>
