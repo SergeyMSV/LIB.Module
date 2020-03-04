@@ -2,10 +2,7 @@
 
 #include <devGNSS.h>
 
-//#include <fstream>
 #include <iostream>
-
-//#include <set>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -69,52 +66,29 @@ void ThreadFun(int tmErr_ms, int tmPause_ms)
 
 int main(int argc, char* argv[])
 {
+	std::string ComPortID;
+	unsigned int ComPortBR = 0;
+
 	if (argc == 3)//FileName + COMn + BR
 	{
-
+		//[TBD]
 	}
 	else//if there is no args, try to find config file
 	{
-		if (argc > 0 && argv[0] != 0)
+		try
 		{
-			try
-			{
-				boost::property_tree::ptree PTree;
-				boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
+			boost::property_tree::ptree PTree;
+			boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
 
-				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.PORT_A_ID") << '\n';
-				std::cout << PTree.data() << " -- " << PTree.get<int>("SerialPort.PORT_A_BR") << '\n';
-				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.PORT_B") << '\n';
-				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.Abcd") << '\n';
-				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.dgf") << '\n';
-
-				//std::cout << PTree.data() << " -- " << PTree.get<boost::property_tree::ptree>("SerialPort.PORT_A").get << '\n';
-			}
-			catch (std::exception & e)
-			{
-				std::cerr << "Exception: " << e.what() << "\n";
-			}
-			//std::ifstream FileConfig(FileNameConfig);
-
-			//if (FileConfig)
-			//{
-			//	std::set<std::string> Options;
-			//	Options.insert("PORT_A");
-			//	Options.insert("Abcd");
-			//	Options.insert("dgf");
-
-			//	for (boost::program_options::detail::config_file_iterator i(FileConfig, Options, true), end; i != end; ++i)
-			//	{
-			//		std::cout << i->string_key << " " << i->value[0] << " " << (i->value.size() > 1 ? i->value[1] : "") << std::endl;
-			//	}
-			//}
-			//else
-			//{
-			//	std::cerr << "Error: ini-file not found." << std::endl;
-			//}
+			ComPortID = PTree.get<std::string>("SerialPort.ID");
+			ComPortBR = PTree.get<unsigned int>("SerialPort.BR");
 		}
+		catch (std::exception & e)
+		{
+			std::cerr << "Exception: " << e.what() << "\n";
 
-		return 1;//ERROR
+			return 1;//ERROR
+		}
 	}
 
 	std::thread Thread_5(ThreadFun, 1000, 50);
