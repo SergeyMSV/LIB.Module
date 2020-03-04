@@ -2,14 +2,13 @@
 
 #include <devGNSS.h>
 
-#include <fstream>
+//#include <fstream>
 #include <iostream>
 
-#include <set>
+//#include <set>
 
-//#include <boost/config.hpp>
-#include <boost/program_options/detail/config_file.hpp>
-//#include <boost/program_options/parsers.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 void ThreadFun_Dev(dev::tGNSS* dev)
 {
@@ -78,26 +77,41 @@ int main(int argc, char* argv[])
 	{
 		if (argc > 0 && argv[0] != 0)
 		{
-			std::string FileNameConfig(argv[0]);
-			FileNameConfig += ".ini";
-			std::ifstream FileConfig(FileNameConfig);
-
-			if (FileConfig)
+			try
 			{
-				std::set<std::string> Options;
-				Options.insert("PORT_A");
-				Options.insert("Abcd");
-				Options.insert("dgf");
+				boost::property_tree::ptree PTree;
+				boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
 
-				for (boost::program_options::detail::config_file_iterator i(FileConfig, Options, true), end; i != end; ++i)
-				{
-					std::cout << i->string_key << " " << i->value[0] << " " << (i->value.size() > 1 ? i->value[1] : "") << std::endl;
-				}
+				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.PORT_A_ID") << '\n';
+				std::cout << PTree.data() << " -- " << PTree.get<int>("SerialPort.PORT_A_BR") << '\n';
+				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.PORT_B") << '\n';
+				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.Abcd") << '\n';
+				std::cout << PTree.data() << " -- " << PTree.get<std::string>("SerialPort.dgf") << '\n';
+
+				//std::cout << PTree.data() << " -- " << PTree.get<boost::property_tree::ptree>("SerialPort.PORT_A").get << '\n';
 			}
-			else
+			catch (std::exception & e)
 			{
-				std::cerr << "Error: ini-file not found." << std::endl;
+				std::cerr << "Exception: " << e.what() << "\n";
 			}
+			//std::ifstream FileConfig(FileNameConfig);
+
+			//if (FileConfig)
+			//{
+			//	std::set<std::string> Options;
+			//	Options.insert("PORT_A");
+			//	Options.insert("Abcd");
+			//	Options.insert("dgf");
+
+			//	for (boost::program_options::detail::config_file_iterator i(FileConfig, Options, true), end; i != end; ++i)
+			//	{
+			//		std::cout << i->string_key << " " << i->value[0] << " " << (i->value.size() > 1 ? i->value[1] : "") << std::endl;
+			//	}
+			//}
+			//else
+			//{
+			//	std::cerr << "Error: ini-file not found." << std::endl;
+			//}
 		}
 
 		return 1;//ERROR
