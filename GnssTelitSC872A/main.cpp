@@ -2,7 +2,14 @@
 
 #include <devGNSS.h>
 
+#include <fstream>
 #include <iostream>
+
+#include <set>
+
+//#include <boost/config.hpp>
+#include <boost/program_options/detail/config_file.hpp>
+//#include <boost/program_options/parsers.hpp>
 
 void ThreadFun_Dev(dev::tGNSS* dev)
 {
@@ -63,6 +70,39 @@ void ThreadFun(int tmErr_ms, int tmPause_ms)
 
 int main(int argc, char* argv[])
 {
+	if (argc == 3)//FileName + COMn + BR
+	{
+
+	}
+	else//if there is no args, try to find config file
+	{
+		if (argc > 0 && argv[0] != 0)
+		{
+			std::string FileNameConfig(argv[0]);
+			FileNameConfig += ".ini";
+			std::ifstream FileConfig(FileNameConfig);
+
+			if (FileConfig)
+			{
+				std::set<std::string> Options;
+				Options.insert("PORT_A");
+				Options.insert("Abcd");
+				Options.insert("dgf");
+
+				for (boost::program_options::detail::config_file_iterator i(FileConfig, Options, true), end; i != end; ++i)
+				{
+					std::cout << i->string_key << " " << i->value[0] << " " << (i->value.size() > 1 ? i->value[1] : "") << std::endl;
+				}
+			}
+			else
+			{
+				std::cerr << "Error: ini-file not found." << std::endl;
+			}
+		}
+
+		return 1;//ERROR
+	}
+
 	std::thread Thread_5(ThreadFun, 1000, 50);
 
 	try
