@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+
 void ThreadFun_Dev(dev::tGNSS* dev)
 {
 	while (true)
@@ -63,6 +66,31 @@ void ThreadFun(int tmErr_ms, int tmPause_ms)
 
 int main(int argc, char* argv[])
 {
+	std::string ComPortID;
+	unsigned int ComPortBR = 0;
+
+	if (argc == 3)//FileName + COMn + BR
+	{
+		//[TBD]
+	}
+	else//if there is no args, try to find config file
+	{
+		try
+		{
+			boost::property_tree::ptree PTree;
+			boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
+
+			ComPortID = PTree.get<std::string>("SerialPort.ID");
+			ComPortBR = PTree.get<unsigned int>("SerialPort.BR");
+		}
+		catch (std::exception & e)
+		{
+			std::cerr << "Exception: " << e.what() << "\n";
+
+			return 1;//ERROR
+		}
+	}
+
 	std::thread Thread_5(ThreadFun, 1000, 50);
 
 	try
