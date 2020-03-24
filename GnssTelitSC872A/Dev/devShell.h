@@ -34,6 +34,7 @@ public:
 	static bool Handler3(const std::vector<std::string>& data);
 	static bool HandlerECHO(const std::vector<std::string>& data);
 	static bool HandlerLog(const std::vector<std::string>& data);
+	static bool HandlerGNSS(const std::vector<std::string>& data);
 
 protected:
 	virtual void Board_Send(char data) const;

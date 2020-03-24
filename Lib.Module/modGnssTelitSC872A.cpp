@@ -5,65 +5,75 @@
 namespace mod
 {
 
-tGnssTelitSC872A::tGnssTelitSC872A(utils::tLog* log, const tGnssTelitSC872ASettings& settings)
+tGnssTelitSC872A::tGnssTelitSC872A(utils::tLog* log, const tGnssTelitSC872ASettings& settings, bool start)
 	:m_pLog(log)
 {
-	ChangeState(new tStateStart(this, "the very start"));
-	return;
+	m_Control_Operation = start;
+
+	if (m_Control_Operation)
+	{
+		ChangeState(new tStateStart(this, "the very start"));
+		return;
+	}
+	else
+	{
+		ChangeState(new tStateHalt(this, "the very start"));
+		return;
+	}
 }
 
 tGnssTelitSC872AError tGnssTelitSC872A::operator()()
 {
-	std::lock_guard<std::mutex> Lock(m_Mtx);
-
-	(*m_pState)();
-
-	return tGnssTelitSC872AError::OK;
-}
-
-tGnssTelitSC872AError tGnssTelitSC872A::operator()(const utils::tVectorUInt8& data)
-{
-	std::lock_guard<std::mutex> Lock(m_Mtx);
-
-	(*m_pState)(data);
+	//std::lock_guard<std::mutex> Lock(m_Mtx);
+	while (true)
+	{
+		(*m_pState)();
+	}
 
 	return tGnssTelitSC872AError::OK;
 }
 
 void tGnssTelitSC872A::Start()
 {
-	std::lock_guard<std::mutex> Lock(m_Mtx);
+	m_Control_Operation = true;
+}
 
-	ChangeState(new tStateStart(this, "the very start"));
-	return;
+void tGnssTelitSC872A::Restart()
+{
+	m_Control_Restart = true;
 }
 
 void tGnssTelitSC872A::Halt()
 {
-	m_pState->Halt();
-	return;
+	m_Control_Operation = false;
+}
+
+void tGnssTelitSC872A::Exit()
+{
+	m_Control_Exit = true;
+	m_Control_Operation = false;
 }
 
 tGnssTelitSC872AStatus tGnssTelitSC872A::GetStatus()
 {
-	std::lock_guard<std::mutex> Lock(m_Mtx);
+	//std::lock_guard<std::mutex> Lock(m_Mtx);
 
 	return m_pState->GetStatus();
 }
 
-tGnssTelitSC872ASettings tGnssTelitSC872A::GetSettings()
-{
-	std::lock_guard<std::mutex> Lock(m_Mtx);
-
-	return m_Settings;
-}
-
-void tGnssTelitSC872A::SetSettings(const tGnssTelitSC872ASettings& settings)
-{
-	std::lock_guard<std::mutex> Lock(m_Mtx);
-
-	m_Settings = settings;
-}
+//tGnssTelitSC872ASettings tGnssTelitSC872A::GetSettings()
+//{
+//	std::lock_guard<std::mutex> Lock(m_Mtx);
+//
+//	return m_Settings;
+//}
+//
+//void tGnssTelitSC872A::SetSettings(const tGnssTelitSC872ASettings& settings)
+//{
+//	std::lock_guard<std::mutex> Lock(m_Mtx);
+//
+//	m_Settings = settings;
+//}
 
 void tGnssTelitSC872A::Board_OnReceived(utils::tVectorUInt8& data)
 {
@@ -88,6 +98,14 @@ utils::tVectorUInt8 tGnssTelitSC872A::GetReceivedDataChunk()
 	m_ReceivedData.pop();
 
 	return Data;
+}
+
+void tGnssTelitSC872A::ClearReceivedData()
+{
+	while (!m_ReceivedData.empty())
+	{
+		m_ReceivedData.pop();
+	}
 }
 
 void tGnssTelitSC872A::ChangeState(tState* state)

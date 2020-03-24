@@ -1,9 +1,13 @@
+#include <devConfig.h>
+
 #include <devGNSS.h>
 //#include <devShell.h>
 
-#include <iostream>
+#include <atomic>
 #include <functional>
 #include <future>
+#include <iostream>
+#include <mutex>
 
 #include <boost/asio.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -15,6 +19,8 @@ namespace dev
 {
 	void ThreadFunShell();
 }
+
+tDataSetMainControl g_DataSetMainControl;
 
 //void ThreadFun_Dev(dev::tGNSS* dev)
 //{
@@ -33,31 +39,43 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 {
 	dev::tLog Log(dev::tLog::LogId_GNSS);
 
-	Log.LogSettings.Field.GNSS = 1;
+	//Log.LogSettings.Field.GNSS = 1;
 
 	boost::asio::io_context IO;
 
 	try
 	{
-		dev::tGNSS Dev(&Log, IO, promise);
+		dev::tGNSS Dev(&Log, IO);
 
 		std::thread Thread_IO([&]() { IO.run(); });
+		std::thread Thread_Dev([&]() { Dev(); });
+
+		tDataSetMainControl::tStateGNSS StateGNSSPrev = g_DataSetMainControl.Thread_GNSS_State;
 
 		while (true)
 		{
-			Dev();//Blocking...
-
-			if (Dev.GetStatus() == mod::tGnssTelitSC872AStatus::Halted)
+			if (g_DataSetMainControl.Thread_GNSS_State != tDataSetMainControl::tStateGNSS::Nothing)
 			{
-				//Thread_Dev.join();
+				switch (g_DataSetMainControl.Thread_GNSS_State)
+				{
+				case tDataSetMainControl::tStateGNSS::Start: Dev.Start(); break;
+				case tDataSetMainControl::tStateGNSS::Halt: Dev.Halt(); break;
+				case tDataSetMainControl::tStateGNSS::Restart: Dev.Restart(); break;
+				case tDataSetMainControl::tStateGNSS::Exit: Dev.Exit(); break;
+				}
 
-				std::this_thread::sleep_for(std::chrono::seconds(5));
+				if (g_DataSetMainControl.Thread_GNSS_State == tDataSetMainControl::tStateGNSS::Exit)
+					break;
 
-				//Thread_Dev = std::thread(ThreadFun_Dev, &Dev);
-
-				Dev.Start();
+				g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Nothing;
 			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		}
+		
+		Thread_Dev.join();
+
+		IO.stop();
 
 		Thread_IO.join();
 	}
@@ -94,62 +112,20 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		//std::thread Thread_1([&]()
-		//	{
-		//		IO.run();
-		//	});
-
-		//std::thread Thread_2([&]()
-		//	{
-		//		IO.run();
-		//	});
-
-		//IO.run();
-
 		while (true)
 		{
 			std::string StrValue = Thread_GNSS_Future.get();
+
+			std::cout << StrValue << '\n';
 		}
-		
-
-		//Thread_5.join();//it's not needed if the thread is detached
-
-		//boost::asio::serial_port Port(IO);
-
-		//tCommunication<> SerialPort(IO, ComPortID);
-
-		//std::thread Thread_1([&]()
-		//	{
-		//		IO.run();
-		//	});
-
-		//std::thread Thread_2([&]()
-		//	{
-		//		IO.run();
-		//	});
-
-		//IO.run();
-
-		////ThreadConsole.join();
-		//Thread_1.join();
-		//Thread_2.join();
 	}
 	catch (std::exception & e)
 	{
 		std::cerr << "Exception: " << e.what() << "\n";
 	}
 	
+	//Thread_Shell.abort();
 
-
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	std::this_thread::sleep_for(std::chrono::seconds(1));
-
-	//	std::cout << "Preved\n";
-	//}
-
-	//Thread_5.detach();
-	//std::thread::id Thread_5_ID = Thread_5.get_id();
 	Thread_GNSS.join();
 	Thread_Shell.join();
 

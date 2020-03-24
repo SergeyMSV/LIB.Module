@@ -6,6 +6,8 @@
 #include <iostream>
 #include <iomanip>
 
+extern tDataSetMainControl g_DataSetMainControl;
+
 namespace dev
 {
 
@@ -113,6 +115,34 @@ bool tShell::HandlerLog(const std::vector<std::string>& data)
 	}
 }
 
+bool tShell::HandlerGNSS(const std::vector<std::string>& data)
+{
+	if (data.size() == 2 && data[1] == "start")
+	{
+		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Start;
+	}
+	else if (data.size() == 2 && data[1] == "restart")
+	{
+		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Restart;
+	}
+	else if (data.size() == 2 && data[1] == "halt")
+	{
+		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Halt;
+	}
+	else if (data.size() == 2 && data[1] == "exit")
+	{
+		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Exit;
+	}
+	else
+	{
+		std::cout << std::setw(10) << std::setfill(' ') << std::left << "start" << std::right << std::setw(20) << "comment...\n";
+		std::cout << std::setw(10) << std::setfill(' ') << std::left << "restart" << std::right << std::setw(20) << "comment...\n";
+		std::cout << std::setw(10) << std::setfill(' ') << std::left << "halt" << std::right << std::setw(20) << "comment...\n";
+		std::cout << std::setw(10) << std::setfill(' ') << std::left << "exit" << std::right << std::setw(20) << "comment...\n";
+	}
+	return true;
+}
+
 void tShell::Board_Send(char data) const
 {
 	std::cout << data;
@@ -166,6 +196,7 @@ void ThreadFunShell()
 		{ (char*)"~debug", (char*)"DEBUG",     tShell::Handler3 },
 		{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::HandlerECHO },
 		{ (char*)"log",    (char*)"Log on/off",      tShell::HandlerLog },
+		{ (char*)"gnss",    (char*)"",      tShell::HandlerGNSS },
 		{ 0 }
 	};
 

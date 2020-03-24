@@ -8,6 +8,7 @@
 
 #include <utilsPacketNMEAType.h>
 
+//#include <atomic>
 #include <mutex>
 #include <string>
 #include <queue>
@@ -132,6 +133,11 @@ struct tGnssTelitSC872ADataSet
 		//return "LALALALALALALA~!!!! PREVED MEDVED!!!!";
 	}
 };
+
+//struct tGnssTelitSC872AControl
+//{
+//	std::atomic_bool Halt = false;
+//};
 
 enum class tGnssTelitSC872AStatus : unsigned char
 {

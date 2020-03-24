@@ -8,7 +8,24 @@ tGnssTelitSC872A::tStateHalt::tStateHalt(tGnssTelitSC872A* obj, const std::strin
 {
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateHalt: %s", value.c_str());
 
-	//m_pObj->m_pDataSet->SetDataValue1("tState-Halt");
+	if (m_pObj->IsControlRestart())
+	{
+		m_pObj->m_Control_Restart = false;
+	}
+}
+
+void tGnssTelitSC872A::tStateHalt::operator()()
+{
+	while (!m_pObj->m_Control_Exit)
+	{
+		if (m_pObj->IsControlOperation())
+		{
+			ChangeState(new tStateStart(m_pObj, "start...s"));
+			return;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
 }
 
 }

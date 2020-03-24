@@ -11,45 +11,53 @@ tGnssTelitSC872A::tStateStart::tStateStart(tGnssTelitSC872A* obj, const std::str
 {
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateStart: %s", value.c_str());
 
-	//m_pObj->m_pDataSet->SetDataValue1("tState-Start");
+	if (m_pObj->IsControlRestart())
+	{
+		m_pObj->m_Control_Restart = false;
+	}
+
+	m_pObj->ClearReceivedData();
 }
 
 void tGnssTelitSC872A::tStateStart::operator()()
 {
-	auto TimeStart = std::chrono::high_resolution_clock::now();
-
-	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "[");
-	while (true)//Step 1
+	while (true)
 	{
-		//do some work...
+		auto TimeStart = std::chrono::high_resolution_clock::now();
+
+		m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "[");
+		while (true)//Step 1
 		{
-			m_pObj->m_pLog->Write(false, utils::tLogColour::LightYellow, ".");
+			//do some work...
+			{
+				m_pObj->m_pLog->Write(false, utils::tLogColour::LightYellow, ".");
+			}
+
+			auto TimeNow = std::chrono::high_resolution_clock::now();
+
+			std::chrono::duration<double, std::milli> TimeSpan = TimeNow - TimeStart;
+
+			if (TimeSpan.count() > 100)
+			{
+				//Exit with ERROR...
+				break;
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
-		auto TimeNow = std::chrono::high_resolution_clock::now();
+		m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "]");
 
-		std::chrono::duration<double, std::milli> TimeSpan = TimeNow - TimeStart;
-
-		if (TimeSpan.count() > 100)
+		if (++m_Counter > 10)
 		{
-			//Exit with ERROR...
-			break;
+			m_pObj->m_pLog->WriteLine();
+
+			ChangeState(new tStateOperation(m_pObj, "lalala"));
+			return;
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "s");
 	}
-
-	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "]");
-
-	if (++m_Counter > 10)
-	{
-		m_pObj->m_pLog->WriteLine();
-
-		ChangeState(new tStateOperation(m_pObj, "lalala"));
-		return;
-	}
-
-	m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "s");
 }
 
 }

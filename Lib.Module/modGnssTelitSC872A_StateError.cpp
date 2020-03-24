@@ -13,19 +13,22 @@ tGnssTelitSC872A::tStateError::tStateError(tGnssTelitSC872A* obj, const std::str
 
 void tGnssTelitSC872A::tStateError::operator()()
 {
-	if (++m_Counter < 10)
+	while (true)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	}
-	else
-	{
-		m_pObj->m_pLog->WriteLine();
+		if (++m_Counter < 10)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
+		else
+		{
+			m_pObj->m_pLog->WriteLine();
 
-		ChangeState(new tStateStop(m_pObj, "lalala"));
-		return;
-	}
+			ChangeState(new tStateStop(m_pObj, "lalala"));
+			return;
+		}
 
-	m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "e");
+		m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "e");
+	}
 }
 
 }

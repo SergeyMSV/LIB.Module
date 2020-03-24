@@ -38,13 +38,19 @@ void tGnssTelitSC872A::tStateOperation::operator()()
 
 	while (true)
 	{
+		if (!m_pObj->IsControlOperation())
+		{
+			ChangeState(new tStateStop(m_pObj, "operation"));
+			return;
+		}
+
 		if (m_pObj->IsReceivedData())
 		{
 			utils::tVectorUInt8 DataChunk = m_pObj->GetReceivedDataChunk();
 
 			Data.insert(Data.end(), DataChunk.cbegin(), DataChunk.cend());//C++14
 
-			while (true)
+			while (m_pObj->IsControlOperation())
 			{
 				tPacketNMEA Packet;
 
@@ -120,11 +126,6 @@ void tGnssTelitSC872A::tStateOperation::operator()()
 			//return;
 		}
 	}
-}
-
-void tGnssTelitSC872A::tStateOperation::operator()(const utils::tVectorUInt8& data)
-{
-	m_pObj->m_pLog->WriteHex(false, utils::tLogColour::LightYellow, "DATA", data);
 }
 
 }

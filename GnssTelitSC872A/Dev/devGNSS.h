@@ -54,28 +54,12 @@ class tGNSS
 	protected:
 		void OnChanged(const mod::tGnssTelitSC872ADataSet& value) override;
 
-//		virtual void Control();
-//
-//	protected:
 //		virtual void Board_PowerSupply(bool state);
 //		virtual void Board_Reset(bool state);
 //
 //		virtual bool Board_Send(std::vector<char>& data);
 //
 		void OnReceived(utils::tVectorUInt8& data);
-//
-//		virtual void OnChanged(mod::tGnssMTKProperty value);
-//
-//		virtual void OnStart();
-//		virtual void OnResponse();
-//		virtual void OnReady();
-//		virtual void OnHalt();
-//		virtual void OnRestart();
-//		virtual void OnFailed(mod::tGnssMTKError cerr);
-//
-//		virtual void OnGGA(mod::GnssMTK::PacketNMEA::tMsgGGA value);
-//		virtual void OnGSV(mod::GnssMTK::PacketNMEA::tMsgGSV value);
-//		virtual void OnRMC(mod::GnssMTK::PacketNMEA::tMsgRMC value);
 	};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	friend class tModGnssTelitSC872A;
@@ -84,13 +68,11 @@ class tGNSS
 
 	boost::asio::io_context* m_pIO = nullptr;
 
-	//mod::tGnssTelitSC872ADataSet m_DataSet;
-
 	tModGnssTelitSC872A *m_pModFSMachine = nullptr;
-//
+
 public:
 	tGNSS() = delete;
-	tGNSS(utils::tLog* log, boost::asio::io_context& io, std::promise<std::string>& p);
+	tGNSS(utils::tLog* log, boost::asio::io_context& io);
 	tGNSS(const tGNSS&) = delete;
 	tGNSS(tGNSS&&) = delete;
 	~tGNSS();
@@ -98,27 +80,11 @@ public:
 	void operator()();
 
 	void Start();
+	void Restart();
 	void Halt();
+	void Exit();
 
 	mod::tGnssTelitSC872AStatus GetStatus();
-
-	//mod::tGnssTelitSC872ADataSet* GetDataSet()//[TBD] STUPID, THAT'S WHY HERE
-	//{
-	//	return &m_DataSet;
-	//}
-//
-//	void Tick10ms();
-//
-//	void Control();
-//
-//	void Start();
-//	void Halt();
-//
-//	void Reset(mod::tGnssMTKReset resetType);
-//
-//	void SetSettings(mod::tGnssMTKSettings settings);
-//
-//	bool SetSerialPort(int baudrate);
 };
 
 }
