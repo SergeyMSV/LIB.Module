@@ -1,6 +1,10 @@
 #include "devShell.h"
 
+#include "devDataSet.h"
+#include "devLog.h"
+
 #include <iostream>
+#include <iomanip>
 
 namespace dev
 {
@@ -24,6 +28,8 @@ bool tShell::Handler1(const std::vector<std::string>& data)
 {
 	std::cout << "Handler1" << std::endl;
 
+	//g_DataSet.SetDataValue1("Handler1");
+
 	ShowReceivedCmd(data);
 
 	return true;
@@ -32,6 +38,8 @@ bool tShell::Handler1(const std::vector<std::string>& data)
 bool tShell::Handler2(const std::vector<std::string>& data)
 {
 	std::cout << "Handler2" << std::endl;
+
+	//g_DataSet.SetDataValue1("Handler2");
 
 	ShowReceivedCmd(data);
 
@@ -77,11 +85,9 @@ bool tShell::Handler3(const std::vector<std::string>& data)
 	return true;
 }
 
-bool tShell::Handler4(const std::vector<std::string>& data)
+bool tShell::HandlerECHO(const std::vector<std::string>& data)
 {
-	std::cout << "Handler4" << std::endl;
-
-	if (data.size() > 1 && g_pShell)
+	if (data.size() == 2 && g_pShell)
 	{
 		g_pShell->SetEcho(data[1] != "0");
 
@@ -89,6 +95,22 @@ bool tShell::Handler4(const std::vector<std::string>& data)
 	}
 
 	return false;
+}
+
+bool tShell::HandlerLog(const std::vector<std::string>& data)
+{
+	if (data.size() == 2 && data[1] == "gnss")
+	{
+		tLog::LogSettings.Field.GNSS = !tLog::LogSettings.Field.GNSS;
+		return true;
+	}
+	else
+	{
+		std::cout << std::setw(10) << std::setfill('.') << std::left << "gnss" << std::right << std::setw(20) << tLog::LogSettings.Field.GNSS << '\n';
+		std::cout << std::setw(10) << std::setfill('.') << std::left << "log_1" << std::right << std::setw(20) << tLog::LogSettings.Field.Log_0 << '\n';
+		std::cout << std::setw(10) << std::setfill('.') << std::left << "log_2" << std::right << std::setw(20) << tLog::LogSettings.Field.Log_1 << '\n';
+		return true;
+	}
 }
 
 void tShell::Board_Send(char data) const
@@ -142,7 +164,8 @@ void ThreadFunShell()
 		{ (char*)"?",      (char*)"la-la-la",  tShell::Handler2 },
 		{ (char*)"~2",     (char*)"bla-bla",   tShell::Handler3 },
 		{ (char*)"~debug", (char*)"DEBUG",     tShell::Handler3 },
-		{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::Handler4 },
+		{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::HandlerECHO },
+		{ (char*)"log",    (char*)"Log on/off",      tShell::HandlerLog },
 		{ 0 }
 	};
 

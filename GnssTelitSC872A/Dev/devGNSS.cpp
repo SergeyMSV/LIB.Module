@@ -1,17 +1,10 @@
 #include "devGNSS.h"
 
-//#include <fstream>
-//#include <iostream>
-//
-//extern std::string g_DefaultSettings_Files_LogFileName;
-//extern std::string g_DefaultSettings_Settings_GNSS;
-//extern std::string g_DefaultSettings_Settings_Start;
-//
 namespace dev
 {
 
-tGNSS::tGNSS(utils::tLog* log)
-	:m_pLog(log)
+tGNSS::tGNSS(utils::tLog* log, boost::asio::io_context& io, std::promise<std::string>& p)
+	:m_pLog(log), m_pIO(&io)
 {
 	mod::tGnssTelitSC872ASettings Settings;
 

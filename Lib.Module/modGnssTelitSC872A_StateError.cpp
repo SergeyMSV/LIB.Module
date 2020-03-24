@@ -3,12 +3,12 @@
 namespace mod
 {
 
-tGnssTelitSC872A::tStateError::tStateError(tObjectState* obj, const std::string& value)
+tGnssTelitSC872A::tStateError::tStateError(tGnssTelitSC872A* obj, const std::string& value)
 	:tState(obj)
 {
-	GetObject<tGnssTelitSC872A>()->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateError: %s", value.c_str());
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateError: %s", value.c_str());
 
-	GetObject<tGnssTelitSC872A>()->m_pDataSet->SetDataValue1("tState-Operation");
+	//m_pObj->m_pDataSet->SetDataValue1("tState-Operation");
 }
 
 void tGnssTelitSC872A::tStateError::operator()()
@@ -19,13 +19,13 @@ void tGnssTelitSC872A::tStateError::operator()()
 	}
 	else
 	{
-		GetObject<tGnssTelitSC872A>()->m_pLog->WriteLine();
+		m_pObj->m_pLog->WriteLine();
 
-		ChangeState(new tStateStop(GetObject<utils::pattern_State::tObjectState>(), "lalala"));
+		ChangeState(new tStateStop(m_pObj, "lalala"));
 		return;
 	}
 
-	GetObject<tGnssTelitSC872A>()->m_pLog->Write(false, utils::tLogColour::LightRed, "e");
+	m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "e");
 }
 
 }

@@ -12,8 +12,15 @@
 
 #include <devConfig.h>
 #include <devLog.h>
+#include <devDataSet.h>
 
 #include <modGnssTelitSC872A.h>
+
+#include <comSerialPort.h>
+
+#include <future>
+
+#include <boost/asio.hpp>
 
 namespace dev
 {
@@ -24,25 +31,28 @@ class tGNSS
 	class tModGnssTelitSC872A : public mod::tGnssTelitSC872A
 	{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-		//class tBoard// : public board::tBoardModFSMachine
-		//{
-		//	tModGnssTelitSC872A* p_obj;
+		class tBoard : public tCommunication<>
+		{
+			tModGnssTelitSC872A* m_pObj = nullptr;
 
-		//public:
-		//	explicit tBoard(tModGnssTelitSC872A* obj);
-		//	virtual ~tBoard();
+		public:
+			tBoard(tModGnssTelitSC872A* obj, boost::asio::io_context& io);
+			virtual ~tBoard();
 
-		//protected:
-		//	virtual void OnReceived(std::vector<char>& data);
-		//};
+		protected:
+			void OnReceived(utils::tVectorUInt8& data) override;
+		};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-		tGNSS* m_pObj;
+		tGNSS* m_pObj = nullptr;
 
-		//tBoard* m_Board;
+		tBoard m_Board;
 
 	public:
 		tModGnssTelitSC872A(tGNSS* obj, const mod::tGnssTelitSC872ASettings& settings);
 		virtual ~tModGnssTelitSC872A();
+
+	protected:
+		void OnChanged(const mod::tGnssTelitSC872ADataSet& value) override;
 
 //		virtual void Control();
 //
@@ -52,7 +62,7 @@ class tGNSS
 //
 //		virtual bool Board_Send(std::vector<char>& data);
 //
-//		void OnReceived(std::vector<char>& data);
+		void OnReceived(utils::tVectorUInt8& data);
 //
 //		virtual void OnChanged(mod::tGnssMTKProperty value);
 //
@@ -72,13 +82,15 @@ class tGNSS
 
 	utils::tLog *m_pLog = nullptr;
 
-	mod::tGnssTelitSC872ADataSet m_DataSet;
+	boost::asio::io_context* m_pIO = nullptr;
+
+	//mod::tGnssTelitSC872ADataSet m_DataSet;
 
 	tModGnssTelitSC872A *m_pModFSMachine = nullptr;
 //
 public:
 	tGNSS() = delete;
-	explicit tGNSS(utils::tLog* log);
+	tGNSS(utils::tLog* log, boost::asio::io_context& io, std::promise<std::string>& p);
 	tGNSS(const tGNSS&) = delete;
 	tGNSS(tGNSS&&) = delete;
 	~tGNSS();
@@ -90,10 +102,10 @@ public:
 
 	mod::tGnssTelitSC872AStatus GetStatus();
 
-	mod::tGnssTelitSC872ADataSet* GetDataSet()//[TBD] STUPID, THAT'S WHY HERE
-	{
-		return &m_DataSet;
-	}
+	//mod::tGnssTelitSC872ADataSet* GetDataSet()//[TBD] STUPID, THAT'S WHY HERE
+	//{
+	//	return &m_DataSet;
+	//}
 //
 //	void Tick10ms();
 //

@@ -6,90 +6,125 @@
 #include <chrono>
 #include <thread>
 
+//#include <boost/signals2.hpp>
+
 namespace mod
 {
 
-tGnssTelitSC872A::tStateOperation::tStateOperation(tObjectState* obj, const std::string& value)
+tGnssTelitSC872A::tStateOperation::tStateOperation(tGnssTelitSC872A* obj, const std::string& value)
 	:tState(obj)
 {
-	GetObject<tGnssTelitSC872A>()->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperation: %s", value.c_str());
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperation: %s", value.c_str());
+}
 
-	GetObject<tGnssTelitSC872A>()->m_pDataSet->SetDataValue1("tState-Operation");
+template<class T, class U>
+void SetParam(T& valDst, U valSrc, bool& check)
+{
+	if (valSrc.Absent)
+	{
+		check = false;
+	}
+	else
+	{
+		valDst = valSrc.Value;
+	}
 }
 
 void tGnssTelitSC872A::tStateOperation::operator()()
 {
-	if (++m_Counter < 10)
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "PREVED");
+
+	utils::tVectorUInt8 Data;
+
+	while (true)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		//std::this_thread::sleep_for(std::chrono::duration<unsigned long, std::milli>(1000));
-	}
-	else
-	{
-		GetObject<tGnssTelitSC872A>()->m_pLog->WriteLine();
-
-		ChangeState(new tStateError(GetObject<utils::pattern_State::tObjectState>(), "lalala"));
-		//ChangeState(new tStateStop(GetObject<utils::pattern_State::tObjectState>(), "lalala"));
-		return;
-	}
-
-	std::string Data = "$GNRMC,090210.000,A,5539.564975,N,03732.411956,E,0.03,274.40,120517,,,A*71\xd\xa";
-
-	utils::tVectorUInt8 DataVector(Data.cbegin(), Data.cend());
-
-	tPacketNMEA Packet;
-
-	if (tPacketNMEA::Find(DataVector, Packet))
-	{
-		std::vector<std::string> PacketData = Packet.GetPayload();
-
-		struct DataSet1
+		if (m_pObj->IsReceivedData())
 		{
-			double A = 0;
-			double B = 0;
-		}ds1;
+			utils::tVectorUInt8 DataChunk = m_pObj->GetReceivedDataChunk();
 
-		auto Handle1 = [&ds1](const std::vector<std::string>& packetData)->bool
-		{
-			if (packetData.size() == 13 && packetData[0] == "GNRMC")
+			Data.insert(Data.end(), DataChunk.cbegin(), DataChunk.cend());//C++14
+
+			while (true)
 			{
-				if (packetData[9].size() > 0)
+				tPacketNMEA Packet;
+
+				if (tPacketNMEA::Find(Data, Packet))
 				{
-					utils::packet_NMEA::Type::tDate Date(packetData[9]);
-					ds1.A = 123.02;
+					utils::packet_NMEA::tPayloadCommon::value_type PacketData = Packet.GetPayload();
+
+					if (tMsgGSV::Try(PacketData))
+					{
+						tMsgGSV Msg(PacketData);
+						m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightMagenta, PacketData[0] + " " + Msg.MsgQty.ToString() + " " + Msg.MsgNum.ToString() + " " + Msg.SatelliteQty.ToString());
+
+						for (auto& i : Msg.Satellite)//C++11
+						{
+							m_DataSet.Satellite.push(std::forward<tGNSS_Satellite>(i));
+						}
+					}
+					else if (tMsgRMC::Try(PacketData))
+					{
+						tMsgRMC Msg(PacketData);
+						m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightMagenta, PacketData[0] + " " + Msg.Date.ToString() + " " + Msg.Time.ToString());
+
+						if (!Msg.Date.Absent)
+						{
+							m_DataSet.Year = Msg.Date.Year;
+							m_DataSet.Month = Msg.Date.Month;
+							m_DataSet.Day = Msg.Date.Day;
+						}
+
+						if (!Msg.Time.Absent)
+						{
+							m_DataSet.Hour = Msg.Time.Hour;
+							m_DataSet.Minute = Msg.Time.Minute;
+							m_DataSet.Second = Msg.Time.Second;
+						}
+
+						m_DataSet.Check_DateTime = !Msg.Date.Absent && !Msg.Time.Absent;
+
+						SetParam(m_DataSet.Valid, Msg.Valid, m_DataSet.Check_GNSS);
+						SetParam(m_DataSet.Latitude, Msg.Latitude, m_DataSet.Check_GNSS);
+						SetParam(m_DataSet.Longitude, Msg.Longitude, m_DataSet.Check_GNSS);
+						SetParam(m_DataSet.Speed, Msg.Speed, m_DataSet.Check_GNSS);
+						SetParam(m_DataSet.Course, Msg.Course, m_DataSet.Check_GNSS);
+
+						m_pObj->OnChanged(m_DataSet);//TEST
+					}
+					else
+					{
+						m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Yellow, PacketData[0]);
+
+						while (!m_DataSet.Satellite.empty())
+						{
+							m_DataSet.Satellite.pop();//TEST
+						}
+					}
 				}
 				else
 				{
-					ds1.A = 1;
+					break;
 				}
-
-				return true;
 			}
 
-			return false;
-		};
-
-		Handle1(PacketData);
-
-		//auto f = []<typename ...Ts>(Ts && ...ts) {
-		//	return foo(std::forward<Ts>(ts)...);
-		//};
-		//auto glambda = []<class T>(T a, auto && b) { return a < b; };
-
-
-		GetObject<tGnssTelitSC872A>()->m_pLog->Write(true, utils::tLogColour::LightYellow, "");
-
-		for (std::string i : PacketData)
-		{
-			GetObject<tGnssTelitSC872A>()->m_pLog->Write(false, utils::tLogColour::LightYellow, i + " ");
+			if (Data.size() > 1024)//[#]
+			{
+				ChangeState(new tStateError(m_pObj, "buffer overrun"));
+				return;
+			}
 		}
+		else
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			//ChangeState(new tStateOperation(m_pObj, "transaction"));
+			//return;
+		}
+	}
+}
 
-		GetObject<tGnssTelitSC872A>()->m_pLog->WriteLine();
-	}
-	else
-	{
-		GetObject<tGnssTelitSC872A>()->m_pLog->Write(false, utils::tLogColour::LightRed, "o");
-	}
+void tGnssTelitSC872A::tStateOperation::operator()(const utils::tVectorUInt8& data)
+{
+	m_pObj->m_pLog->WriteHex(false, utils::tLogColour::LightYellow, "DATA", data);
 }
 
 }

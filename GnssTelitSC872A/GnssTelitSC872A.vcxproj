@@ -83,6 +83,9 @@
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(TargetName).exe.ini $(OutDir)\</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -97,6 +100,9 @@
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(TargetName).exe.ini $(OutDir)\</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -115,6 +121,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(TargetName).exe.ini $(OutDir)\</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -133,6 +142,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(TargetName).exe.ini $(OutDir)\</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A.cpp" />
@@ -151,6 +163,7 @@
     <ClCompile Include="Dev\devGNSS_ModGnssTelitSC872A.cpp" />
     <ClCompile Include="Dev\devGNSS_ModGnssTelitSC872A_Board.cpp" />
     <ClCompile Include="Dev\devLog.cpp" />
+    <ClCompile Include="Dev\devDataSet.cpp" />
     <ClCompile Include="Dev\devShell.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -167,12 +180,12 @@
     <ClInclude Include="..\LIB.Utils\utilsPacketNMEAPayloadPTWS.h" />
     <ClInclude Include="..\LIB.Utils\utilsPacketNMEAType.h" />
     <ClInclude Include="..\Lib.Utils\utilsPatternCommand.h" />
-    <ClInclude Include="..\Lib.Utils\utilsPatternState.h" />
     <ClInclude Include="..\Lib.Utils\utilsShell.h" />
     <ClInclude Include="comSerialPort.h" />
     <ClInclude Include="devConfig.h" />
     <ClInclude Include="Dev\devGNSS.h" />
     <ClInclude Include="Dev\devLog.h" />
+    <ClInclude Include="Dev\devDataSet.h" />
     <ClInclude Include="Dev\devShell.h" />
     <ClInclude Include="libConfig.h" />
   </ItemGroup>

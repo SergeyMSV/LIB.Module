@@ -14,37 +14,47 @@
 
 #include <utilsLog.h>
 #include <utilsPacketNMEA.h>
-#include <utilsPatternState.h>
+#include <utilsPacketNMEAPayload.h>
 
 #include <mutex>
+#include <queue>
 
 namespace mod
 {
 
 typedef utils::packet::tPacket<utils::packet_NMEA::tFormatNMEA, utils::packet_NMEA::tPayloadCommon> tPacketNMEA;
+typedef utils::packet_NMEA::tPayloadRMC<13, 3, 4, 4> tMsgRMC;
+typedef utils::packet_NMEA::tPayloadGSV tMsgGSV;
 
-class tGnssTelitSC872A :public utils::pattern_State::tObjectState
+class tGnssTelitSC872A// :public utils::pattern_State::tObjectState
 {
-	class tState :public utils::pattern_State::tObjectState::tStateBase
+	//typedef tGnssTelitSC872A tContainer;
+
+	class tState// :public utils::pattern_State::tObjectState::tStateBase
 	{
 	protected:
-		int m_Counter = 0;
+		tGnssTelitSC872A* m_pObj = nullptr;
+
+		int m_Counter = 0;//[TBD] TEST
 
 	public:
-		tState(tObjectState* obj);
+		tState(tGnssTelitSC872A* obj);
 
 		virtual void operator()() { }
+		virtual void operator()(const utils::tVectorUInt8& data) { }
 
 		virtual bool Start() { return false; }
 		virtual bool Halt();
 
 		virtual tGnssTelitSC872AStatus GetStatus() = 0;
+
+		void ChangeState(tState* state) { m_pObj->ChangeState(state); }
 	};
 
 	class tStateError :public tState
 	{
 	public:
-		tStateError(tObjectState* obj, const std::string& value);
+		tStateError(tGnssTelitSC872A* obj, const std::string& value);
 
 		void operator()() override;
 
@@ -54,7 +64,7 @@ class tGnssTelitSC872A :public utils::pattern_State::tObjectState
 	class tStateHalt :public tState
 	{
 	public:
-		tStateHalt(tObjectState* obj, const std::string& value);
+		tStateHalt(tGnssTelitSC872A* obj, const std::string& value);
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
@@ -64,10 +74,13 @@ class tGnssTelitSC872A :public utils::pattern_State::tObjectState
 
 	class tStateOperation :public tState
 	{
+		tGnssTelitSC872ADataSet m_DataSet;
+
 	public:
-		tStateOperation(tObjectState* obj, const std::string& value);
+		tStateOperation(tGnssTelitSC872A* obj, const std::string& value);
 		
 		void operator()() override;
+		void operator()(const utils::tVectorUInt8& data) override;
 
 		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Operation; }
 	};
@@ -76,7 +89,7 @@ class tGnssTelitSC872A :public utils::pattern_State::tObjectState
 	{
 
 	public:
-		tStateStart(tObjectState* obj, const std::string& value);
+		tStateStart(tGnssTelitSC872A* obj, const std::string& value);
 
 		void operator()() override;
 
@@ -86,7 +99,7 @@ class tGnssTelitSC872A :public utils::pattern_State::tObjectState
 	class tStateStop :public tState
 	{
 	public:
-		tStateStop(tObjectState* obj, const std::string& value);
+		tStateStop(tGnssTelitSC872A* obj, const std::string& value);
 
 		void operator()() override;
 
@@ -100,18 +113,24 @@ class tGnssTelitSC872A :public utils::pattern_State::tObjectState
 
 	utils::tLog* m_pLog = nullptr;
 
+	tState* m_pState = nullptr;
+
 	tGnssTelitSC872ASettings m_Settings;
 	tGnssTelitSC872AProperty m_Property;
 
-	tGnssTelitSC872ADataSet* m_pDataSet = nullptr;
+	mutable std::mutex m_MtxReceivedData;
+	std::queue<utils::tVectorUInt8> m_ReceivedData;
+
+	//tGnssTelitSC872ADataSet* m_pDataSet = nullptr;
 
 public:
 	tGnssTelitSC872A() = delete;
-	explicit tGnssTelitSC872A(utils::tLog* log, const tGnssTelitSC872ASettings& settings, tGnssTelitSC872ADataSet* dataSet);
+	tGnssTelitSC872A(utils::tLog* log, const tGnssTelitSC872ASettings& settings);
 	tGnssTelitSC872A(const tGnssTelitSC872A&) = delete;
 	tGnssTelitSC872A(tGnssTelitSC872A&&) = delete;
 
 	tGnssTelitSC872AError operator()();
+	tGnssTelitSC872AError operator()(const utils::tVectorUInt8& data);
 
 	void Start();
 	void Halt();
@@ -121,6 +140,8 @@ public:
 	tGnssTelitSC872ASettings GetSettings();
 	void SetSettings(const tGnssTelitSC872ASettings& settings);
 
+protected:
+	virtual void OnChanged(const tGnssTelitSC872ADataSet& value) = 0;
 	//virtual void OnChanged(const tGnssTelitSC872AProperty& value) = 0;
 	//virtual void OnFailed(const tGnssTelitSC872AError& value) = 0;
 
@@ -139,7 +160,13 @@ public:
 //	virtual void Board_Reset(bool state) = 0;
 //
 //	virtual bool Board_Send(std::vector<char>& data) = 0;
-//	void Board_OnReceived(std::vector<char>& data);
+	void Board_OnReceived(utils::tVectorUInt8& data);
+
+private:
+	bool IsReceivedData();
+	utils::tVectorUInt8 GetReceivedDataChunk();
+
+	void ChangeState(tState* state);
 };
 
 }

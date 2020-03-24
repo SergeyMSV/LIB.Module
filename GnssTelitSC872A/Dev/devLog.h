@@ -20,6 +20,7 @@ class tLog : public utils::tLog
 public:
 	static const unsigned int LogId_0 = (1 << 0);
 	static const unsigned int LogId_1 = (1 << 1);
+	static const unsigned int LogId_GNSS = (1 << 2);
 	//...
 
 	union tSettings
@@ -28,7 +29,9 @@ public:
 		{
 			unsigned int Log_0 : 1;
 			unsigned int Log_1 : 1;
-			unsigned int : 30;
+			unsigned int GNSS : 1;
+
+			unsigned int : 29;
 		}Field;
 
 		unsigned int Value = 0;

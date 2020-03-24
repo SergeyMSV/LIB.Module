@@ -3,15 +3,15 @@
 namespace mod
 {
 
-tGnssTelitSC872A::tState::tState(tObjectState* obj)
-	:tStateBase(obj)
+tGnssTelitSC872A::tState::tState(tGnssTelitSC872A* obj)
+	:m_pObj(obj)
 {
 
 }
 
 bool tGnssTelitSC872A::tState::Halt()
 {
-	ChangeState(new tStateStop(GetObject<utils::pattern_State::tObjectState>(), "halt"));
+	ChangeState(new tStateStop(m_pObj, "halt"));
 	return true;
 }
 

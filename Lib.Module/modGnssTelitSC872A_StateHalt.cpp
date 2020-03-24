@@ -3,12 +3,12 @@
 namespace mod
 {
 
-tGnssTelitSC872A::tStateHalt::tStateHalt(tObjectState* obj, const std::string& value)
+tGnssTelitSC872A::tStateHalt::tStateHalt(tGnssTelitSC872A* obj, const std::string& value)
 	:tState(obj)
 {
-	GetObject<tGnssTelitSC872A>()->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateHalt: %s", value.c_str());
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateHalt: %s", value.c_str());
 
-	GetObject<tGnssTelitSC872A>()->m_pDataSet->SetDataValue1("tState-Halt");
+	//m_pObj->m_pDataSet->SetDataValue1("tState-Halt");
 }
 
 }

@@ -32,7 +32,8 @@ public:
 	static bool Debug;
 
 	static bool Handler3(const std::vector<std::string>& data);
-	static bool Handler4(const std::vector<std::string>& data);
+	static bool HandlerECHO(const std::vector<std::string>& data);
+	static bool HandlerLog(const std::vector<std::string>& data);
 
 protected:
 	virtual void Board_Send(char data) const;
@@ -50,7 +51,8 @@ static const std::vector<utils::shell::tShellCommandList> g_ShellCommandList
 	{ (char*)"?",      (char*)"la-la-la",  tShell::Handler2 },
 	{ (char*)"~2",     (char*)"bla-bla",   tShell::Handler3 },
 	{ (char*)"~debug", (char*)"DEBUG",     tShell::Handler3 },
-	{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::Handler4 },
+	{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::HandlerECHO },
+	{ (char*)"log",   (char*)"log 0-off, 1-on",      tShell::HandlerLog },
 	{ 0 }
 };
 

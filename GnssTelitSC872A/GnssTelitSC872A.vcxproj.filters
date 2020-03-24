@@ -65,12 +65,12 @@
     <ClCompile Include="Dev\devShell.cpp">
       <Filter>Dev</Filter>
     </ClCompile>
+    <ClCompile Include="Dev\devDataSet.cpp">
+      <Filter>Dev</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Lib.Utils\utilsBase.h">
-      <Filter>Lib.Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Lib.Utils\utilsPatternState.h">
       <Filter>Lib.Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Lib.Utils\utilsShell.h">
@@ -119,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="comSerialPort.h" />
     <ClInclude Include="Dev\devShell.h">
+      <Filter>Dev</Filter>
+    </ClInclude>
+    <ClInclude Include="Dev\devDataSet.h">
       <Filter>Dev</Filter>
     </ClInclude>
   </ItemGroup>
