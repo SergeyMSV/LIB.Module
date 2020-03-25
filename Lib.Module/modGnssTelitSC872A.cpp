@@ -25,10 +25,7 @@ tGnssTelitSC872A::tGnssTelitSC872A(utils::tLog* log, const tGnssTelitSC872ASetti
 tGnssTelitSC872AError tGnssTelitSC872A::operator()()
 {
 	//std::lock_guard<std::mutex> Lock(m_Mtx);
-	while (true)
-	{
-		(*m_pState)();
-	}
+	while ((*m_pState)());
 
 	return tGnssTelitSC872AError::OK;
 }

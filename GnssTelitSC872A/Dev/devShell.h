@@ -20,21 +20,26 @@ namespace dev
 
 class tShell : public utils::shell::tShell
 {
+	static bool m_Exit;
+
 	tShell() = delete;
 
 public:
 	explicit tShell(const utils::shell::tShellCommandList* cmdList, std::size_t cmdListSize);
 	virtual ~tShell();
 
+	bool Ready() { return !m_Exit; }
+
 	static bool Handler1(const std::vector<std::string>& data);
 	static bool Handler2(const std::vector<std::string>& data);
 
-	static bool Debug;
+	static bool Debug;//TEST shall be like m_Exit
 
 	static bool Handler3(const std::vector<std::string>& data);
 	static bool HandlerECHO(const std::vector<std::string>& data);
 	static bool HandlerLog(const std::vector<std::string>& data);
 	static bool HandlerGNSS(const std::vector<std::string>& data);
+	static bool HandlerEXIT(const std::vector<std::string>& data);
 
 protected:
 	virtual void Board_Send(char data) const;

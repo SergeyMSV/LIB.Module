@@ -78,6 +78,8 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 		IO.stop();
 
 		Thread_IO.join();
+
+		promise.set_value("EXIT");
 	}
 	catch (...)
 	{
@@ -112,12 +114,12 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		while (true)
-		{
+		//while (true)
+		//{
 			std::string StrValue = Thread_GNSS_Future.get();
 
 			std::cout << StrValue << '\n';
-		}
+		//}
 	}
 	catch (std::exception & e)
 	{

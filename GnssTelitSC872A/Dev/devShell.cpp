@@ -143,6 +143,15 @@ bool tShell::HandlerGNSS(const std::vector<std::string>& data)
 	return true;
 }
 
+bool tShell::HandlerEXIT(const std::vector<std::string>& data)
+{
+	tShell::m_Exit = true;
+
+	g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Exit;
+
+	return true;
+}
+
 void tShell::Board_Send(char data) const
 {
 	std::cout << data;
@@ -185,6 +194,7 @@ void tShell::ShowReceivedCmd(const std::vector<std::string>& data)
 }
 
 bool tShell::Debug = false;
+bool tShell::m_Exit = false;
 
 void ThreadFunShell()
 {
@@ -197,12 +207,13 @@ void ThreadFunShell()
 		{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::HandlerECHO },
 		{ (char*)"log",    (char*)"Log on/off",      tShell::HandlerLog },
 		{ (char*)"gnss",    (char*)"",      tShell::HandlerGNSS },
+		{ (char*)"exit",    (char*)"",      tShell::HandlerEXIT },
 		{ 0 }
 	};
 
 	dev::tShell Shell(ShellCommandList.data(), ShellCommandList.size());
 
-	while (true)
+	while (Shell.Ready())
 	{
 		int Byte = getchar();
 

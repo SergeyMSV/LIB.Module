@@ -19,45 +19,45 @@ tGnssTelitSC872A::tStateStart::tStateStart(tGnssTelitSC872A* obj, const std::str
 	m_pObj->ClearReceivedData();
 }
 
-void tGnssTelitSC872A::tStateStart::operator()()
+bool tGnssTelitSC872A::tStateStart::operator()()
 {
-	while (true)
+	auto TimeStart = std::chrono::high_resolution_clock::now();
+
+	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "[");
+
+	while (true)//Step 1
 	{
-		auto TimeStart = std::chrono::high_resolution_clock::now();
-
-		m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "[");
-		while (true)//Step 1
+		//do some work...
 		{
-			//do some work...
-			{
-				m_pObj->m_pLog->Write(false, utils::tLogColour::LightYellow, ".");
-			}
-
-			auto TimeNow = std::chrono::high_resolution_clock::now();
-
-			std::chrono::duration<double, std::milli> TimeSpan = TimeNow - TimeStart;
-
-			if (TimeSpan.count() > 100)
-			{
-				//Exit with ERROR...
-				break;
-			}
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			m_pObj->m_pLog->Write(false, utils::tLogColour::LightYellow, ".");
 		}
 
-		m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "]");
+		auto TimeNow = std::chrono::high_resolution_clock::now();
 
-		if (++m_Counter > 10)
+		std::chrono::duration<double, std::milli> TimeSpan = TimeNow - TimeStart;
+
+		if (TimeSpan.count() > 100)
 		{
-			m_pObj->m_pLog->WriteLine();
-
-			ChangeState(new tStateOperation(m_pObj, "lalala"));
-			return;
+			//Exit with ERROR...
+			break;
 		}
 
-		m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "s");
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+
+	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "]");
+
+	if (++m_Counter > 10)
+	{
+		m_pObj->m_pLog->WriteLine();
+
+		ChangeState(new tStateOperation(m_pObj, "lalala"));
+		return true;
+	}
+
+	m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "s");
+
+	return true;
 }
 
 }

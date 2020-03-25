@@ -39,7 +39,7 @@ class tGnssTelitSC872A
 	public:
 		tState(tGnssTelitSC872A* obj);
 
-		virtual void operator()() { }
+		virtual bool operator()() { return false; }
 
 		virtual bool Start() { return false; }
 		virtual bool Halt();
@@ -54,7 +54,7 @@ class tGnssTelitSC872A
 	public:
 		tStateError(tGnssTelitSC872A* obj, const std::string& value);
 
-		void operator()() override;
+		bool operator()() override;
 
 		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Error; }
 	};
@@ -64,7 +64,7 @@ class tGnssTelitSC872A
 	public:
 		tStateHalt(tGnssTelitSC872A* obj, const std::string& value);
 
-		void operator()() override;
+		bool operator()() override;
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
@@ -74,12 +74,14 @@ class tGnssTelitSC872A
 
 	class tStateOperation :public tState
 	{
+		utils::tVectorUInt8 m_ReceivedData;
+
 		tGnssTelitSC872ADataSet m_DataSet;
 
 	public:
 		tStateOperation(tGnssTelitSC872A* obj, const std::string& value);
 		
-		void operator()() override;
+		bool operator()() override;
 
 		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Operation; }
 	};
@@ -90,7 +92,7 @@ class tGnssTelitSC872A
 	public:
 		tStateStart(tGnssTelitSC872A* obj, const std::string& value);
 
-		void operator()() override;
+		bool operator()() override;
 
 		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Init; }
 	};
@@ -100,7 +102,7 @@ class tGnssTelitSC872A
 	public:
 		tStateStop(tGnssTelitSC872A* obj, const std::string& value);
 
-		void operator()() override;
+		bool operator()() override;
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
