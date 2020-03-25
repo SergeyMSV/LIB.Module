@@ -51,15 +51,4 @@ private:
 	static void ShowReceivedCmd(const std::vector<std::string>& data);
 };
 
-static const std::vector<utils::shell::tShellCommandList> g_ShellCommandList
-{
-	{ (char*)"help",   (char*)"blablabla", tShell::Handler1 },
-	{ (char*)"?",      (char*)"la-la-la",  tShell::Handler2 },
-	{ (char*)"~2",     (char*)"bla-bla",   tShell::Handler3 },
-	{ (char*)"~debug", (char*)"DEBUG",     tShell::Handler3 },
-	{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::HandlerECHO },
-	{ (char*)"log",   (char*)"log 0-off, 1-on",      tShell::HandlerLog },
-	{ 0 }
-};
-
 }

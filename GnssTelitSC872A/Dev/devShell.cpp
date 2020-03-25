@@ -11,6 +11,19 @@ extern tDataSetMainControl g_DataSetMainControl;
 namespace dev
 {
 
+static const std::vector<utils::shell::tShellCommandList> g_ShellCommandList
+{
+	{ (char*)"help",   (char*)"blablabla", tShell::Handler1 },
+	{ (char*)"?",      (char*)"la-la-la",  tShell::Handler2 },
+	{ (char*)"~2",     (char*)"bla-bla",   tShell::Handler3 },
+	{ (char*)"~debug", (char*)"DEBUG",     tShell::Handler3 },
+	{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::HandlerECHO },
+	{ (char*)"log",   (char*)"log 0-off, 1-on",      tShell::HandlerLog },
+	{ (char*)"gnss",    (char*)"",      tShell::HandlerGNSS },
+	{ (char*)"exit",    (char*)"",      tShell::HandlerEXIT },
+	{ 0 }
+};
+
 tShell* g_pShell = nullptr;
 
 tShell::tShell(const utils::shell::tShellCommandList* cmdList, std::size_t cmdListSize)
@@ -198,20 +211,7 @@ bool tShell::m_Exit = false;
 
 void ThreadFunShell()
 {
-	static const std::vector<utils::shell::tShellCommandList> ShellCommandList
-	{
-		{ (char*)"help",   (char*)"blablabla", tShell::Handler1 },
-		{ (char*)"?",      (char*)"la-la-la",  tShell::Handler2 },
-		{ (char*)"~2",     (char*)"bla-bla",   tShell::Handler3 },
-		{ (char*)"~debug", (char*)"DEBUG",     tShell::Handler3 },
-		{ (char*)"echo",   (char*)"ECHO 0-off, 1-on",      tShell::HandlerECHO },
-		{ (char*)"log",    (char*)"Log on/off",      tShell::HandlerLog },
-		{ (char*)"gnss",    (char*)"",      tShell::HandlerGNSS },
-		{ (char*)"exit",    (char*)"",      tShell::HandlerEXIT },
-		{ 0 }
-	};
-
-	dev::tShell Shell(ShellCommandList.data(), ShellCommandList.size());
+	dev::tShell Shell(g_ShellCommandList.data(), g_ShellCommandList.size());
 
 	while (Shell.Ready())
 	{
