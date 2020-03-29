@@ -105,6 +105,41 @@ void tGnssTelitSC872A::ClearReceivedData()
 	}
 }
 
+void tGnssTelitSC872A::SetStrTimePeriod(std::stringstream& stream, const std::chrono::time_point<tClock>& timePoint) const
+{
+	auto Time_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(tClock::now() - timePoint).count();//C++11
+	double Time_ms = static_cast<double>(Time_ns) / 1000000;//C++11
+
+	stream << Time_ms << " ms";
+
+}
+
+void tGnssTelitSC872A::SetStrBaudrate(std::stringstream& stream, const std::chrono::time_point<tClock>& timePoint, std::size_t sizeBytes) const
+{
+	auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - timePoint).count();//C++11
+	double Time_ms = static_cast<double>(Time_us) / 1000;//C++11
+
+	//stream << "; ";
+	stream << sizeBytes << ", ";
+	stream.setf(std::ios::fixed);
+	int SizeFract = 2;
+	stream << std::setw(4 + SizeFract + 1) << std::setprecision(SizeFract);
+	stream << Time_ms << " ms, ";
+
+	double Time_s = Time_ms / 1000;
+	if (Time_s > 0)
+	{
+		stream.setf(std::ios::fixed);
+		SizeFract = 2;
+		stream << std::setw(4 + SizeFract + 1) << std::setprecision(SizeFract);
+		stream << (static_cast<double>(sizeBytes) * 8 / Time_s) << " bps";
+	}
+	else
+	{
+		stream << "n/a";
+	}
+}
+
 void tGnssTelitSC872A::ChangeState(tState* state)
 {
 	tState* Prev = m_pState;

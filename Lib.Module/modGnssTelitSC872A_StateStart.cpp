@@ -51,7 +51,7 @@ bool tGnssTelitSC872A::tStateStart::operator()()
 	{
 		m_pObj->m_pLog->WriteLine();
 
-		ChangeState(new tStateOperation(m_pObj, "lalala"));
+		ChangeState(new tStateOperation(m_pObj));
 		return true;
 	}
 

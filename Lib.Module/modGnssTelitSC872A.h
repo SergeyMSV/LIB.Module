@@ -17,6 +17,7 @@
 #include <utilsPacketNMEAPayload.h>
 
 #include <atomic>
+#include <chrono>
 #include <mutex>
 #include <queue>
 
@@ -29,6 +30,8 @@ typedef utils::packet_NMEA::tPayloadGSV tMsgGSV;
 
 class tGnssTelitSC872A
 {
+	using tClock = std::chrono::high_resolution_clock;//C++11
+
 	class tState
 	{
 	protected:
@@ -75,11 +78,18 @@ class tGnssTelitSC872A
 	class tStateOperation :public tState
 	{
 		utils::tVectorUInt8 m_ReceivedData;
+		std::chrono::time_point<tClock> m_StartTime;
+
+		bool m_NoData = true;
 
 		tGnssTelitSC872ADataSet m_DataSet;
 
+		int m_TimeCounter = 0;
+
+		tStateOperation(tGnssTelitSC872A* obj, const std::chrono::time_point<tClock>& startTime, bool noData);
+
 	public:
-		tStateOperation(tGnssTelitSC872A* obj, const std::string& value);
+		tStateOperation(tGnssTelitSC872A* obj);
 		
 		bool operator()() override;
 
@@ -178,6 +188,9 @@ private:
 	bool IsControlHalt() { return !m_Control_Operation; }
 
 	void ClearReceivedData();
+
+	void SetStrTimePeriod(std::stringstream& stream, const std::chrono::time_point<tClock>& timePoint) const;
+	void SetStrBaudrate(std::stringstream& stream, const std::chrono::time_point<tClock>& timePoint, std::size_t sizeBytes) const;
 
 	void ChangeState(tState* state);
 };

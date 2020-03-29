@@ -6,6 +6,7 @@
 // |   version  |    release    | Description
 // |------------|---------------|---------------------------------
 // |      1     |   2019 06 20  |
+// |      2     |   2020 03 26  | std::size_t Find(tVectorUInt8& receivedData, tPacket& packet) instead of bool Find(tVectorUInt8& receivedData, tPacket& packet)
 // |            |               | 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
@@ -35,7 +36,7 @@ public:
 		TPayload::Data = value;
 	}
 
-	static bool Find(tVectorUInt8& receivedData, tPacket& packet)
+	static std::size_t Find(tVectorUInt8& receivedData, tPacket& packet)
 	{
 		tVectorUInt8::const_iterator Begin = receivedData.cbegin();
 
@@ -60,14 +61,14 @@ public:
 
 					receivedData.erase(receivedData.begin(), receivedData.begin() + EraseSize);
 
-					return true;
+					return PacketVector.size();
 				}
 			}
 
 			Begin++;
 		}
 
-		return false;
+		return 0;
 	}
 
 	static bool TryParse(const tVectorUInt8& packetVector, tPacket& packet)
