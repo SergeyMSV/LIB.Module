@@ -6,8 +6,6 @@
 #include <chrono>
 #include <thread>
 
-//#include <boost/signals2.hpp>
-
 namespace mod
 {
 
@@ -15,6 +13,11 @@ tGnssTelitSC872A::tStateOperation::tStateOperation(tGnssTelitSC872A* obj, const 
 	:tState(obj), m_StartTime(startTime), m_NoData(noData)
 {
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperation");
+}
+
+tGnssTelitSC872A::tStateOperation::tStateOperation(tGnssTelitSC872A* obj, const std::chrono::time_point<tClock>& startTime)
+	: tStateOperation(obj, startTime, false)
+{
 }
 
 tGnssTelitSC872A::tStateOperation::tStateOperation(tGnssTelitSC872A* obj)
@@ -171,6 +174,16 @@ bool tGnssTelitSC872A::tStateOperation::operator()()
 			m_NoData = true;
 
 			m_StartTime = tClock::now();
+		}
+
+		if (m_NoData)
+		{
+			auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_StartTime).count();//C++11
+			if (Time_us > 100000)//100ms
+			{
+				ChangeState(new tStateOperationNoData(m_pObj, m_StartTime));
+				return true;
+			}
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

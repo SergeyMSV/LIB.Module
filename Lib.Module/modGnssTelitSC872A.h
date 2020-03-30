@@ -81,16 +81,28 @@ class tGnssTelitSC872A
 		std::chrono::time_point<tClock> m_StartTime;
 
 		bool m_NoData = true;
+		//bool m_Transaction = false;
 
 		tGnssTelitSC872ADataSet m_DataSet;
 
-		int m_TimeCounter = 0;
-
-		tStateOperation(tGnssTelitSC872A* obj, const std::chrono::time_point<tClock>& startTime, bool noData);
+		tStateOperation(tGnssTelitSC872A* obj, const std::chrono::time_point<tClock>& startTime, bool noData);//DEPRECATED
 
 	public:
-		tStateOperation(tGnssTelitSC872A* obj);
+		tStateOperation(tGnssTelitSC872A* obj, const std::chrono::time_point<tClock>& startTime);
+		explicit tStateOperation(tGnssTelitSC872A* obj);
 		
+		bool operator()() override;
+
+		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Operation; }
+	};
+
+	class tStateOperationNoData :public tState
+	{
+		std::chrono::time_point<tClock> m_StartTime;
+
+	public:
+		tStateOperationNoData(tGnssTelitSC872A* obj, const std::chrono::time_point<tClock>& startTime);
+
 		bool operator()() override;
 
 		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Operation; }

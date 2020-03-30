@@ -154,6 +154,7 @@
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_StateHalt.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_StateInitialize.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_StateOperation.cpp" />
+    <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_StateOperationNoData.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_StateStart.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_StateStop.cpp" />
     <ClCompile Include="..\Lib.Utils\utilsLog.cpp" />
