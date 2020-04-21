@@ -87,7 +87,7 @@ bool tGnssTelitSC872A::tStateOperation::operator()()
 
 					for (auto& i : Msg.Satellite)//C++11
 					{
-						m_DataSet.Satellite.push(std::forward<tGNSS_Satellite>(i));
+						m_DataSet.Satellite.push_back(std::forward<tGNSS_Satellite>(i));
 					}
 
 					StrTime << "; ";
@@ -142,10 +142,7 @@ bool tGnssTelitSC872A::tStateOperation::operator()()
 					m_pObj->m_pLog->Write(true, utils::tLogColour::Yellow, PacketData[0]);
 					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
 
-					while (!m_DataSet.Satellite.empty())
-					{
-						m_DataSet.Satellite.pop();//TEST
-					}
+					m_DataSet.Satellite.clear();//[TEST]
 				}
 
 				m_StartTime = tClock::now();

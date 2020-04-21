@@ -8,11 +8,9 @@
 
 #include <utilsPacketNMEAType.h>
 
-//#include <atomic>
 #include <mutex>
 #include <string>
-#include <queue>
-//#include <forward_list>
+#include <deque>
 
 #include <iomanip>
 #include <sstream>
@@ -43,7 +41,7 @@ struct tGnssTelitSC872ADataSet
 	double Speed = 0;
 	double Course = 0;
 
-	std::queue<tGNSS_Satellite> Satellite;
+	std::deque<tGNSS_Satellite> Satellite;
 
 	tGnssTelitSC872ADataSet() = default;
 

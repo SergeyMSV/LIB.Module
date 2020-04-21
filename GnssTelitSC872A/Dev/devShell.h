@@ -39,6 +39,7 @@ public:
 	static bool HandlerECHO(const std::vector<std::string>& data);
 	static bool HandlerLog(const std::vector<std::string>& data);
 	static bool HandlerGNSS(const std::vector<std::string>& data);
+	static bool HandlerDB(const std::vector<std::string>& data);
 	static bool HandlerEXIT(const std::vector<std::string>& data);
 
 protected:

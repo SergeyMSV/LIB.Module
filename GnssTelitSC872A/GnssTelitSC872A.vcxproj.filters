@@ -71,6 +71,9 @@
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_StateOperationNoData.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
+    <ClCompile Include="Dev\devDB.cpp">
+      <Filter>Dev</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Lib.Utils\utilsBase.h">
@@ -125,6 +128,9 @@
       <Filter>Dev</Filter>
     </ClInclude>
     <ClInclude Include="Dev\devDataSet.h">
+      <Filter>Dev</Filter>
+    </ClInclude>
+    <ClInclude Include="Dev\devDB.h">
       <Filter>Dev</Filter>
     </ClInclude>
   </ItemGroup>

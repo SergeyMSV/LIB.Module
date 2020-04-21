@@ -11,8 +11,8 @@
 #pragma once
 
 #include <devConfig.h>
-#include <devLog.h>
 #include <devDataSet.h>
+#include <devLog.h>
 
 #include <modGnssTelitSC872A.h>
 

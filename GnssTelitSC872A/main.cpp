@@ -1,5 +1,6 @@
 #include <devConfig.h>
 
+#include <devDB.h>
 #include <devGNSS.h>
 //#include <devShell.h>
 
@@ -21,19 +22,6 @@ namespace dev
 }
 
 tDataSetMainControl g_DataSetMainControl;
-
-//void ThreadFun_Dev(dev::tGNSS* dev)
-//{
-//	while (true)
-//	{
-//		(*dev)();
-//
-//		if (dev->GetStatus() == mod::tGnssTelitSC872AStatus::Halted)
-//		{
-//			break;
-//		}
-//	}
-//}
 
 void Thread_GNSS_Handler(std::promise<std::string>& promise)
 {
@@ -94,8 +82,17 @@ int main(int argc, char* argv[])
 		boost::property_tree::ptree PTree;
 		boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
 
-		g_ConfigINI.ComPortID = PTree.get<std::string>("SerialPort.ID");
-		g_ConfigINI.ComPortBR = PTree.get<unsigned int>("SerialPort.BR");
+		g_ConfigINI.Main.Model = PTree.get<std::string>("Main.Model");
+		g_ConfigINI.Main.Ident = PTree.get<std::string>("Main.Ident");
+
+		g_ConfigINI.SerialPort.ID = PTree.get<std::string>("SerialPort.ID");
+		g_ConfigINI.SerialPort.BR = PTree.get<utils::tUInt32>("SerialPort.BR");
+
+		g_ConfigINI.DB.Host = PTree.get<std::string>("DB.Host");
+		g_ConfigINI.DB.User = PTree.get<std::string>("DB.User");
+		g_ConfigINI.DB.Passwd = PTree.get<std::string>("DB.Passwd");
+		g_ConfigINI.DB.DB = PTree.get<std::string>("DB.DB");
+		g_ConfigINI.DB.Port = PTree.get<unsigned int>("DB.Port");
 	}
 	catch (std::exception & e)
 	{
@@ -103,7 +100,11 @@ int main(int argc, char* argv[])
 
 		return 1;//ERROR
 	}
+	////////////////////////////////
 
+	dev::db::Open();
+
+	////////////////////////////////
 	std::thread Thread_Shell(dev::ThreadFunShell);
 	////////////////////////////////
 
@@ -126,6 +127,8 @@ int main(int argc, char* argv[])
 		std::cerr << "Exception: " << e.what() << "\n";
 	}
 	
+	dev::db::Close();
+
 	//Thread_Shell.abort();
 
 	Thread_GNSS.join();
