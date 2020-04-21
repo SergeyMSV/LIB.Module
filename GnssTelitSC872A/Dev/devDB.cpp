@@ -160,22 +160,19 @@ bool Open(int& cerr)
 
 				for (tTableRow& row : TableRCV)
 				{
-					if (TableRCV.size() != 4)
+					if (row.size() != 4)
 					{
 						return false;
 					}
 
-					for (std::string& i : row)
+					if (row[2] == g_ConfigINI.Main.Model && row[3] == g_ConfigINI.Main.Ident)
 					{
-						if (i == g_ConfigINI.Main.Ident)
-						{
-							g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
-							return true;
-						}
+						g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
+						return true;
 					}
-
-					dev::db::InsertTableRcv(cerr);
 				}
+
+				dev::db::InsertTableRcv(cerr);
 			}
 		}
 	}
@@ -214,7 +211,7 @@ my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm, int& ce
 
 	tLockGuard Lock(g_MySQL.Mtx);
 
-	cerr = mysql_real_query(&g_MySQL.MySQL, Str, std::strlen(Str));//Contrary to the mysql_query() function, mysql_real_query is binary safe.
+	cerr = mysql_real_query(&g_MySQL.MySQL, Str, static_cast<unsigned long>(std::strlen(Str)));//Contrary to the mysql_query() function, mysql_real_query is binary safe.
 
 	return mysql_insert_id(&g_MySQL.MySQL);
 }
