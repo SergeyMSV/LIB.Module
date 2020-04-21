@@ -1,5 +1,6 @@
 #include "devDB.h"
 
+#include <memory>//[TEST]
 #include <mutex>
 
 #include <iomanip>
@@ -19,6 +20,7 @@ struct tMYSQL
 	MYSQL MySQL{};
 	std::string DB;
 
+	utils::tUInt8 UpdateID = 0xFF;
 	utils::tUInt8 RcvID = 0xFF;
 }g_MySQL;
 
@@ -26,6 +28,25 @@ typedef std::lock_guard<std::recursive_mutex> tLockGuard;
 
 typedef std::pair<std::string, std::string> tSQLQueryParamPair;
 typedef std::vector<tSQLQueryParamPair> tSQLQueryParam;
+
+#define DB_TEST
+#ifdef DB_TEST
+static void show_mysql_error(MYSQL* mysql)
+{
+	printf("Error(%d) [%s] \"%s\"", mysql_errno(mysql),
+		mysql_sqlstate(mysql),
+		mysql_error(mysql));
+	exit(-1);
+}
+
+static void show_stmt_error(MYSQL_STMT* stmt)
+{
+	printf("Error(%d) [%s] \"%s\"", mysql_stmt_errno(stmt),
+		mysql_stmt_sqlstate(stmt),
+		mysql_stmt_error(stmt));
+	exit(-1);
+}
+#endif//DB_TEST
 
 template<typename T>
 std::string ToString(T value)
@@ -88,7 +109,7 @@ void Create(int& cerr)
 			"INSERT INTO sys (version) VALUE('" DEV_DB_VERSION "');",
 			"CREATE TABLE rcv (rcv_id INT(2) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, model VARCHAR(50) NOT NULL DEFAULT '', ident VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(rcv_id), UNIQUE INDEX(ident));",
 			"CREATE TABLE pos (pos_id INT(10) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, gnss INT(2), date_time DATETIME, valid BOOLEAN, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, speed FLOAT, course FLOAT, rcv_id INT(2) NOT NULL, update_id INT(2) NOT NULL, PRIMARY KEY(pos_id), INDEX(timestamp));",
-			"CREATE TABLE sat (pos_id INT(10) NOT NULL, sat_id INT(2) NOT NULL, elevation INT(2), azimuth INT(3), snr INT(2), PRIMARY KEY(pos_id, sat_id), INDEX(pos_id, sat_id));",
+			"CREATE TABLE pos_sat (pos_id INT(10) NOT NULL, sat_id INT(2) NOT NULL, elevation INT(2), azimuth INT(3), snr INT(2), PRIMARY KEY(pos_id, sat_id));",
 		};
 
 		for (auto& i : ReqList)
@@ -124,12 +145,16 @@ bool Open(int& cerr)
 		{
 			tTable TableSys = GetTableSys(cerr);
 
-			if (TableSys.size() != 1 || TableSys.front().size() != 2 || TableSys.front()[1] != DEV_DB_VERSION)
+			if (TableSys.size() == 1 && TableSys.front().size() == 2 && TableSys.front()[1] == DEV_DB_VERSION)
+			{
+				g_MySQL.UpdateID = utils::Read<utils::tUInt8>(TableSys.front()[0].cbegin(), TableSys.front()[0].cend(), utils::tRadix_10);
+			}
+			else
 			{
 				return false;
 			}
 			
-			for (int i = 0; i < 2; ++i)//if there is no this receiver on the list - insert it and repeate the search
+			for (int i = 0; i < 2; ++i)//if the receiver is not on the list - insert it and repeate the search
 			{
 				tTable TableRCV = GetTableRcv(cerr);
 
@@ -144,7 +169,7 @@ bool Open(int& cerr)
 					{
 						if (i == g_ConfigINI.Main.Ident)
 						{
-							g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].begin(), row[0].end());
+							g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
 							return true;
 						}
 					}
@@ -194,21 +219,7 @@ my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm, int& ce
 	return mysql_insert_id(&g_MySQL.MySQL);
 }
 
-my_ulonglong InsertTableRcv(int& cerr)
-{
-	std::string Timestamp = GetTimestamp(std::time(nullptr));
-
-	const tSQLQueryParam Query
-	{
-		{"timestamp", Timestamp},
-		{"model", g_ConfigINI.Main.Model},
-		{"ident", g_ConfigINI.Main.Ident},
-	};
-
-	return Insert("rcv", Query, cerr);
-}
-
-my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course, unsigned char update_id, int& cerr)
+my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course, int& cerr)
 {
 	std::string RcvID = ToString(g_MySQL.RcvID);
 
@@ -224,24 +235,113 @@ my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::
 		{"speed", ToString(speed)},
 		{"course", ToString(course)},
 		{"rcv_id", RcvID},
-		{"update_id", ToString(update_id)},
+		{"update_id", ToString(g_MySQL.UpdateID)},
 	};
 
 	return Insert("pos", Query, cerr);
 }
 
-my_ulonglong InsertTableSat(int pos_id, int sat_id, int elevation, int azimuth, int snr, int& cerr)
+//my_ulonglong InsertTablePosSat(int pos_id, int sat_id, int elevation, int azimuth, int snr, int& cerr)
+//{
+//	const tSQLQueryParam Query
+//	{
+//		{"pos_id", ToString(pos_id)},
+//		{"sat_id", ToString(sat_id)},
+//		{"elevation", ToString(elevation)},
+//		{"azimuth", ToString(azimuth)},
+//		{"snr", ToString(snr)},
+//	};
+//
+//	return Insert("pos_sat", Query, cerr);
+//}
+
+void InsertTablePosSatBulk(tTableSatBulk& table, int& cerr)
 {
-	const tSQLQueryParam Query
+	tLockGuard Lock(g_MySQL.Mtx);
+
+	MYSQL_STMT* Stmt = mysql_stmt_init(&g_MySQL.MySQL);
+
+	const unsigned int ColumnQty = 5;
+
+	cerr = mysql_stmt_prepare(Stmt, "INSERT INTO pos_sat VALUES (?,?,?,?,?)", -1);//[TBD] - columns
+
+	if (cerr)
+		return;
+
+	const std::size_t RowSize = sizeof(tTableSatBulkRow);
+
+	std::unique_ptr<MYSQL_BIND> Bind{ new MYSQL_BIND[ColumnQty] };
+
+	auto InsertBulk = [=, &table, &cerr](MYSQL_BIND* bind, std::size_t& count)->void
 	{
-		{"pos_id", ToString(pos_id)},
-		{"sat_id", ToString(sat_id)},
-		{"elevation", ToString(elevation)},
-		{"azimuth", ToString(azimuth)},
-		{"snr", ToString(snr)},
+		if (cerr || count >= table.size())
+			return;
+
+		std::size_t ArraySize = table.size();
+		//std::size_t ArraySize = table.size() - count;
+		//if (ArraySize > 16)
+		//{
+		//	ArraySize = 16;
+		//}
+
+		memset(bind, 0, sizeof(MYSQL_BIND) * ColumnQty);
+
+		bind[0].buffer = &table[count].pos_id;
+		bind[0].buffer_type = MYSQL_TYPE_LONG;
+		bind[0].u.indicator = &table[count].pos_id_ind;
+
+		bind[1].buffer = &table[count].sat_id;
+		bind[1].buffer_type = MYSQL_TYPE_LONG;
+		bind[1].u.indicator = &table[count].sat_id_ind;
+
+		bind[2].buffer = &table[count].elevation;
+		bind[2].buffer_type = MYSQL_TYPE_LONG;
+		bind[2].u.indicator = &table[count].elevation_ind;
+
+		bind[3].buffer = &table[count].azimuth;
+		bind[3].buffer_type = MYSQL_TYPE_LONG;
+		bind[3].u.indicator = &table[count].azimuth_ind;
+
+		bind[4].buffer = &table[count].snr;
+		bind[4].buffer_type = MYSQL_TYPE_LONG;
+		bind[4].u.indicator = &table[count].snr_ind;
+
+		mysql_stmt_attr_set(Stmt, STMT_ATTR_ARRAY_SIZE, &ArraySize);
+		mysql_stmt_attr_set(Stmt, STMT_ATTR_ROW_SIZE, &RowSize);
+
+		mysql_stmt_bind_param(Stmt, bind);
+
+		cerr = mysql_stmt_execute(Stmt);
+
+		count += ArraySize;
 	};
 
-	return Insert("sat", Query, cerr);
+	std::size_t Count = 0;
+	while (!cerr && Count < table.size())
+	{
+		InsertBulk(Bind.get(), Count);
+	}
+
+#ifdef DB_TEST
+	if (cerr)
+		show_stmt_error(Stmt);
+#endif//DB_TEST
+
+	mysql_stmt_close(Stmt);
+}
+
+my_ulonglong InsertTableRcv(int& cerr)
+{
+	std::string Timestamp = GetTimestamp(std::time(nullptr));
+
+	const tSQLQueryParam Query
+	{
+		{"timestamp", Timestamp},
+		{"model", g_ConfigINI.Main.Model},
+		{"ident", g_ConfigINI.Main.Ident},
+	};
+
+	return Insert("rcv", Query, cerr);
 }
 
 tTable GetTable(std::string table, int& cerr)

@@ -35,9 +35,28 @@ namespace dev
 bool Open(int& cerr);
 bool Open();
 
-my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course, unsigned char update_id, int& cerr);
+my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course, int& cerr);
+//my_ulonglong InsertTablePosSat(int pos_id, int sat_id, int elevation, int azimuth, int snr, int& cerr);
+
+struct tTableSatBulkRow
+{
+	int pos_id = 0;
+	char pos_id_ind = STMT_INDICATOR_NONE;
+	int sat_id = 0;
+	char sat_id_ind = STMT_INDICATOR_NONE;
+	int elevation = 0;
+	char elevation_ind = STMT_INDICATOR_NONE;
+	int azimuth = 0;
+	char azimuth_ind = STMT_INDICATOR_NONE;
+	int snr = 0;
+	char snr_ind = STMT_INDICATOR_NONE;
+};
+
+typedef std::vector<tTableSatBulkRow> tTableSatBulk;
+
+void InsertTablePosSatBulk(tTableSatBulk& table, int& cerr);
+
 my_ulonglong InsertTableRcv(int& cerr);
-my_ulonglong InsertTableSat(int pos_id, int sat_id, int elevation, int azimuth, int snr, int& cerr);
 
 typedef std::vector<std::string> tTableRow;
 typedef std::list<tTableRow> tTable;

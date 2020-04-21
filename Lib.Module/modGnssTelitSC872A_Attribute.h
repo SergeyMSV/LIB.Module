@@ -11,6 +11,7 @@
 #include <mutex>
 #include <string>
 #include <deque>
+//#include <set>//[TEST]
 
 #include <iomanip>
 #include <sstream>
@@ -41,6 +42,11 @@ struct tGnssTelitSC872ADataSet
 	double Speed = 0;
 	double Course = 0;
 
+	//struct SatelliteCmp
+	//{
+	//	bool operator()(const tGNSS_Satellite& lhs, const tGNSS_Satellite& rhs) const { return lhs.ID.Value < rhs.ID.Value; }
+	//};
+	//std::set<tGNSS_Satellite, SatelliteCmp> Satellite;
 	std::deque<tGNSS_Satellite> Satellite;
 
 	tGnssTelitSC872ADataSet() = default;

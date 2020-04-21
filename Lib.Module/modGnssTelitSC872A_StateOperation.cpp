@@ -87,6 +87,7 @@ bool tGnssTelitSC872A::tStateOperation::operator()()
 
 					for (auto& i : Msg.Satellite)//C++11
 					{
+						//m_DataSet.Satellite.insert(std::forward<tGNSS_Satellite>(i));//C++17
 						m_DataSet.Satellite.push_back(std::forward<tGNSS_Satellite>(i));
 					}
 
