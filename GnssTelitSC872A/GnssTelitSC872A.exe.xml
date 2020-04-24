@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DB_Init>
+  <Table Name="sat">
+    <Row ID="1" GNSS="GPS" Description="SUPER satellite 1"/>
+    <Row ID="2" GNSS="GPS" Description="SUPER satellite 2"/>
+    <Row ID="3" GNSS="GPS" Description="SUPER satellite 3"/>
+    <Row ID="4" GNSS="GPS" Description="SUPER satellite 4"/>
+    <Row ID="5" GNSS="GPS" Description="SUPER satellite 5"/>
+    <Row ID="6" GNSS="GPS" Description="SUPER satellite 6"/>
+    <Row ID="65" GNSS="GLONASS" Description="First satellite 65"/>
+  </Table>
+  <Table Name="bat">
+    <Row Preved="Medved1"/>
+    <Row Preved="Medved2"/>
+    <Row Preved="Medved3"/>
+  </Table>
+</DB_Init>

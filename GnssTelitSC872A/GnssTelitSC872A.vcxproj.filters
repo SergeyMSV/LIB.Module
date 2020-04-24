@@ -140,4 +140,7 @@
   <ItemGroup>
     <Text Include="Readme.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="GnssTelitSC872A.exe.xml" />
+  </ItemGroup>
 </Project>

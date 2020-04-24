@@ -17,7 +17,7 @@ std::tm tGnssTelitSC872ADataSet::GetDateTime() const
 		Time.tm_min = Minute;
 		Time.tm_sec = static_cast<int>(Second);
 	}
-	else//01.01.1970 - Unix Epoch
+	else//01.01.1970 - Unix Epoch6
 	{
 		Time.tm_year = 70;
 		Time.tm_mday = 1;
