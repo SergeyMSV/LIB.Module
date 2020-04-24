@@ -27,6 +27,8 @@ namespace dev
 	namespace db
 	{
 
+std::string ToString(const std::tm& time);
+
 //bool Init(const std::string& host, const std::string& user, const std::string& passwd, const std::string& db, unsigned int port);
 //
 ////void DB_Create(int& cerr);

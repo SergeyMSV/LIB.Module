@@ -12,6 +12,7 @@
 #include <string>
 #include <deque>
 //#include <set>//[TEST]
+#include <ctime>
 
 #include <iomanip>
 #include <sstream>
@@ -105,6 +106,8 @@ struct tGnssTelitSC872ADataSet
 	//{
 	//	return !operator==(value);
 	//}
+
+	std::tm GetDateTime() const;
 
 	std::string ToString() const
 	{

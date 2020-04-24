@@ -19,7 +19,7 @@ tGNSS::tModGnssTelitSC872A::~tModGnssTelitSC872A()
 void tGNSS::tModGnssTelitSC872A::OnChanged(const mod::tGnssTelitSC872ADataSet& value)
 {
 	std::string Timestamp = db::GetTimestampNow();
-	std::string DateTime = db::GetTimestamp(value.Year, value.Month, value.Day, value.Hour, value.Minute, static_cast<unsigned char>(value.Second));
+	std::string DateTime = db::ToString(value.GetDateTime());
 	int Cerr = 0;
 	auto PosID = db::InsertTablePos(Timestamp, static_cast<char>(value.GNSS), DateTime, value.Valid, value.Latitude, value.Longitude, value.Altitude, value.Speed, value.Course, Cerr);
 
