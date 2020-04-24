@@ -137,4 +137,7 @@
   <ItemGroup>
     <None Include="GnssTelitSC872A.exe.ini" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Readme.txt" />
+  </ItemGroup>
 </Project>
