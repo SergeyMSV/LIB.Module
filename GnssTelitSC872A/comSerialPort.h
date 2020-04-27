@@ -38,18 +38,16 @@ private:
         m_Port.async_read_some(boost::asio::buffer(m_Data, sizeof(m_Data)),
             [this](boost::system::error_code ec, std::size_t bytes_recvd)
             {
-                //if (!ec && bytes_recvd > 0)
-                //{
-                //    do_send(bytes_recvd);
-                //}
+                if (!ec && bytes_recvd > 0)
+                {
+					utils::tVectorUInt8 Data(m_Data, m_Data + bytes_recvd);
+					OnReceived(Data);
+                }
                 //else
                 //{
-
-                utils::tVectorUInt8 Data(m_Data, m_Data + bytes_recvd);
-                Receive();
-                OnReceived(Data);//[TBD] is it here or before Receive()???
-           
                 //}
+
+				Receive();
             });
     }
 
