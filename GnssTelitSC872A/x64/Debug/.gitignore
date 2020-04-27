@@ -3,3 +3,4 @@
 *.idb
 *.pdb
 *.obj.enc
+*.vcxproj.FileListAbsolute.txt
