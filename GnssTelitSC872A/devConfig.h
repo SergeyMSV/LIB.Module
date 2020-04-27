@@ -29,6 +29,8 @@ struct tConfigINI
 		std::string DB;
 		unsigned int Port = 0;
 	}DB;
+
+	std::string ConfigFileName;
 };
 
 extern tConfigINI g_ConfigINI;

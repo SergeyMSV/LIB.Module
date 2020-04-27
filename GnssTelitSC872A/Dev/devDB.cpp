@@ -9,6 +9,9 @@
 
 #include <cstdio>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+
 namespace dev
 {
 	namespace db
@@ -28,6 +31,8 @@ typedef std::lock_guard<std::recursive_mutex> tLockGuard;
 
 typedef std::pair<std::string, std::string> tSQLQueryParamPair;
 typedef std::vector<tSQLQueryParamPair> tSQLQueryParam;
+
+my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm, int& cerr);
 
 #define DB_TEST
 #ifdef DB_TEST
@@ -110,20 +115,7 @@ void Create(int& cerr)
 			"CREATE TABLE rcv (rcv_id INT(2) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, model VARCHAR(50) NOT NULL DEFAULT '', ident VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(rcv_id), UNIQUE INDEX(ident));",
 			"CREATE TABLE pos (pos_id INT(10) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, gnss INT(2), date_time DATETIME, valid BOOLEAN, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, speed FLOAT, course FLOAT, rcv_id INT(2) NOT NULL, update_id INT(2) NOT NULL, PRIMARY KEY(pos_id), INDEX(timestamp));",
 			"CREATE TABLE pos_sat (pos_id INT(10) NOT NULL, sat_id INT(3) NOT NULL, elevation INT(2), azimuth INT(3), snr INT(2), PRIMARY KEY(pos_id, sat_id));",
-			"CREATE TABLE sat (sat_id INT(3) NOT NULL, gnss VARCHAR(50) NOT NULL DEFAULT '', descript VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(sat_id));",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(1,'GPS','descr_1');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(2,'GPS','descr_2');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(3,'GPS','descr_3');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(4,'GPS','descr_4');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(5,'GPS','descr_5');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(6,'GPS','descr_6');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(7,'GPS','descr_7');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(8,'GPS','descr_8');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(9,'GPS','descr_9');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(10,'GPS','descr_10');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(11,'GPS','descr_11');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(12,'GPS','descr_12');",
-			"INSERT INTO sat (sat_id, gnss, descript) VALUE(65,'GLONASS','descr_65');",
+			"CREATE TABLE sat (sat_id INT(3) NOT NULL, gnss VARCHAR(50) NOT NULL DEFAULT '', description VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(sat_id));",
 		};
 
 		for (auto& i : ReqList)
@@ -133,6 +125,73 @@ void Create(int& cerr)
 				mysql_query(&g_MySQL.MySQL, i.c_str());
 
 				cerr = mysql_errno(&g_MySQL.MySQL);
+			}
+		}
+
+		if (!cerr)
+		{
+			try
+			{
+				boost::property_tree::ptree PTree;
+				boost::property_tree::xml_parser::read_xml(g_ConfigINI.ConfigFileName, PTree);
+
+				if (PTree.size() > 0)
+				{
+					auto Root = PTree.begin();
+
+					if (Root->first == "App")
+					{
+						for (auto a : Root->second)
+						{
+							if (a.first == "DB_Init")
+							{
+								for (auto b : a.second)
+								{
+									if (b.first == "Table")
+									{
+										std::string Table;
+
+										for (auto c : b.second)
+										{
+											if (c.first == "<xmlattr>")
+											{
+												Table = c.second.get<std::string>("Name");
+											}
+											else if (c.first == "Row")
+											{
+												if (Table == "sat")
+												{
+													for (auto d : c.second)
+													{
+														if (d.first == "<xmlattr>")
+														{
+															std::string Sat_ID = d.second.get<std::string>("ID");
+															std::string GNSS = d.second.get<std::string>("GNSS");
+															std::string Descript = d.second.get<std::string>("Description");
+
+															const tSQLQueryParam Query
+															{
+																{"sat_id", Sat_ID},
+																{"gnss", GNSS},
+																{"description", Descript},
+															};
+
+															Insert("sat", Query, cerr);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			catch (std::exception& e)
+			{
+				return;
 			}
 		}
 	}

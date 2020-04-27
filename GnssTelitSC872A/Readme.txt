@@ -7,3 +7,8 @@ c) The numbers 65-96 are reserved for GLONASS satellites. GLONASS satellites are
 by 64+satellite slot number. The slot numbers are 1 through 24 for the full GLONASS
 constellation of 24 satellites, this gives a range of 65 through 88. The numbers 89 through 96 are
 available if slot numbers above 24 are allocated to on-orbit spares.
+
+
+SELECT pos.pos_id, pos.timestamp, pos.gnss, pos.date_time, pos.valid, pos.latitude, pos.longitude, pos.altitude, pos.speed, pos.course, pos.rcv_id, pos.update_id,
+pos_sat.sat_id, pos_sat.elevation, pos_sat.azimuth, pos_sat.snr, sat.gnss, sat.description
+FROM pos LEFT JOIN pos_sat ON pos.pos_id=pos_sat.pos_id LEFT JOIN sat ON pos_sat.sat_id=sat.sat_id ORDER BY pos.pos_id desc;
