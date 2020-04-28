@@ -112,7 +112,7 @@ void Create(int& cerr)
 		{
 			"CREATE TABLE sys (update_id INT(2) NOT NULL AUTO_INCREMENT, version VARCHAR(20) NOT NULL DEFAULT '', PRIMARY KEY(update_id));",
 			"INSERT INTO sys (version) VALUE('" DEV_DB_VERSION "');",
-			"CREATE TABLE rcv (rcv_id INT(2) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, model VARCHAR(50) NOT NULL DEFAULT '', ident VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(rcv_id), UNIQUE INDEX(ident));",
+			"CREATE TABLE rcv (rcv_id INT(2) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, model VARCHAR(50) NOT NULL DEFAULT '', id VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(rcv_id), UNIQUE INDEX(id));",
 			"CREATE TABLE pos (pos_id INT(10) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, gnss INT(2), date_time DATETIME, valid BOOLEAN, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, speed FLOAT, course FLOAT, rcv_id INT(2) NOT NULL, update_id INT(2) NOT NULL, PRIMARY KEY(pos_id), INDEX(timestamp));",
 			"CREATE TABLE pos_sat (pos_id INT(10) NOT NULL, sat_id INT(3) NOT NULL, elevation INT(2), azimuth INT(3), snr INT(2), PRIMARY KEY(pos_id, sat_id));",
 			"CREATE TABLE sat (sat_id INT(3) NOT NULL, gnss VARCHAR(50) NOT NULL DEFAULT '', description VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(sat_id));",
@@ -155,7 +155,7 @@ void Create(int& cerr)
 										{
 											if (c.first == "<xmlattr>")
 											{
-												Table = c.second.get<std::string>("Name");
+												Table = c.second.get<std::string>("ID");
 											}
 											else if (c.first == "Row")
 											{
@@ -238,7 +238,7 @@ bool Open(int& cerr)
 						return false;
 					}
 
-					if (row[2] == g_ConfigINI.Main.Model && row[3] == g_ConfigINI.Main.Ident)
+					if (row[2] == g_ConfigINI.Main.Model && row[3] == g_ConfigINI.Main.ID)
 					{
 						g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
 						return true;
@@ -408,7 +408,7 @@ my_ulonglong InsertTableRcv(int& cerr)
 	{
 		{"timestamp", Timestamp},
 		{"model", g_ConfigINI.Main.Model},
-		{"ident", g_ConfigINI.Main.Ident},
+		{"id", g_ConfigINI.Main.ID},
 	};
 
 	return Insert("rcv", Query, cerr);

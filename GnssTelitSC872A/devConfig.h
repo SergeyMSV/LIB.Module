@@ -12,7 +12,7 @@ struct tConfigINI
 	struct
 	{
 		std::string Model;
-		std::string Ident;
+		std::string ID;
 	}Main;
 
 	struct

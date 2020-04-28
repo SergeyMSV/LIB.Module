@@ -135,12 +135,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GnssTelitSC872A.exe.ini" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="GnssTelitSC872A.exe.xml" />
+    <Xml Include="GnssTelitSC872A.exe.cfg" />
   </ItemGroup>
 </Project>

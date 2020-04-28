@@ -213,13 +213,10 @@
     <ClInclude Include="libConfig.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GnssTelitSC872A.exe.ini" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="GnssTelitSC872A.exe.xml" />
+    <Xml Include="GnssTelitSC872A.exe.cfg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -12,8 +12,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
-#include <boost/property_tree/xml_parser.hpp>//[TBD]TEST
+#include <boost/property_tree/xml_parser.hpp>
 
 tConfigINI g_ConfigINI;
 
@@ -78,24 +77,66 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 int main(int argc, char* argv[])
 {
-	g_ConfigINI.ConfigFileName = std::string(argv[0]) + ".xml";
+	g_ConfigINI.ConfigFileName = std::string(argv[0]) + ".cfg";
 
 	try
 	{
 		boost::property_tree::ptree PTree;
-		boost::property_tree::ini_parser::read_ini(std::string(argv[0]) + ".ini", PTree);
+		boost::property_tree::xml_parser::read_xml(g_ConfigINI.ConfigFileName, PTree);
 
-		g_ConfigINI.Main.Model = PTree.get<std::string>("Main.Model");
-		g_ConfigINI.Main.Ident = PTree.get<std::string>("Main.Ident");
+		if (PTree.size() > 0)
+		{
+			auto Root = PTree.begin();
 
-		g_ConfigINI.SerialPort.ID = PTree.get<std::string>("SerialPort.ID");
-		g_ConfigINI.SerialPort.BR = PTree.get<utils::tUInt32>("SerialPort.BR");
-
-		g_ConfigINI.DB.Host = PTree.get<std::string>("DB.Host");
-		g_ConfigINI.DB.User = PTree.get<std::string>("DB.User");
-		g_ConfigINI.DB.Passwd = PTree.get<std::string>("DB.Passwd");
-		g_ConfigINI.DB.DB = PTree.get<std::string>("DB.DB");
-		g_ConfigINI.DB.Port = PTree.get<unsigned int>("DB.Port");
+			if (Root->first == "App")
+			{
+				for (auto a : Root->second)
+				{
+					if (a.first == "Settings")
+					{
+						for (auto b : a.second)
+						{
+							if (b.first == "DB")
+							{
+								for (auto c : b.second)
+								{
+									if (c.first == "<xmlattr>")
+									{
+										g_ConfigINI.DB.Host = c.second.get<std::string>("Host");
+										g_ConfigINI.DB.User = c.second.get<std::string>("User");
+										g_ConfigINI.DB.Passwd = c.second.get<std::string>("Passwd");
+										g_ConfigINI.DB.DB = c.second.get<std::string>("Name");
+										g_ConfigINI.DB.Port = c.second.get<unsigned int>("Port");
+									}
+								}
+							}
+							else if (b.first == "GNSS")
+							{
+								for (auto c : b.second)
+								{
+									if (c.first == "<xmlattr>")
+									{
+										g_ConfigINI.Main.Model = c.second.get<std::string>("Model");
+										g_ConfigINI.Main.ID = c.second.get<std::string>("ID");
+									}
+								}
+							}
+							else if (b.first == "SerialPort")
+							{
+								for (auto c : b.second)
+								{
+									if (c.first == "<xmlattr>")
+									{
+										g_ConfigINI.SerialPort.ID = c.second.get<std::string>("ID");
+										g_ConfigINI.SerialPort.BR = c.second.get<utils::tUInt32>("BR");
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	catch (std::exception & e)
 	{
