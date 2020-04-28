@@ -52,7 +52,7 @@ class tGNSS
 		virtual ~tModGnssTelitSC872A();
 
 	protected:
-		void OnChanged(const mod::tGnssTelitSC872ADataSet& value) override;
+		void OnChanged(const mod::tGnssDataSet& value) override;
 
 //		virtual void Board_PowerSupply(bool state);
 //		virtual void Board_Reset(bool state);
@@ -84,7 +84,7 @@ public:
 	void Halt();
 	void Exit();
 
-	mod::tGnssTelitSC872AStatus GetStatus();
+	mod::tGnssStatus GetStatus();
 };
 
 }

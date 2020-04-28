@@ -56,14 +56,14 @@ void tGNSS::Exit()
 	}
 }
 
-mod::tGnssTelitSC872AStatus tGNSS::GetStatus()
+mod::tGnssStatus tGNSS::GetStatus()
 {
 	if (m_pModFSMachine)
 	{
 		return m_pModFSMachine->GetStatus();
 	}
 
-	return mod::tGnssTelitSC872AStatus::Unknown;
+	return mod::tGnssStatus::Unknown;
 }
 
 }

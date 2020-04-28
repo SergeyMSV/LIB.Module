@@ -22,12 +22,12 @@ tGnssTelitSC872A::tGnssTelitSC872A(utils::tLog* log, const tGnssTelitSC872ASetti
 	}
 }
 
-tGnssTelitSC872AError tGnssTelitSC872A::operator()()
+tGnssError tGnssTelitSC872A::operator()()
 {
 	//std::lock_guard<std::mutex> Lock(m_Mtx);
 	while ((*m_pState)());
 
-	return tGnssTelitSC872AError::OK;
+	return tGnssError::OK;
 }
 
 void tGnssTelitSC872A::Start()
@@ -51,7 +51,7 @@ void tGnssTelitSC872A::Exit()
 	m_Control_Operation = false;
 }
 
-tGnssTelitSC872AStatus tGnssTelitSC872A::GetStatus()
+tGnssStatus tGnssTelitSC872A::GetStatus()
 {
 	//std::lock_guard<std::mutex> Lock(m_Mtx);
 

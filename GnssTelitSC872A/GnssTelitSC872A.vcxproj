@@ -167,6 +167,7 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Lib.Module\modGnss.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_Attribute.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssTelitSC872A_State.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Lib.Module\modGnss.h" />
     <ClInclude Include="..\Lib.Module\modGnssTelitSC872A.h" />
     <ClInclude Include="..\Lib.Module\modGnssTelitSC872A_Attribute.h" />
     <ClInclude Include="..\Lib.Utils\utilsBase.h" />

@@ -47,7 +47,7 @@ class tGnssTelitSC872A
 		virtual bool Start() { return false; }
 		virtual bool Halt();
 
-		virtual tGnssTelitSC872AStatus GetStatus() = 0;
+		virtual tGnssStatus GetStatus() = 0;
 
 		void ChangeState(tState* state) { m_pObj->ChangeState(state); }
 	};
@@ -59,7 +59,7 @@ class tGnssTelitSC872A
 
 		bool operator()() override;
 
-		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Error; }
+		tGnssStatus GetStatus() override { return tGnssStatus::Error; }
 	};
 
 	class tStateHalt :public tState
@@ -72,7 +72,7 @@ class tGnssTelitSC872A
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
 
-		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Halted; }
+		tGnssStatus GetStatus() override { return tGnssStatus::Halted; }
 	};
 
 	class tStateOperation :public tState
@@ -83,7 +83,7 @@ class tGnssTelitSC872A
 		bool m_NoData = true;
 		//bool m_Transaction = false;
 
-		tGnssTelitSC872ADataSet m_DataSet;
+		tGnssDataSet m_DataSet;
 
 		tStateOperation(tGnssTelitSC872A* obj, const std::chrono::time_point<tClock>& startTime, bool noData);//DEPRECATED
 
@@ -93,7 +93,7 @@ class tGnssTelitSC872A
 		
 		bool operator()() override;
 
-		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Operation; }
+		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
 	};
 
 	class tStateOperationNoData :public tState
@@ -105,7 +105,7 @@ class tGnssTelitSC872A
 
 		bool operator()() override;
 
-		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Operation; }
+		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
 	};
 
 	class tStateStart :public tState
@@ -116,7 +116,7 @@ class tGnssTelitSC872A
 
 		bool operator()() override;
 
-		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Init; }
+		tGnssStatus GetStatus() override { return tGnssStatus::Init; }
 	};
 
 	class tStateStop :public tState
@@ -129,7 +129,7 @@ class tGnssTelitSC872A
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
 
-		tGnssTelitSC872AStatus GetStatus() override { return tGnssTelitSC872AStatus::Deinit; }
+		tGnssStatus GetStatus() override { return tGnssStatus::Deinit; }
 	};
 
 	//mutable std::mutex m_Mtx;
@@ -144,33 +144,34 @@ class tGnssTelitSC872A
 
 	//tGnssTelitSC872AControl m_Control;
 	tGnssTelitSC872ASettings m_Settings;
-	tGnssTelitSC872AProperty m_Property;
+	//tGnssTelitSC872AProperty m_Property;
 
 	mutable std::mutex m_MtxReceivedData;
 	std::queue<utils::tVectorUInt8> m_ReceivedData;
 
-	//tGnssTelitSC872ADataSet* m_pDataSet = nullptr;
+	//tGnssDataSet* m_pDataSet = nullptr;
 
 public:
 	tGnssTelitSC872A() = delete;
 	tGnssTelitSC872A(utils::tLog* log, const tGnssTelitSC872ASettings& settings, bool start = false);
 	tGnssTelitSC872A(const tGnssTelitSC872A&) = delete;
 	tGnssTelitSC872A(tGnssTelitSC872A&&) = delete;
+	virtual ~tGnssTelitSC872A() {};// = 0;
 
-	tGnssTelitSC872AError operator()();
+	tGnssError operator()();
 
 	void Start();
 	void Restart();
 	void Halt();
 	void Exit();
 
-	tGnssTelitSC872AStatus GetStatus();
+	tGnssStatus GetStatus();
 
 	//tGnssTelitSC872ASettings GetSettings();
 	//void SetSettings(const tGnssTelitSC872ASettings& settings);
 
 protected:
-	virtual void OnChanged(const tGnssTelitSC872ADataSet& value) = 0;
+	virtual void OnChanged(const tGnssDataSet& value) = 0;
 	//virtual void OnChanged(const tGnssTelitSC872AProperty& value) = 0;
 	//virtual void OnFailed(const tGnssTelitSC872AError& value) = 0;
 

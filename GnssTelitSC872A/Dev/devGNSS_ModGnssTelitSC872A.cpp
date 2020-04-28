@@ -16,7 +16,7 @@ tGNSS::tModGnssTelitSC872A::~tModGnssTelitSC872A()
 
 }
 
-void tGNSS::tModGnssTelitSC872A::OnChanged(const mod::tGnssTelitSC872ADataSet& value)
+void tGNSS::tModGnssTelitSC872A::OnChanged(const mod::tGnssDataSet& value)
 {
 	std::string Timestamp = db::GetTimestampNow();
 	std::string DateTime = db::ToString(value.GetDateTime());

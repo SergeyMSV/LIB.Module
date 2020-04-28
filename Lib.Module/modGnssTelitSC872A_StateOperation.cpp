@@ -132,7 +132,7 @@ bool tGnssTelitSC872A::tStateOperation::operator()()
 					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
 
 					m_pObj->OnChanged(m_DataSet);//TEST
-					m_DataSet = tGnssTelitSC872ADataSet();//TEST
+					m_DataSet = tGnssDataSet();//TEST
 				}
 				else
 				{

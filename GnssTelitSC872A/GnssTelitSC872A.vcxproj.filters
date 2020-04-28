@@ -74,6 +74,9 @@
     <ClCompile Include="Dev\devDB.cpp">
       <Filter>Dev</Filter>
     </ClCompile>
+    <ClCompile Include="..\Lib.Module\modGnss.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Lib.Utils\utilsBase.h">
@@ -132,6 +135,9 @@
     </ClInclude>
     <ClInclude Include="Dev\devDB.h">
       <Filter>Dev</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lib.Module\modGnss.h">
+      <Filter>Lib.Module</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
