@@ -1,6 +1,7 @@
 #include "devGNSS.h"
 #include "devDataSet.h"
 #include "devDB.h"
+#include "devSettings.h"
 
 namespace dev
 {
@@ -31,14 +32,10 @@ void tGNSS::tModGnssTelitSC872A::OnChanged(const mod::tGnssDataSet& value)
 		for (std::size_t i = 0; i < TableSat.size() && SatIter != value.Satellite.cend(); ++i, ++SatIter)
 		{
 			TableSat[i].pos_id = PosID;
-			TableSat[i].sat_id = (*SatIter).ID.Value;
-			TableSat[i].elevation = (*SatIter).Elevation.Value;
-			TableSat[i].azimuth = (*SatIter).Azimuth.Value;
-			TableSat[i].snr = (*SatIter).SNR.Value;
-			//TableSat[i].sat_id = value.Satellite[i].ID.Value;
-			//TableSat[i].elevation = value.Satellite[i].Elevation.Value;
-			//TableSat[i].azimuth = value.Satellite[i].Azimuth.Value;
-			//TableSat[i].snr = value.Satellite[i].SNR.Value;
+			TableSat[i].sat_id = SatIter->ID.Value;
+			TableSat[i].elevation = SatIter->Elevation.Value;
+			TableSat[i].azimuth = SatIter->Azimuth.Value;
+			TableSat[i].snr = SatIter->SNR.Value;
 		}
 
 		db::InsertTablePosSatBulk(TableSat, Cerr);

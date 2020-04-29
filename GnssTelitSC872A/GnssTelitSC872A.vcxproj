@@ -181,6 +181,7 @@
     <ClCompile Include="..\Lib.Utils\utilsLog.cpp" />
     <ClCompile Include="..\LIB.Utils\utilsPacketNMEAType.cpp" />
     <ClCompile Include="..\Lib.Utils\utilsShell.cpp" />
+    <ClCompile Include="Dev\devSettings.cpp" />
     <ClCompile Include="Dev\devDB.cpp" />
     <ClCompile Include="Dev\devGNSS.cpp" />
     <ClCompile Include="Dev\devGNSS_ModGnssTelitSC872A.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="..\Lib.Utils\utilsShell.h" />
     <ClInclude Include="comSerialPort.h" />
     <ClInclude Include="devConfig.h" />
+    <ClInclude Include="Dev\devSettings.h" />
     <ClInclude Include="Dev\devDB.h" />
     <ClInclude Include="Dev\devGNSS.h" />
     <ClInclude Include="Dev\devLog.h" />

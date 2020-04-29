@@ -100,4 +100,19 @@ struct tGnssDataSet
 	}
 };
 
+struct tGnssSettings
+{
+	union tMsg
+	{
+		struct
+		{
+			unsigned int GGA : 1;
+			unsigned int GSA : 1;
+			unsigned int GSV : 1;
+			unsigned int RMC : 1;
+			unsigned int VTG : 1;
+		}Field;
+	};
+};
+
 }

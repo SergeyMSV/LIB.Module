@@ -42,7 +42,7 @@ my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::
 
 struct tTableSatBulkRow
 {
-	int pos_id = 0;
+	my_ulonglong pos_id = 0;
 	char pos_id_ind = STMT_INDICATOR_NONE;
 	int sat_id = 0;
 	char sat_id_ind = STMT_INDICATOR_NONE;

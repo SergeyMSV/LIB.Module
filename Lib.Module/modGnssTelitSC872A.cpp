@@ -111,7 +111,6 @@ void tGnssTelitSC872A::SetStrTimePeriod(std::stringstream& stream, const std::ch
 	double Time_ms = static_cast<double>(Time_ns) / 1000000;//C++11
 
 	stream << Time_ms << " ms";
-
 }
 
 void tGnssTelitSC872A::SetStrBaudrate(std::stringstream& stream, const std::chrono::time_point<tClock>& timePoint, std::size_t sizeBytes) const

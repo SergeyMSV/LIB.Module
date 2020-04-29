@@ -2,6 +2,7 @@
 
 #include <devDB.h>
 #include <devGNSS.h>
+#include <devSettings.h>
 //#include <devShell.h>
 
 #include <atomic>
@@ -13,8 +14,6 @@
 #include <boost/asio.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-
-tConfigINI g_ConfigINI;
 
 namespace dev
 {
@@ -77,66 +76,9 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 int main(int argc, char* argv[])
 {
-	g_ConfigINI.ConfigFileName = std::string(argv[0]) + ".cfg";
-
 	try
 	{
-		boost::property_tree::ptree PTree;
-		boost::property_tree::xml_parser::read_xml(g_ConfigINI.ConfigFileName, PTree);
-
-		if (PTree.size() > 0)
-		{
-			auto Root = PTree.begin();
-
-			if (Root->first == "App")
-			{
-				for (auto a : Root->second)
-				{
-					if (a.first == "Settings")
-					{
-						for (auto b : a.second)
-						{
-							if (b.first == "DB")
-							{
-								for (auto c : b.second)
-								{
-									if (c.first == "<xmlattr>")
-									{
-										g_ConfigINI.DB.Host = c.second.get<std::string>("Host");
-										g_ConfigINI.DB.User = c.second.get<std::string>("User");
-										g_ConfigINI.DB.Passwd = c.second.get<std::string>("Passwd");
-										g_ConfigINI.DB.DB = c.second.get<std::string>("Name");
-										g_ConfigINI.DB.Port = c.second.get<unsigned int>("Port");
-									}
-								}
-							}
-							else if (b.first == "GNSS")
-							{
-								for (auto c : b.second)
-								{
-									if (c.first == "<xmlattr>")
-									{
-										g_ConfigINI.Main.Model = c.second.get<std::string>("Model");
-										g_ConfigINI.Main.ID = c.second.get<std::string>("ID");
-									}
-								}
-							}
-							else if (b.first == "SerialPort")
-							{
-								for (auto c : b.second)
-								{
-									if (c.first == "<xmlattr>")
-									{
-										g_ConfigINI.SerialPort.ID = c.second.get<std::string>("ID");
-										g_ConfigINI.SerialPort.BR = c.second.get<utils::tUInt32>("BR");
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		dev::g_Settings = dev::tSettings(std::string(argv[0]) + ".cfg");
 	}
 	catch (std::exception & e)
 	{

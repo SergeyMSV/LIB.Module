@@ -181,10 +181,6 @@ protected:
 	//virtual void OnStateHalt() = 0;
 	//virtual void OnStateRestart() = 0;
 
-	//virtual void OnGGA(GnssMTK::PacketNMEA::tMsgGGA value) { }
-	//virtual void OnGSV(GnssMTK::PacketNMEA::tMsgGSV value) { }
-	//virtual void OnRMC(GnssMTK::PacketNMEA::tMsgRMC value) { }
-
 //protected:
 //	virtual void Board_PowerSupply(bool state) = 0;
 //	virtual void Board_Reset(bool state) = 0;

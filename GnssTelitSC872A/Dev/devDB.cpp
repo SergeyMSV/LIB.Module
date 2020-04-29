@@ -1,4 +1,5 @@
 #include "devDB.h"
+#include "devSettings.h"
 
 #include <memory>//[TEST]
 #include <mutex>
@@ -133,7 +134,7 @@ void Create(int& cerr)
 			try
 			{
 				boost::property_tree::ptree PTree;
-				boost::property_tree::xml_parser::read_xml(g_ConfigINI.ConfigFileName, PTree);
+				boost::property_tree::xml_parser::read_xml(g_Settings.ConfigFileName, PTree);
 
 				if (PTree.size() > 0)
 				{
@@ -203,7 +204,7 @@ bool Open(int& cerr)
 	{
 		tLockGuard Lock(g_MySQL.Mtx);
 
-		if (!cerr && Init(g_ConfigINI.DB.Host, g_ConfigINI.DB.User, g_ConfigINI.DB.Passwd, g_ConfigINI.DB.DB, g_ConfigINI.DB.Port))
+		if (!cerr && Init(g_Settings.DB.Host, g_Settings.DB.User, g_Settings.DB.Passwd, g_Settings.DB.DB, g_Settings.DB.Port))
 		{
 			cerr = mysql_query(&g_MySQL.MySQL, std::string("USE " + g_MySQL.DB).c_str());
 		}
@@ -238,7 +239,7 @@ bool Open(int& cerr)
 						return false;
 					}
 
-					if (row[2] == g_ConfigINI.Main.Model && row[3] == g_ConfigINI.Main.ID)
+					if (row[2] == g_Settings.Main.Model && row[3] == g_Settings.Main.ID)
 					{
 						g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
 						return true;
@@ -407,8 +408,8 @@ my_ulonglong InsertTableRcv(int& cerr)
 	const tSQLQueryParam Query
 	{
 		{"timestamp", Timestamp},
-		{"model", g_ConfigINI.Main.Model},
-		{"id", g_ConfigINI.Main.ID},
+		{"model", g_Settings.Main.Model},
+		{"id", g_Settings.Main.ID},
 	};
 
 	return Insert("rcv", Query, cerr);
