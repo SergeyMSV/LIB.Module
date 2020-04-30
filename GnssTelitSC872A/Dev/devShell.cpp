@@ -141,7 +141,7 @@ bool tShell::HandlerGNSS(const std::vector<std::string>& data)
 	{
 		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Restart;
 	}
-	else if (data.size() == 2 && data[1] == "halt")
+	else if (data.size() == 2 && (data[1] == "halt" || data[1] == "stop"))
 	{
 		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Halt;
 	}
