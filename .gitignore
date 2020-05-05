@@ -3,5 +3,6 @@
 ################################################################################
 
 /.vs/LIB.Module/v16
-/DuperStateMachine/x64/Debug
+/GnssReceiver/Debug
+/GnssReceiver/x64/Debug
 /x64/Debug
