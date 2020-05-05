@@ -87,7 +87,6 @@ bool tGnssTelitSC872A::tStateOperation::operator()()
 
 					for (auto& i : Msg.Satellite)//C++11
 					{
-						//m_DataSet.Satellite.insert(std::forward<tGNSS_Satellite>(i));//C++17
 						m_DataSet.Satellite.push_back(std::forward<tGNSS_Satellite>(i));
 					}
 
@@ -118,11 +117,11 @@ bool tGnssTelitSC872A::tStateOperation::operator()()
 
 					m_DataSet.Check_DateTime = !Msg.Date.Absent && !Msg.Time.Absent;
 
-					SetParam(m_DataSet.Valid, Msg.Valid, m_DataSet.Check_GNSS);
-					SetParam(m_DataSet.Latitude, Msg.Latitude, m_DataSet.Check_GNSS);
-					SetParam(m_DataSet.Longitude, Msg.Longitude, m_DataSet.Check_GNSS);
-					SetParam(m_DataSet.Speed, Msg.Speed, m_DataSet.Check_GNSS);
-					SetParam(m_DataSet.Course, Msg.Course, m_DataSet.Check_GNSS);
+					SetParam(m_DataSet.Valid, Msg.Valid, m_DataSet.Check_Position);
+					SetParam(m_DataSet.Latitude, Msg.Latitude, m_DataSet.Check_Position);
+					SetParam(m_DataSet.Longitude, Msg.Longitude, m_DataSet.Check_Position);
+					SetParam(m_DataSet.Speed, Msg.Speed, m_DataSet.Check_Position);
+					SetParam(m_DataSet.Course, Msg.Course, m_DataSet.Check_Position);
 
 					StrTime << "; ";
 					m_pObj->SetStrTimePeriod(StrTime, m_StartTime);

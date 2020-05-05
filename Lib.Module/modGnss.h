@@ -57,7 +57,7 @@ struct tGnssDataSet
 	utils::tUInt8 Minute = 0;
 	double Second = 0;
 
-	bool Check_GNSS = false;
+	bool Check_Position = false;
 	bool Valid = false;
 	double Latitude = 0;
 	double Longitude = 0;
@@ -100,19 +100,9 @@ struct tGnssDataSet
 	}
 };
 
-struct tGnssSettings
-{
-	union tMsg
-	{
-		struct
-		{
-			unsigned int GGA : 1;
-			unsigned int GSA : 1;
-			unsigned int GSV : 1;
-			unsigned int RMC : 1;
-			unsigned int VTG : 1;
-		}Field;
-	};
-};
+//struct tGnssSettings
+//{
+
+//};
 
 }

@@ -58,19 +58,21 @@ tGnssStatus tGnssTelitSC872A::GetStatus()
 	return m_pState->GetStatus();
 }
 
-//tGnssTelitSC872ASettings tGnssTelitSC872A::GetSettings()
-//{
-//	std::lock_guard<std::mutex> Lock(m_Mtx);
-//
-//	return m_Settings;
-//}
-//
-//void tGnssTelitSC872A::SetSettings(const tGnssTelitSC872ASettings& settings)
-//{
-//	std::lock_guard<std::mutex> Lock(m_Mtx);
-//
-//	m_Settings = settings;
-//}
+tGnssTelitSC872ASettings tGnssTelitSC872A::GetSettings()
+{
+	std::lock_guard<std::mutex> Lock(m_MtxSettings);
+
+	return m_Settings;
+}
+
+void tGnssTelitSC872A::SetSettings(const tGnssTelitSC872ASettings& settings)
+{
+	std::lock_guard<std::mutex> Lock(m_MtxSettings);
+
+	m_Settings = settings;
+
+	//[TBD] - put - need restart is needed....
+}
 
 void tGnssTelitSC872A::Board_OnReceived(utils::tVectorUInt8& data)
 {

@@ -81,7 +81,6 @@ class tGnssTelitSC872A
 		std::chrono::time_point<tClock> m_StartTime;
 
 		bool m_NoData = true;
-		//bool m_Transaction = false;
 
 		tGnssDataSet m_DataSet;
 
@@ -132,8 +131,6 @@ class tGnssTelitSC872A
 		tGnssStatus GetStatus() override { return tGnssStatus::Deinit; }
 	};
 
-	//mutable std::mutex m_Mtx;
-
 	utils::tLog* m_pLog = nullptr;
 
 	tState* m_pState = nullptr;
@@ -142,14 +139,12 @@ class tGnssTelitSC872A
 	std::atomic_bool m_Control_Restart = false;
 	std::atomic_bool m_Control_Exit = false;
 
-	//tGnssTelitSC872AControl m_Control;
+	mutable std::mutex m_MtxSettings;
 	tGnssTelitSC872ASettings m_Settings;
 	//tGnssTelitSC872AProperty m_Property;
 
 	mutable std::mutex m_MtxReceivedData;
 	std::queue<utils::tVectorUInt8> m_ReceivedData;
-
-	//tGnssDataSet* m_pDataSet = nullptr;
 
 public:
 	tGnssTelitSC872A() = delete;
@@ -167,8 +162,8 @@ public:
 
 	tGnssStatus GetStatus();
 
-	//tGnssTelitSC872ASettings GetSettings();
-	//void SetSettings(const tGnssTelitSC872ASettings& settings);
+	tGnssTelitSC872ASettings GetSettings();
+	void SetSettings(const tGnssTelitSC872ASettings& settings);
 
 protected:
 	virtual void OnChanged(const tGnssDataSet& value) = 0;

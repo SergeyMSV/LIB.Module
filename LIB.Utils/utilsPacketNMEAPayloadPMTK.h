@@ -249,7 +249,7 @@ typedef hidden::tPayloadPMTK10xReset<hidden::tPayloadPMTK10xResetState::Warm> tP
 typedef hidden::tPayloadPMTK10xReset<hidden::tPayloadPMTK10xResetState::Cold> tPayloadPMTK103ResetCold;
 typedef hidden::tPayloadPMTK10xReset<hidden::tPayloadPMTK10xResetState::Full> tPayloadPMTK104ResetFull;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-struct tPayloadPMTK314
+struct tPayloadPMTK314_19
 {
 	typedef Type::tUInt<tUInt8, 0> status_type;
 
@@ -261,11 +261,11 @@ struct tPayloadPMTK314
 	status_type GSV;
 	status_type ZDA;
 
-	tPayloadPMTK314() = default;
-	tPayloadPMTK314(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 zda)
+	tPayloadPMTK314_19() = default;
+	tPayloadPMTK314_19(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 zda)
 		:GLL(gll), RMC(rmc), VTG(vtg), GGA(gga), GSA(gsa), GSV(gsv), ZDA(zda)
 	{ }
-	explicit tPayloadPMTK314(const tPayloadCommon::value_type& val)
+	explicit tPayloadPMTK314_19(const tPayloadCommon::value_type& val)
 	{
 		if (Try(val))
 		{
@@ -310,6 +310,87 @@ struct tPayloadPMTK314
 		Data.push_back("0");
 		Data.push_back(ZDA.ToString());
 		Data.push_back("0");
+
+		return Data;
+	}
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct tPayloadPMTK314_21
+{
+	typedef Type::tUInt<tUInt8, 0> status_type;
+
+	status_type GLL;
+	status_type RMC;
+	status_type VTG;
+	status_type GGA;
+	status_type GSA;
+	status_type GSV;
+	status_type GRS;
+	status_type GST;
+	status_type ZDA;
+	status_type MCHN;
+	status_type DTM;
+	status_type GBS;
+
+	tPayloadPMTK314_21() = default;
+	tPayloadPMTK314_21(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 grs, tUInt8 gst, tUInt8 zda, tUInt8 mchn, tUInt8 dtm, tUInt8 gbs)
+		:GLL(gll), RMC(rmc), VTG(vtg), GGA(gga), GSA(gsa), GSV(gsv), GRS(grs), GST(gst), ZDA(zda), MCHN(mchn), DTM(dtm), GBS(gbs)
+	{ }
+	tPayloadPMTK314_21(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 zda)
+		:tPayloadPMTK314_21(gll, rmc, vtg, gga, gsa, gsv, 0, 0, zda, 0, 0, 0)
+	{ }	
+	explicit tPayloadPMTK314_21(const tPayloadCommon::value_type& val)
+	{
+		if (Try(val))
+		{
+			GLL = status_type(val[1]);
+			RMC = status_type(val[2]);
+			VTG = status_type(val[3]);
+			GGA = status_type(val[4]);
+			GSA = status_type(val[5]);
+			GSV = status_type(val[6]);
+			GRS = status_type(val[7]);
+			GST = status_type(val[8]);
+			ZDA = status_type(val[18]);
+			MCHN = status_type(val[19]);
+			DTM = status_type(val[20]);
+			GBS = status_type(val[21]);
+		}
+	}
+
+	static const char* GetID() { return "PMTK314"; }
+
+	static bool Try(const tPayloadCommon::value_type& val)
+	{
+		return val.size() == 22 && !std::strcmp(val[0].c_str(), GetID());
+	}
+
+	tPayloadCommon::value_type GetPayload() const
+	{
+		tPayloadCommon::value_type Data;
+
+		Data.push_back(GetID());
+		Data.push_back(GLL.ToString());
+		Data.push_back(RMC.ToString());
+		Data.push_back(VTG.ToString());
+		Data.push_back(GGA.ToString());
+		Data.push_back(GSA.ToString());
+		Data.push_back(GSV.ToString());
+		Data.push_back(GRS.ToString());
+		Data.push_back(GST.ToString());
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back("0");
+		Data.push_back(ZDA.ToString());
+		Data.push_back(MCHN.ToString());
+		Data.push_back(DTM.ToString());
+		Data.push_back(GBS.ToString());
 
 		return Data;
 	}

@@ -85,6 +85,11 @@ public:
 	void Exit();
 
 	mod::tGnssStatus GetStatus();
+
+	tModGnssTelitSC872A* operator->()//[TEST]
+	{
+		return m_pModFSMachine;
+	}
 };
 
 }
