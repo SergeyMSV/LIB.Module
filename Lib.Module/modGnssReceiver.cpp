@@ -101,6 +101,8 @@ utils::tVectorUInt8 tGnssReceiver::GetReceivedDataChunk()
 
 void tGnssReceiver::ClearReceivedData()
 {
+	std::lock_guard<std::mutex> Lock(m_MtxReceivedData);
+
 	while (!m_ReceivedData.empty())
 	{
 		m_ReceivedData.pop();
