@@ -134,7 +134,7 @@ void Create(int& cerr)
 			try
 			{
 				boost::property_tree::ptree PTree;
-				boost::property_tree::xml_parser::read_xml(g_Settings.ConfigFileName, PTree);
+				boost::property_tree::xml_parser::read_xml(g_Settings.GetConfigFileName(), PTree);
 
 				if (PTree.size() > 0)
 				{

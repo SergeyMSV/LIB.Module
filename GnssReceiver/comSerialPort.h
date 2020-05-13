@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <mutex>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -13,6 +15,9 @@ class tCommunication
     boost::asio::serial_port m_Port;
 
     unsigned char m_Data[DataSizeRecv];
+
+	mutable std::mutex m_Mtx;//[TBD] maybe scoped_mutex
+	std::queue<utils::tVectorUInt8> m_DataSent;
 
 public:
     tCommunication(boost::asio::io_context& io_context, const std::string& portID, utils::tUInt32 portBR)
@@ -31,6 +36,22 @@ public:
 
         Receive();
     }
+
+	bool Send(const utils::tVectorUInt8& data)
+	{
+		std::lock_guard<std::mutex> Lock(m_Mtx);
+
+		bool DataSentEmpty = m_DataSent.empty();//[TBD]it shall limit incoming data for sending
+
+		m_DataSent.push(data);
+
+		if (DataSentEmpty)
+		{
+			Send();
+		}
+
+		return true;
+	}
 
 private:
     void Receive()
@@ -53,6 +74,22 @@ private:
 
 protected:
     virtual void OnReceived(utils::tVectorUInt8& data) = 0;
+
+	void Send()
+	{
+		m_Port.async_write_some(boost::asio::buffer(m_DataSent.front(), m_DataSent.front().size()),
+			[this](boost::system::error_code /*ec*/, std::size_t /*bytes_sent*/)
+			{
+				std::lock_guard<std::mutex> Lock(m_Mtx);
+
+				m_DataSent.pop();
+
+				if (!m_DataSent.empty())
+				{
+					Send();
+				}
+			});
+	}
 
 //    void do_receive()
 //    {

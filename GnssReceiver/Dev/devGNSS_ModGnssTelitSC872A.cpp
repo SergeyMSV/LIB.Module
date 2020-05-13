@@ -17,6 +17,11 @@ tGNSS::tModGnssReceiver::~tModGnssReceiver()
 
 }
 
+mod::tGnssTaskScript tGNSS::tModGnssReceiver::GetTaskScript(const std::string& id)
+{
+	return g_Settings.GetTaskScript(id);
+}
+
 void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)
 {
 	std::string Timestamp = db::GetTimestampNow();
@@ -47,6 +52,11 @@ void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)
 	}
 
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, value.ToString());
+}
+
+bool tGNSS::tModGnssReceiver::Board_Send(const utils::tVectorUInt8& data)
+{
+	return m_Board.Send(data);
 }
 
 void tGNSS::tModGnssReceiver::OnReceived(utils::tVectorUInt8& data)

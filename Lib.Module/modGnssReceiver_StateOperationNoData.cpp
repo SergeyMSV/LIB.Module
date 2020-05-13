@@ -17,7 +17,7 @@ tGnssReceiver::tStateOperationNoData::tStateOperationNoData(tGnssReceiver* obj, 
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperationNoData");
 }
 
-bool tGnssReceiver::tStateOperationNoData::operator()()
+/*bool tGnssReceiver::tStateOperationNoData::operator()()
 {
 	if (!m_pObj->IsControlOperation())
 	{
@@ -40,6 +40,6 @@ bool tGnssReceiver::tStateOperationNoData::operator()()
 	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
 	return true;
-}
+}*/
 
 }

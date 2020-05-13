@@ -249,7 +249,7 @@ typedef hidden::tPayloadPMTK10xReset<hidden::tPayloadPMTK10xResetState::Warm> tP
 typedef hidden::tPayloadPMTK10xReset<hidden::tPayloadPMTK10xResetState::Cold> tPayloadPMTK103ResetCold;
 typedef hidden::tPayloadPMTK10xReset<hidden::tPayloadPMTK10xResetState::Full> tPayloadPMTK104ResetFull;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-struct tPayloadPMTK314_19
+struct tPayloadPMTK314R2
 {
 	typedef Type::tUInt<tUInt8, 0> status_type;
 
@@ -261,11 +261,11 @@ struct tPayloadPMTK314_19
 	status_type GSV;
 	status_type ZDA;
 
-	tPayloadPMTK314_19() = default;
-	tPayloadPMTK314_19(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 zda)
+	tPayloadPMTK314R2() = default;
+	tPayloadPMTK314R2(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 zda)
 		:GLL(gll), RMC(rmc), VTG(vtg), GGA(gga), GSA(gsa), GSV(gsv), ZDA(zda)
 	{ }
-	explicit tPayloadPMTK314_19(const tPayloadCommon::value_type& val)
+	explicit tPayloadPMTK314R2(const tPayloadCommon::value_type& val)
 	{
 		if (Try(val))
 		{
@@ -315,7 +315,7 @@ struct tPayloadPMTK314_19
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-struct tPayloadPMTK314_21
+struct tPayloadPMTK314R3
 {
 	typedef Type::tUInt<tUInt8, 0> status_type;
 
@@ -332,14 +332,14 @@ struct tPayloadPMTK314_21
 	status_type DTM;
 	status_type GBS;
 
-	tPayloadPMTK314_21() = default;
-	tPayloadPMTK314_21(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 grs, tUInt8 gst, tUInt8 zda, tUInt8 mchn, tUInt8 dtm, tUInt8 gbs)
+	tPayloadPMTK314R3() = default;
+	tPayloadPMTK314R3(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 grs, tUInt8 gst, tUInt8 zda, tUInt8 mchn, tUInt8 dtm, tUInt8 gbs)
 		:GLL(gll), RMC(rmc), VTG(vtg), GGA(gga), GSA(gsa), GSV(gsv), GRS(grs), GST(gst), ZDA(zda), MCHN(mchn), DTM(dtm), GBS(gbs)
 	{ }
-	tPayloadPMTK314_21(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 zda)
-		:tPayloadPMTK314_21(gll, rmc, vtg, gga, gsa, gsv, 0, 0, zda, 0, 0, 0)
+	tPayloadPMTK314R3(tUInt8 gll, tUInt8 rmc, tUInt8 vtg, tUInt8 gga, tUInt8 gsa, tUInt8 gsv, tUInt8 zda)
+		:tPayloadPMTK314R3(gll, rmc, vtg, gga, gsa, gsv, 0, 0, zda, 0, 0, 0)
 	{ }	
-	explicit tPayloadPMTK314_21(const tPayloadCommon::value_type& val)
+	explicit tPayloadPMTK314R3(const tPayloadCommon::value_type& val)
 	{
 		if (Try(val))
 		{

@@ -24,7 +24,7 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 {
 	dev::tLog Log(dev::tLog::LogId_GNSS);
 
-	//Log.LogSettings.Field.GNSS = 1;
+	Log.LogSettings.Field.GNSS = 1;
 
 	boost::asio::io_context IO;
 

@@ -39,7 +39,7 @@ void SetParam(T& valDst, U valSrc, bool& check)
 	}
 }
 
-bool tGnssReceiver::tStateOperation::operator()()
+/*bool tGnssReceiver::tStateOperation::operator()()
 {
 	if (!m_pObj->IsControlOperation())
 	{
@@ -78,8 +78,9 @@ bool tGnssReceiver::tStateOperation::operator()()
 				m_pObj->SetStrBaudrate(StrTime, m_StartTime, PacketSize);
 				m_StartTime = tClock::now();
 
-				utils::packet_NMEA::tPayloadCommon::value_type PacketData = Packet.GetPayload();
+				tPacketNMEA::payload_value_type PacketData = Packet.GetPayload();
 
+				//[TBD] it's possible to use std::map instead of following statement... just reg in map new handler...
 				if (tMsgGSV::Try(PacketData))
 				{
 					tMsgGSV Msg(PacketData);
@@ -192,7 +193,7 @@ bool tGnssReceiver::tStateOperation::operator()()
 	}
 
 	return true;
-}
+}*/
 
 }
 //[904564.367289]182539.000 A 55.924115 37.751517 00.000000 23

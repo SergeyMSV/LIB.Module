@@ -9,6 +9,7 @@
 // |      2     |   2019 02 07  | Added tPacket(std::string& address, int payloadItemQty, bool encapsulation = false);
 // |      3     |   2019 05 01  | Refactored
 // |      4     |   2019 09 20  | Refactored
+// |      5     |   2020 09 06  | Corrected tFormat::Append(tVectorUInt8& dst, const TPayload& payload) const
 // |            |               | 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
@@ -27,12 +28,9 @@ namespace utils
 template <class TPayload, unsigned char stx = '$'>
 struct tFormat
 {
-	enum { STX = stx, CTX = '*' };
+	enum : unsigned char { STX = stx, CTX = '*' };
 
 protected:
-	template <class tMsg>
-	void SetPayloadIDs(const tMsg& msg) { }
-
 	static tVectorUInt8 TestPacket(tVectorUInt8::const_iterator cbegin, tVectorUInt8::const_iterator cend)
 	{
 		std::size_t Size = std::distance(cbegin, cend);
@@ -56,7 +54,7 @@ protected:
 		return tVectorUInt8();
 	}
 
-	static bool TryParse(const tVectorUInt8& packetVector, tFormat& format, TPayload& payload)
+	static bool TryParse(const tVectorUInt8& packetVector, TPayload& payload)
 	{
 		if (packetVector.size() >= GetSize(0) && packetVector[0] == STX)
 		{
@@ -81,24 +79,25 @@ protected:
 
 	static std::size_t GetSize(std::size_t payloadSize) { return payloadSize + 6; };//$*xx\xd\xa
 
-	void Append(tVectorUInt8& dst, const TPayload& payload) const
+	static void Append(tVectorUInt8& dst, const TPayload& payload)
 	{
+		dst.reserve(GetSize(payload.size()));
+
 		dst.push_back(STX);
 
-		payload.Append(dst);
+		for (auto i : payload)
+		{
+			dst.push_back(i);
+		}
 
-		unsigned char CRC = utils::crc::CRC08_NMEA<tVectorUInt8::const_iterator>(dst.cbegin() + 1, dst.cend());
+		unsigned char CRC = utils::crc::CRC08_NMEA(payload.begin(), payload.end());
 
 		dst.push_back(CTX);
 
-		char StrCRC[5];
-		std::sprintf(StrCRC, "%02X", CRC);
+		char StrCRC[10]{};
+		std::sprintf(StrCRC, "%02X\xd\xa", CRC);
 
-		dst.push_back(StrCRC[0]);
-		dst.push_back(StrCRC[1]);
-
-		dst.push_back(0x0D);
-		dst.push_back(0x0A);
+		dst.insert(dst.end(), StrCRC, StrCRC + 4);
 	}
 
 private:
@@ -120,6 +119,81 @@ template <class TPayload> struct tFormatNMEABin : public tFormat<TPayload, '!'> 
 struct tPayloadCommon
 {
 	typedef std::vector<std::string> value_type;
+
+	class tIterator
+	{
+		friend struct tPayloadCommon;
+
+		const tPayloadCommon* m_pObj = nullptr;
+
+		std::size_t m_DataSize = 0;
+		std::size_t m_DataIndex = 0;
+		const char* m_DataPtr = nullptr;
+
+		tIterator() = delete;
+		tIterator(const tPayloadCommon* obj, bool begin) :m_pObj(obj), m_DataSize(m_pObj->size())
+		{
+			if (m_DataSize > 0 && m_pObj->Data[0].size() > 0)
+			{
+				if (begin)
+				{
+					m_DataPtr = &m_pObj->Data[0][0];
+				}
+				else
+				{
+					m_DataIndex = m_DataSize;
+				}
+			}
+		}
+
+	public:
+		tIterator& operator ++ ()
+		{
+			if (m_DataIndex < m_DataSize)
+			{
+				++m_DataIndex;
+			}
+
+			std::size_t DataIndex = m_DataIndex;
+
+			for (const std::string& i : m_pObj->Data)
+			{
+				std::size_t StrSize = i.size();
+
+				if (DataIndex >= StrSize + 1)
+				{
+					DataIndex -= StrSize + 1;
+				}
+				else if (DataIndex == StrSize)
+				{
+					static char Separator = ',';
+					m_DataPtr = &Separator;
+					break;
+				}
+				else
+				{
+					m_DataPtr = &i[DataIndex];
+					break;
+				}
+			}
+
+			return *this;
+		}
+
+		bool operator != (const tIterator& val) const
+		{
+			return m_DataIndex != val.m_DataIndex;
+		}
+
+		const char operator * () const
+		{
+			assert(m_DataPtr != nullptr);
+
+			return *m_DataPtr;
+		}
+	};
+
+	typedef tIterator iterator;
 
 	value_type Data;
 
@@ -145,34 +219,61 @@ struct tPayloadCommon
 		Data.push_back(LocalString);
 	}
 
-	std::size_t GetSize() const
+	std::size_t size() const
 	{
 		std::size_t Size = 0;
 
 		for (std::size_t i = 0; i < Data.size(); ++i)
 		{
 			Size += Data[i].size();
+		}
 
-			if (i != Data.size() - 1)
-			{
-				Size += 1;
-			}
+		if (Data.size() > 0)
+		{
+			Size += Data.size() - 1;
 		}
 
 		return Size;
 	}
 
-	void Append(tVectorUInt8& dst) const
+	iterator begin() const
 	{
-		for (std::size_t i = 0; i < Data.size(); ++i)
-		{
-			dst.insert(dst.end(), Data[i].cbegin(), Data[i].cend());
+		return iterator(this, true);
+	}
 
-			if (i != Data.size() - 1)
-			{
-				dst.push_back(',');
-			}
-		}
+	iterator end() const
+	{
+		return iterator(this, false);
+	}
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct tPayloadString
+{
+	typedef std::string value_type;
+	typedef value_type::const_iterator iterator;
+
+	value_type Data;
+
+	tPayloadString() { }
+
+	tPayloadString(tVectorUInt8::const_iterator cbegin, tVectorUInt8::const_iterator cend)
+	{
+		Data.insert(Data.end(), cbegin, cend);
+	}
+
+	std::size_t size() const
+	{
+		return Data.size();
+	}
+
+	iterator begin() const
+	{
+		return Data.begin();
+	}
+
+	iterator end() const
+	{
+		return Data.end();
 	}
 };
 

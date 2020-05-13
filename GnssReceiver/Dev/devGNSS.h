@@ -52,13 +52,14 @@ class tGNSS
 		virtual ~tModGnssReceiver();
 
 	protected:
+		mod::tGnssTaskScript GetTaskScript(const std::string& id) override;
+
 		void OnChanged(const mod::tGnssDataSet& value) override;
 
 //		virtual void Board_PowerSupply(bool state);
 //		virtual void Board_Reset(bool state);
 //
-//		virtual bool Board_Send(std::vector<char>& data);
-//
+		bool Board_Send(const utils::tVectorUInt8& data) override;
 		void OnReceived(utils::tVectorUInt8& data);
 	};
 ///////////////////////////////////////////////////////////////////////////////////////////////////

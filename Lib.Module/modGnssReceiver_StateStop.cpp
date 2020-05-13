@@ -11,7 +11,7 @@ tGnssReceiver::tStateStop::tStateStop(tGnssReceiver* obj, const std::string& val
 	//m_pObj->m_pDataSet->SetDataValue1("tState-Stop");
 }
 
-bool tGnssReceiver::tStateStop::operator()()
+/*bool tGnssReceiver::tStateStop::operator()()
 {
 	auto TimeStart = std::chrono::high_resolution_clock::now();
 
@@ -59,6 +59,6 @@ bool tGnssReceiver::tStateStop::operator()()
 	m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "h");
 
 	return true;
-}
+}*/
 
 }

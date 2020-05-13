@@ -25,6 +25,7 @@ namespace mod
 {
 
 typedef utils::packet::tPacket<utils::packet_NMEA::tFormatNMEA, utils::packet_NMEA::tPayloadCommon> tPacketNMEA;
+typedef utils::packet::tPacket<utils::packet_NMEA::tFormatNMEA, utils::packet_NMEA::tPayloadString> tPacketNMEA_Template;
 typedef utils::packet_NMEA::tPayloadRMC<13, 3, 4, 4> tMsgRMC;
 typedef utils::packet_NMEA::tPayloadGSV tMsgGSV;
 
@@ -37,29 +38,47 @@ class tGnssReceiver
 	protected:
 		tGnssReceiver* m_pObj = nullptr;
 
-		int m_Counter = 0;//[TBD] TEST
+		utils::tVectorUInt8 m_ReceivedData;
+
+		//int m_Counter = 0;//[TBD] TEST
 
 	public:
 		tState(tGnssReceiver* obj);
 
-		virtual bool operator()() { return false; }
+		bool operator()();// { return false; }
 
 		virtual bool Start() { return false; }
 		virtual bool Halt();
 
 		virtual tGnssStatus GetStatus() = 0;
 
+	protected:
+		virtual void Go() {}//ChangeState
+		virtual void OnReceived(const tPacketNMEA_Template& value) {}
+
 		void ChangeState(tState* state) { m_pObj->ChangeState(state); }
 	};
 
 	class tStateError :public tState
 	{
+		std::chrono::time_point<tClock> m_StartTime;
+
+		tGnssTaskScript m_TaskScript;
+
+		bool m_TaskScriptSentMsg = false;
+
+		int m_TaskScriptTime_us = 0;
+
 	public:
 		tStateError(tGnssReceiver* obj, const std::string& value);
 
-		bool operator()() override;
+		//bool operator()() override;
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Error; }
+
+	protected:
+		void Go() override;
+		void OnReceived(const tPacketNMEA_Template& value) override;
 	};
 
 	class tStateHalt :public tState
@@ -67,12 +86,15 @@ class tGnssReceiver
 	public:
 		tStateHalt(tGnssReceiver* obj, const std::string& value);
 
-		bool operator()() override;
+		//bool operator()() override;
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Halted; }
+
+	protected:
+		void Go() override;
 	};
 
 	class tStateOperation :public tState
@@ -90,7 +112,7 @@ class tGnssReceiver
 		tStateOperation(tGnssReceiver* obj, const std::chrono::time_point<tClock>& startTime);
 		explicit tStateOperation(tGnssReceiver* obj);
 		
-		bool operator()() override;
+		//bool operator()() override;
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
 	};
@@ -102,20 +124,31 @@ class tGnssReceiver
 	public:
 		tStateOperationNoData(tGnssReceiver* obj, const std::chrono::time_point<tClock>& startTime);
 
-		bool operator()() override;
+		//bool operator()() override;
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
 	};
 
 	class tStateStart :public tState
 	{
+		std::chrono::time_point<tClock> m_StartTime;
+
+		tGnssTaskScript m_TaskScript;
+
+		std::string m_CaseRspWrongLast;
+
+		bool m_TaskScriptSentMsg = false;
+
+		int m_TaskScriptTime_us = 0;
 
 	public:
 		tStateStart(tGnssReceiver* obj, const std::string& value);
 
-		bool operator()() override;
-
 		tGnssStatus GetStatus() override { return tGnssStatus::Init; }
+
+	protected:
+		void Go() override;
+		void OnReceived(const tPacketNMEA_Template& value) override;
 	};
 
 	class tStateStop :public tState
@@ -123,7 +156,7 @@ class tGnssReceiver
 	public:
 		tStateStop(tGnssReceiver* obj, const std::string& value);
 
-		bool operator()() override;
+		//bool operator()() override;
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
@@ -166,6 +199,8 @@ public:
 	void SetSettings(const tGnssReceiverSettings& settings);
 
 protected:
+	virtual tGnssTaskScript GetTaskScript(const std::string& id) = 0;
+
 	virtual void OnChanged(const tGnssDataSet& value) = 0;
 	//virtual void OnChanged(const tGnssReceiverProperty& value) = 0;
 	//virtual void OnFailed(const tGnssReceiverError& value) = 0;
@@ -180,7 +215,7 @@ protected:
 //	virtual void Board_PowerSupply(bool state) = 0;
 //	virtual void Board_Reset(bool state) = 0;
 //
-//	virtual bool Board_Send(std::vector<char>& data) = 0;
+	virtual bool Board_Send(const utils::tVectorUInt8& data) = 0;
 	void Board_OnReceived(utils::tVectorUInt8& data);
 
 private:

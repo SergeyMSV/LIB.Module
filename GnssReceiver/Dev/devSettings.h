@@ -12,6 +12,8 @@
 
 #include <devConfig.h>
 
+#include <modGnss.h>
+
 #include <utilsBase.h>
 
 #include <string>
@@ -42,10 +44,16 @@ struct tSettings
 		unsigned int Port = 0;
 	}DB;
 
+private:
 	std::string ConfigFileName;
 
+public:
 	tSettings() {}
 	explicit tSettings(const std::string& fileName);
+
+	std::string GetConfigFileName() { return ConfigFileName; }
+
+	mod::tGnssTaskScript GetTaskScript(const std::string& id);
 };
 
 extern tSettings g_Settings;

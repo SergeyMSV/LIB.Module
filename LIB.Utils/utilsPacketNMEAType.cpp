@@ -27,9 +27,8 @@ std::string tGNSS::ToString() const
 	case tGNSS_State::GPS: return "GP";
 	case tGNSS_State::GLONASS: return "GL";
 	case tGNSS_State::GPS_GLONASS: return "GN";
+	default: return "--";
 	}
-
-	return "-";
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 tValid::tValid(const std::string& val)
@@ -120,9 +119,8 @@ std::string tPositioning::ToString() const
 	case tPositioning_State::ManualInput: return "M";
 	case tPositioning_State::Simulator: return "S";
 	case tPositioning_State::DataNotValid: return "N";
+	default: return "-";
 	}
-
-	return "-";
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 tSatellite::tSatellite(tUInt8 id, tUInt8 elevation, tUInt16 azimuth, tUInt8 snr)

@@ -17,47 +17,98 @@ tGnssReceiver::tStateStart::tStateStart(tGnssReceiver* obj, const std::string& v
 	}
 
 	m_pObj->ClearReceivedData();
+
+	m_TaskScript = m_pObj->GetTaskScript("StateStart");
 }
 
-bool tGnssReceiver::tStateStart::operator()()
+void tGnssReceiver::tStateStart::Go()
 {
-	auto TimeStart = std::chrono::high_resolution_clock::now();
+	auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_StartTime).count();//C++11
 
-	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "[");
+	if (Time_us < m_TaskScriptTime_us)
+		return;
 
-	while (true)//Step 1
+	if (!m_TaskScript.empty())
 	{
-		//do some work...
+		if (!m_TaskScriptSentMsg)
 		{
-			m_pObj->m_pLog->Write(false, utils::tLogColour::LightYellow, ".");
+			m_TaskScriptSentMsg = !m_TaskScript.front().RspHead.empty();
+
+			m_StartTime = tClock::now();
+
+			std::string Msg = m_TaskScript.front().Msg;
+
+			if (!Msg.empty())
+			{
+				tPacketNMEA_Template Packet(Msg);
+
+				m_pObj->Board_Send(Packet.ToVector());
+			}
+
+			m_TaskScriptTime_us = m_TaskScript.front().RspWait_us;
 		}
-
-		auto TimeNow = std::chrono::high_resolution_clock::now();
-
-		std::chrono::duration<double, std::milli> TimeSpan = TimeNow - TimeStart;
-
-		if (TimeSpan.count() > 100)
+		else
 		{
-			//Exit with ERROR...
-			break;
-		}
+			//auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_StartTime).count();//C++11
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			if (m_TaskScriptTime_us > 0 && m_TaskScriptTime_us < Time_us)
+			{
+				//ERROR - time out
+				m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "TimeERROR");
+			}
+			//else
+			//{
+			//	//m_TaskScriptSentMsg = false;
+			//	//m_TaskScript.pop();
+			//	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "TimeHREN");
+			//}
+		}
 	}
-
-	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "]");
-
-	if (++m_Counter > 10)
+	else if(Time_us > m_TaskScriptTime_us)
 	{
-		m_pObj->m_pLog->WriteLine();
-
-		ChangeState(new tStateOperation(m_pObj));
-		return true;
+		//FINISH --- NEXT STATE!!!
+		ChangeState(new tStateStart(m_pObj, "start"));
+		return;
 	}
+}
 
-	m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "s");
+void tGnssReceiver::tStateStart::OnReceived(const tPacketNMEA_Template& value)
+{
+	if (m_TaskScriptSentMsg && !m_TaskScript.empty() && value.GetPayload().find(m_TaskScript.front().RspHead) == 0)
+	{
+		////
+		{//[TEST]
+			auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_StartTime).count();//C++11
+			std::stringstream StrTime;
+			StrTime << value.GetPayload() << " --- " << Time_us << " us";
+			m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, StrTime.str());
+		}
+		////
 
-	return true;
+		m_TaskScriptTime_us = m_TaskScript.front().TimePause_us;
+
+		m_TaskScriptSentMsg = false;
+
+		if (value.GetPayload() == m_TaskScript.front().RspHead + m_TaskScript.front().RspBody ||
+			m_TaskScript.front().CaseRspWrong.empty())
+		{
+			m_TaskScript.pop_front();
+		}
+		else if(m_CaseRspWrongLast != m_TaskScript.front().CaseRspWrong)
+		{
+			m_CaseRspWrongLast = m_TaskScript.front().CaseRspWrong;
+
+			tGnssTaskScript Script = m_pObj->GetTaskScript(m_CaseRspWrongLast);
+
+			m_TaskScript.insert(m_TaskScript.begin(), Script.begin(), Script.end());
+		}
+		else
+		{
+			//ERROR!!
+			m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, "ERROR!!!! OnReceived");
+			return;
+		}
+	}
 }
 
 }

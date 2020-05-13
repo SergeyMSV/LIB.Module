@@ -16,12 +16,34 @@
 #include <string>
 #include <deque>
 #include <ctime>
+//#include <queue>
 
 #include <iomanip>
 #include <sstream>
 
 namespace mod
 {
+
+struct tGnssTaskScriptCmd
+{
+	//enum class tCase_NoRsp: unsigned char
+	//{
+	//	Continue,
+	//	Restart,
+	//	Error = 0xFF,
+	//};
+
+	std::string Msg;
+	std::string RspHead;
+	std::string RspBody;
+	std::string CaseRspWrong;
+	int RspWait_us = 0;
+
+	int TimePause_us = 0;
+	//tCase_NoRsp Case_NoRsp = tCase_NoRsp::Continue;
+};
+
+typedef std::deque<tGnssTaskScriptCmd> tGnssTaskScript;
 
 typedef utils::packet_NMEA::Type::tGNSS_State tGNSS_State;
 typedef utils::packet_NMEA::Type::tSatellite tGNSS_Satellite;
