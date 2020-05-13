@@ -26,7 +26,7 @@ namespace mod
 
 struct tGnssTaskScriptCmd
 {
-	//enum class tCase_NoRsp: unsigned char
+	//enum class tCase_NoRsp: unsigned char//C++11
 	//{
 	//	Continue,
 	//	Restart,

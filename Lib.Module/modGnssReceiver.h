@@ -35,31 +35,50 @@ class tGnssReceiver
 
 	class tState
 	{
-	protected:
-		tGnssReceiver* m_pObj = nullptr;
+		std::chrono::time_point<tClock> m_TaskScriptStartTime;
+
+		tGnssTaskScript m_TaskScript;
+
+		std::string m_TaskScriptCaseRspWrongLast;
+
+		bool m_TaskScriptSentMsg = false;
+
+		int m_TaskScriptTime_us = 0;
 
 		utils::tVectorUInt8 m_ReceivedData;
 
-		//int m_Counter = 0;//[TBD] TEST
+	protected:
+		tGnssReceiver* m_pObj = nullptr;
 
 	public:
-		tState(tGnssReceiver* obj);
+		explicit tState(tGnssReceiver* obj);
+		tState(tGnssReceiver* obj, const std::string& taskScriptID);
 
-		bool operator()();// { return false; }
+		bool operator()();
 
 		virtual bool Start() { return false; }
 		virtual bool Halt();
 
 		virtual tGnssStatus GetStatus() = 0;
 
+		bool SetTaskScript(const std::string& taskScriptID);
+
+	private:
+		bool TaskScript();//ChangeState
+		bool TaskScript_OnReceived(const tPacketNMEA_Template& value);
+
 	protected:
+		virtual void OnTaskScriptDone() {};
+		virtual void OnTaskScriptFailed() {};
+		virtual void OnTaskScriptFailed(const std::string& msg) {};
+
 		virtual void Go() {}//ChangeState
-		virtual void OnReceived(const tPacketNMEA_Template& value) {}
+		virtual void OnReceived(const tPacketNMEA_Template& value) {}//ChangeState
 
 		void ChangeState(tState* state) { m_pObj->ChangeState(state); }
 	};
 
-	class tStateError :public tState
+	/*class tStateError :public tState
 	{
 		std::chrono::time_point<tClock> m_StartTime;
 
@@ -79,7 +98,7 @@ class tGnssReceiver
 	protected:
 		void Go() override;
 		void OnReceived(const tPacketNMEA_Template& value) override;
-	};
+	};*/
 
 	class tStateHalt :public tState
 	{
@@ -97,7 +116,7 @@ class tGnssReceiver
 		void Go() override;
 	};
 
-	class tStateOperation :public tState
+/*	class tStateOperation :public tState
 	{
 		utils::tVectorUInt8 m_ReceivedData;
 		std::chrono::time_point<tClock> m_StartTime;
@@ -149,7 +168,7 @@ class tGnssReceiver
 	protected:
 		void Go() override;
 		void OnReceived(const tPacketNMEA_Template& value) override;
-	};
+	};*/
 
 	class tStateStop :public tState
 	{
@@ -162,6 +181,22 @@ class tGnssReceiver
 		bool Halt() override { return true; }
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Deinit; }
+	};
+
+	class tStateStart :public tState
+	{
+	public:
+		tStateStart(tGnssReceiver* obj, const std::string& value);
+
+		tGnssStatus GetStatus() override { return tGnssStatus::Init; }
+
+	protected:
+		void OnTaskScriptDone() override;
+		void OnTaskScriptFailed() override;
+		void OnTaskScriptFailed(const std::string& msg) override;
+
+		void Go() override;
+		void OnReceived(const tPacketNMEA_Template& value) override;
 	};
 
 	utils::tLog* m_pLog = nullptr;

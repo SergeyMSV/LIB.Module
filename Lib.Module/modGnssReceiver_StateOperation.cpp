@@ -5,7 +5,7 @@
 
 #include <chrono>
 #include <thread>
-
+/*
 namespace mod
 {
 
@@ -38,164 +38,164 @@ void SetParam(T& valDst, U valSrc, bool& check)
 		valDst = valSrc.Value;
 	}
 }
+//
+//bool tGnssReceiver::tStateOperation::operator()()
+//{
+//	if (!m_pObj->IsControlOperation())
+//	{
+//		ChangeState(new tStateStop(m_pObj, "operation"));
+//		return true;
+//	}
+//
+//	if (m_pObj->IsReceivedData())
+//	{
+//		if (m_NoData)
+//		{
+//			m_NoData = false;
+//
+//			std::stringstream StrTime;
+//			m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
+//			m_StartTime = tClock::now();
+//
+//			m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, StrTime.str());
+//		}
+//
+//		utils::tVectorUInt8 DataChunk = m_pObj->GetReceivedDataChunk();
+//
+//		m_ReceivedData.insert(m_ReceivedData.end(), DataChunk.cbegin(), DataChunk.cend());//C++14
+//
+//		while (m_pObj->IsControlOperation())
+//		{
+//			tPacketNMEA Packet;
+//
+//			std::size_t PacketSize = tPacketNMEA::Find(m_ReceivedData, Packet);
+//
+//			if (PacketSize)
+//			{
+//				std::stringstream StrTime;
+//
+//				StrTime << "; ";
+//				m_pObj->SetStrBaudrate(StrTime, m_StartTime, PacketSize);
+//				m_StartTime = tClock::now();
+//
+//				tPacketNMEA::payload_value_type PacketData = Packet.GetPayload();
+//
+//				//[TBD] it's possible to use std::map instead of following statement... just reg in map new handler...
+//				if (tMsgGSV::Try(PacketData))
+//				{
+//					tMsgGSV Msg(PacketData);
+//					
+//
+//					for (auto& i : Msg.Satellite)//C++11
+//					{
+//						m_DataSet.Satellite.push_back(std::forward<tGNSS_Satellite>(i));
+//					}
+//
+//					StrTime << "; ";
+//					m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
+//					m_StartTime = tClock::now();
+//
+//					m_pObj->m_pLog->Write(true, utils::tLogColour::LightMagenta, PacketData[0] + " " + Msg.MsgQty.ToString() + " " + Msg.MsgNum.ToString() + " " + Msg.SatelliteQty.ToString());
+//					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
+//				}
+//				else if (tMsgRMC::Try(PacketData))
+//				{
+//					tMsgRMC Msg(PacketData);
+//
+//					if (!Msg.Date.Absent)
+//					{
+//						m_DataSet.Year = Msg.Date.Year;
+//						m_DataSet.Month = Msg.Date.Month;
+//						m_DataSet.Day = Msg.Date.Day;
+//					}
+//
+//					if (!Msg.Time.Absent)
+//					{
+//						m_DataSet.Hour = Msg.Time.Hour;
+//						m_DataSet.Minute = Msg.Time.Minute;
+//						m_DataSet.Second = Msg.Time.Second;
+//					}
+//
+//					m_DataSet.Check_DateTime = !Msg.Date.Absent && !Msg.Time.Absent;
+//
+//					SetParam(m_DataSet.Valid, Msg.Valid, m_DataSet.Check_Position);
+//					SetParam(m_DataSet.Latitude, Msg.Latitude, m_DataSet.Check_Position);
+//					SetParam(m_DataSet.Longitude, Msg.Longitude, m_DataSet.Check_Position);
+//					SetParam(m_DataSet.Speed, Msg.Speed, m_DataSet.Check_Position);
+//					SetParam(m_DataSet.Course, Msg.Course, m_DataSet.Check_Position);
+//
+//					StrTime << "; ";
+//					m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
+//					m_StartTime = tClock::now();
+//
+//					m_pObj->m_pLog->Write(true, utils::tLogColour::LightMagenta, PacketData[0] + " " + Msg.Date.ToString() + " " + Msg.Time.ToString());
+//					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
+//
+//					m_pObj->OnChanged(m_DataSet);//TEST
+//					m_DataSet = tGnssDataSet();//TEST
+//				}
+//				else
+//				{
+//					StrTime << "; ";
+//					m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
+//					m_StartTime = tClock::now();
+//
+//					m_pObj->m_pLog->Write(true, utils::tLogColour::Yellow, PacketData[0]);
+//					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
+//
+//					m_DataSet.Satellite.clear();//[TEST]
+//				}
+//
+//				m_StartTime = tClock::now();
+//			}
+//			else
+//			{
+//				break;
+//			}
+//		}
+//
+//		if (m_ReceivedData.size() == 0)
+//		{
+//			m_StartTime = tClock::now();
+//		}
+//
+//		if (m_ReceivedData.size() > 1024)//[#]
+//		{
+//			ChangeState(new tStateError(m_pObj, "buffer overrun"));
+//			return true;
+//		}		
+//	}
+//	else
+//	{
+//		if (m_ReceivedData.size() == 0 && !m_NoData)
+//		{
+//			m_NoData = true;
+//
+//			m_StartTime = tClock::now();
+//		}
+//
+//		if (m_NoData)
+//		{
+//			auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_StartTime).count();//C++11
+//			if (Time_us > 100000)//100ms
+//			{
+//				ChangeState(new tStateOperationNoData(m_pObj, m_StartTime));
+//				return true;
+//			}
+//		}
+//
+//		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//		//if (!m_ReceivedData.size() && ++m_TimeCounter > 3)//if pause more than 300 ms - reboot tStateOperation
+//		//{
+//		//	ChangeState(new tStateOperation(m_pObj, "transaction"));
+//		//	return true;
+//		//}
+//	}
+//
+//	return true;
+//}
 
-/*bool tGnssReceiver::tStateOperation::operator()()
-{
-	if (!m_pObj->IsControlOperation())
-	{
-		ChangeState(new tStateStop(m_pObj, "operation"));
-		return true;
-	}
-
-	if (m_pObj->IsReceivedData())
-	{
-		if (m_NoData)
-		{
-			m_NoData = false;
-
-			std::stringstream StrTime;
-			m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
-			m_StartTime = tClock::now();
-
-			m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, StrTime.str());
-		}
-
-		utils::tVectorUInt8 DataChunk = m_pObj->GetReceivedDataChunk();
-
-		m_ReceivedData.insert(m_ReceivedData.end(), DataChunk.cbegin(), DataChunk.cend());//C++14
-
-		while (m_pObj->IsControlOperation())
-		{
-			tPacketNMEA Packet;
-
-			std::size_t PacketSize = tPacketNMEA::Find(m_ReceivedData, Packet);
-
-			if (PacketSize)
-			{
-				std::stringstream StrTime;
-
-				StrTime << "; ";
-				m_pObj->SetStrBaudrate(StrTime, m_StartTime, PacketSize);
-				m_StartTime = tClock::now();
-
-				tPacketNMEA::payload_value_type PacketData = Packet.GetPayload();
-
-				//[TBD] it's possible to use std::map instead of following statement... just reg in map new handler...
-				if (tMsgGSV::Try(PacketData))
-				{
-					tMsgGSV Msg(PacketData);
-					
-
-					for (auto& i : Msg.Satellite)//C++11
-					{
-						m_DataSet.Satellite.push_back(std::forward<tGNSS_Satellite>(i));
-					}
-
-					StrTime << "; ";
-					m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
-					m_StartTime = tClock::now();
-
-					m_pObj->m_pLog->Write(true, utils::tLogColour::LightMagenta, PacketData[0] + " " + Msg.MsgQty.ToString() + " " + Msg.MsgNum.ToString() + " " + Msg.SatelliteQty.ToString());
-					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
-				}
-				else if (tMsgRMC::Try(PacketData))
-				{
-					tMsgRMC Msg(PacketData);
-
-					if (!Msg.Date.Absent)
-					{
-						m_DataSet.Year = Msg.Date.Year;
-						m_DataSet.Month = Msg.Date.Month;
-						m_DataSet.Day = Msg.Date.Day;
-					}
-
-					if (!Msg.Time.Absent)
-					{
-						m_DataSet.Hour = Msg.Time.Hour;
-						m_DataSet.Minute = Msg.Time.Minute;
-						m_DataSet.Second = Msg.Time.Second;
-					}
-
-					m_DataSet.Check_DateTime = !Msg.Date.Absent && !Msg.Time.Absent;
-
-					SetParam(m_DataSet.Valid, Msg.Valid, m_DataSet.Check_Position);
-					SetParam(m_DataSet.Latitude, Msg.Latitude, m_DataSet.Check_Position);
-					SetParam(m_DataSet.Longitude, Msg.Longitude, m_DataSet.Check_Position);
-					SetParam(m_DataSet.Speed, Msg.Speed, m_DataSet.Check_Position);
-					SetParam(m_DataSet.Course, Msg.Course, m_DataSet.Check_Position);
-
-					StrTime << "; ";
-					m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
-					m_StartTime = tClock::now();
-
-					m_pObj->m_pLog->Write(true, utils::tLogColour::LightMagenta, PacketData[0] + " " + Msg.Date.ToString() + " " + Msg.Time.ToString());
-					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
-
-					m_pObj->OnChanged(m_DataSet);//TEST
-					m_DataSet = tGnssDataSet();//TEST
-				}
-				else
-				{
-					StrTime << "; ";
-					m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
-					m_StartTime = tClock::now();
-
-					m_pObj->m_pLog->Write(true, utils::tLogColour::Yellow, PacketData[0]);
-					m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
-
-					m_DataSet.Satellite.clear();//[TEST]
-				}
-
-				m_StartTime = tClock::now();
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		if (m_ReceivedData.size() == 0)
-		{
-			m_StartTime = tClock::now();
-		}
-
-		if (m_ReceivedData.size() > 1024)//[#]
-		{
-			ChangeState(new tStateError(m_pObj, "buffer overrun"));
-			return true;
-		}		
-	}
-	else
-	{
-		if (m_ReceivedData.size() == 0 && !m_NoData)
-		{
-			m_NoData = true;
-
-			m_StartTime = tClock::now();
-		}
-
-		if (m_NoData)
-		{
-			auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_StartTime).count();//C++11
-			if (Time_us > 100000)//100ms
-			{
-				ChangeState(new tStateOperationNoData(m_pObj, m_StartTime));
-				return true;
-			}
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		//if (!m_ReceivedData.size() && ++m_TimeCounter > 3)//if pause more than 300 ms - reboot tStateOperation
-		//{
-		//	ChangeState(new tStateOperation(m_pObj, "transaction"));
-		//	return true;
-		//}
-	}
-
-	return true;
 }*/
-
-}
 //[904564.367289]182539.000 A 55.924115 37.751517 00.000000 23
 //[904564.398420]GNVTG; 39, 29 ms, 10758.6 bps
 //
