@@ -136,62 +136,46 @@ void Create(int& cerr)
 				boost::property_tree::ptree PTree;
 				boost::property_tree::xml_parser::read_xml(g_Settings.GetConfigFileName(), PTree);
 
-				if (PTree.size() > 0)
+				if (auto Value = PTree.get_child_optional("App.DB_Init.Table"))
 				{
-					auto Root = PTree.begin();
+					std::string TableID;
 
-					if (Root->first == "App")
+					for (auto i : *Value)
 					{
-						for (auto a : Root->second)
+						if (i.first == "<xmlattr>")
 						{
-							if (a.first == "DB_Init")
+							TableID = i.second.get<std::string>("ID");
+						}
+						else if (i.first == "Row")
+						{
+							if (TableID == "sat")
 							{
-								for (auto b : a.second)
+								if (auto Attr = i.second.get_child_optional("<xmlattr>"))
 								{
-									if (b.first == "Table")
+									std::string Sat_ID = Attr->get<std::string>("ID");
+									std::string GNSS = Attr->get<std::string>("GNSS");
+									std::string Descript = Attr->get<std::string>("Description");
+
+									const tSQLQueryParam Query
 									{
-										std::string Table;
+										{"sat_id", Sat_ID},
+										{"gnss", GNSS},
+										{"description", Descript},
+									};
 
-										for (auto c : b.second)
-										{
-											if (c.first == "<xmlattr>")
-											{
-												Table = c.second.get<std::string>("ID");
-											}
-											else if (c.first == "Row")
-											{
-												if (Table == "sat")
-												{
-													for (auto d : c.second)
-													{
-														if (d.first == "<xmlattr>")
-														{
-															std::string Sat_ID = d.second.get<std::string>("ID");
-															std::string GNSS = d.second.get<std::string>("GNSS");
-															std::string Descript = d.second.get<std::string>("Description");
-
-															const tSQLQueryParam Query
-															{
-																{"sat_id", Sat_ID},
-																{"gnss", GNSS},
-																{"description", Descript},
-															};
-
-															Insert("sat", Query, cerr);
-														}
-													}
-												}
-											}
-										}
-									}
+									Insert("sat", Query, cerr);
 								}
 							}
+							//else if (TableID == "bat")
+							//{
+							//}
 						}
 					}
 				}
 			}
 			catch (std::exception& e)
 			{
+				//[TBD] do something...
 				return;
 			}
 		}
