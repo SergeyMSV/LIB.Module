@@ -1,14 +1,5 @@
 #include "devSettings.h"
 
-//#include <memory>//[TEST]
-//#include <mutex>
-
-//#include <iomanip>
-//#include <sstream>
-//#include <utility>
-
-//#include <cstdio>
-
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -76,15 +67,36 @@ mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id)
 			{
 				if (auto Attr = i.second.get_child_optional("<xmlattr>"))
 				{
-					mod::tGnssTaskScriptCmd Cmd;
-					Cmd.Msg = Attr->get<std::string>("Msg");
-					Cmd.RspHead = Attr->get<std::string>("RspHead");
-					Cmd.RspBody = Attr->get<std::string>("RspBody");
-					Cmd.CaseRspWrong = Attr->get<std::string>("CaseRspWrong");
-					Cmd.RspWait_us = Attr->get<decltype(Cmd.RspWait_us)>("RspWait_us");
+					auto Value = std::make_unique<mod::tGnssTaskScriptCmd>();
+					Value->Msg = Attr->get<std::string>("Msg");
+					Value->RspHead = Attr->get<std::string>("RspHead");
+					Value->RspBody = Attr->get<std::string>("RspBody");
+					Value->CaseRspWrong = Attr->get<std::string>("CaseRspWrong");
+					Value->RspWait_us = Attr->get<decltype(Value->RspWait_us)>("RspWait_us");
 
-					Cmd.TimePause_us = Attr->get<decltype(Cmd.TimePause_us)>("TimePause_us");
-					Script.push_back(Cmd);
+					Value->TimePause_us = Attr->get<decltype(Value->TimePause_us)>("TimePause_us");
+					Script.push_back(std::move(Value));
+				}
+			}
+			else if (i.first == "GPI")
+			{
+				if (auto Attr = i.second.get_child_optional("<xmlattr>"))
+				{
+					auto Value = std::make_unique<mod::tGnssTaskScriptGPI>();
+					Value->ID = Attr->get<std::string>("ID");
+					Value->State = Attr->get<decltype(Value->State)>("State");
+					Value->Wait_us = Attr->get<decltype(Value->Wait_us)>("Wait_us");
+					Script.push_back(std::move(Value));
+				}
+			}
+			else if (i.first == "GPO")
+			{
+				if (auto Attr = i.second.get_child_optional("<xmlattr>"))
+				{
+					auto Value = std::make_unique<mod::tGnssTaskScriptGPO>();
+					Value->ID = Attr->get<std::string>("ID");
+					Value->State = Attr->get<decltype(Value->State)>("State");
+					Script.push_back(std::move(Value));
 				}
 			}
 		}

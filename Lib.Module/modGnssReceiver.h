@@ -65,7 +65,10 @@ class tGnssReceiver
 
 	private:
 		bool TaskScript();//ChangeState
-		bool TaskScript_OnReceived(const tPacketNMEA_Template& value);
+		bool TaskScript_Handle(tGnssTaskScriptCmd* ptr);//ChangeState
+		bool TaskScript_Handle(tGnssTaskScriptGPI* ptr);//ChangeState
+		bool TaskScript_Handle(tGnssTaskScriptGPO* ptr);//ChangeState
+		bool TaskScript_OnReceived(const tPacketNMEA_Template& value);//ChangeState
 
 	protected:
 		virtual void OnTaskScriptDone() {};
@@ -246,10 +249,9 @@ protected:
 	//virtual void OnStateHalt() = 0;
 	//virtual void OnStateRestart() = 0;
 
-//protected:
-//	virtual void Board_PowerSupply(bool state) = 0;
-//	virtual void Board_Reset(bool state) = 0;
-//
+	virtual void Board_PowerSupply(bool state) = 0;
+	virtual void Board_Reset(bool state) = 0;
+
 	virtual bool Board_Send(const utils::tVectorUInt8& data) = 0;
 	void Board_OnReceived(utils::tVectorUInt8& data);
 

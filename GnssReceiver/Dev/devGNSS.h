@@ -56,9 +56,9 @@ class tGNSS
 
 		void OnChanged(const mod::tGnssDataSet& value) override;
 
-//		virtual void Board_PowerSupply(bool state);
-//		virtual void Board_Reset(bool state);
-//
+		void Board_PowerSupply(bool state) override;
+		void Board_Reset(bool state) override;
+
 		bool Board_Send(const utils::tVectorUInt8& data) override;
 		void OnReceived(utils::tVectorUInt8& data);
 	};

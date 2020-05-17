@@ -12,19 +12,41 @@
 
 #include <utilsPacketNMEAType.h>
 
-#include <mutex>
-#include <string>
-#include <deque>
 #include <ctime>
-//#include <queue>
-
+#include <deque>
 #include <iomanip>
+#include <memory>
+#include <mutex>
 #include <sstream>
+#include <string>
 
 namespace mod
 {
 
-struct tGnssTaskScriptCmd
+struct tGnssTaskScriptBase
+{
+	enum class tID : unsigned char
+	{
+		Cmd,
+		GPI,
+		GPO,
+	};
+
+private:
+	tID m_ID = tID::Cmd;
+
+	tGnssTaskScriptBase() = delete;
+
+protected:
+	explicit tGnssTaskScriptBase(tID id) :m_ID(id) {}
+
+public:
+	virtual ~tGnssTaskScriptBase() = default;
+
+	tID GetID() { return m_ID; }
+};
+
+struct tGnssTaskScriptCmd: public tGnssTaskScriptBase
 {
 	//enum class tCase_NoRsp: unsigned char//C++11
 	//{
@@ -41,9 +63,28 @@ struct tGnssTaskScriptCmd
 
 	int TimePause_us = 0;
 	//tCase_NoRsp Case_NoRsp = tCase_NoRsp::Continue;
+
+	tGnssTaskScriptCmd() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::Cmd) {}
 };
 
-typedef std::deque<tGnssTaskScriptCmd> tGnssTaskScript;
+struct tGnssTaskScriptGPI : public tGnssTaskScriptBase
+{
+	std::string ID;
+	bool State = 0;
+	int Wait_us = 0;
+
+	tGnssTaskScriptGPI() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::GPI) {}
+};
+
+struct tGnssTaskScriptGPO : public tGnssTaskScriptBase
+{
+	std::string ID;
+	bool State = 0;
+
+	tGnssTaskScriptGPO() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::GPO) {}
+};
+
+typedef std::deque<std::unique_ptr<tGnssTaskScriptBase>> tGnssTaskScript;
 
 typedef utils::packet_NMEA::Type::tGNSS_State tGNSS_State;
 typedef utils::packet_NMEA::Type::tSatellite tGNSS_Satellite;

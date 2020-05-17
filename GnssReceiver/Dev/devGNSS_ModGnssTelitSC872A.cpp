@@ -54,6 +54,20 @@ void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, value.ToString());
 }
 
+void tGNSS::tModGnssReceiver::Board_PowerSupply(bool state)
+{
+	std::stringstream SStream;
+	SStream << "Board_PowerSupply: " << state;
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightMagenta, SStream.str());
+}
+
+void tGNSS::tModGnssReceiver::Board_Reset(bool state)
+{
+	std::stringstream SStream;
+	SStream << "Board_Reset:       " << state;
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightMagenta, SStream.str());
+}
+
 bool tGNSS::tModGnssReceiver::Board_Send(const utils::tVectorUInt8& data)
 {
 	return m_Board.Send(data);
