@@ -63,11 +63,11 @@ mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id)
 	{
 		for (auto i : *Value)
 		{
-			if (i.first == "Cmd")
+			if (i.first == "REQ")
 			{
 				if (auto Attr = i.second.get_child_optional("<xmlattr>"))
 				{
-					auto Value = std::make_unique<mod::tGnssTaskScriptCmd>();
+					auto Value = std::make_unique<mod::tGnssTaskScriptREQ>();
 					Value->Msg = Attr->get<std::string>("Msg");
 					Value->RspHead = Attr->get<std::string>("RspHead");
 					Value->RspBody = Attr->get<std::string>("RspBody");

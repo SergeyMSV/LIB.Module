@@ -5,6 +5,48 @@
 
 #include <chrono>
 #include <thread>
+
+namespace mod
+{
+
+tGnssReceiver::tStateOperation::tStateOperation(tGnssReceiver* obj)
+	:tState(obj, "StateOperation")
+{
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperation");
+}
+
+void tGnssReceiver::tStateOperation::OnTaskScriptDone()
+{
+
+}
+
+void tGnssReceiver::tStateOperation::OnTaskScriptFailed()
+{
+
+}
+
+void tGnssReceiver::tStateOperation::OnTaskScriptFailed(const std::string& msg)
+{
+
+}
+
+void tGnssReceiver::tStateOperation::Go()
+{
+	if (!m_pObj->IsControlOperation())
+	{
+		ChangeState(new tStateStop(m_pObj, "operation"));
+		return;
+	}
+}
+
+void tGnssReceiver::tStateOperation::OnReceived(const tPacketNMEA_Template& value)
+{
+	std::string Payload = value.GetPayload();
+
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightCyan, "OnReceived: " + Payload);
+}
+
+}
 /*
 namespace mod
 {

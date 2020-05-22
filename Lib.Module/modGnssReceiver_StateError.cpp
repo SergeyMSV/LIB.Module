@@ -22,9 +22,9 @@
 //{
 //	if (!m_TaskScript.empty())
 //	{
-//		if (!m_TaskScriptSentMsg)
+//		if (!m_TaskScriptActive)
 //		{
-//			m_TaskScriptSentMsg = true;
+//			m_TaskScriptActive = true;
 //
 //			m_StartTime = tClock::now();
 //
@@ -45,7 +45,7 @@
 //			}
 //			//else
 //			//{
-//			//	m_TaskScriptSentMsg = false;
+//			//	m_TaskScriptActive = false;
 //			//	m_TaskScript.pop();
 //			//}
 //		}
@@ -54,13 +54,13 @@
 //
 //void tGnssReceiver::tStateError::OnReceived(const tPacketNMEA_Template& value)
 //{
-//	if (m_TaskScriptSentMsg && !m_TaskScript.empty() && value.GetPayload() == m_TaskScript.front().RspHead)//[TBD]
+//	if (m_TaskScriptActive && !m_TaskScript.empty() && value.GetPayload() == m_TaskScript.front().RspHead)//[TBD]
 //	{
 //		auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_StartTime).count();//C++11
 //
 //		m_TaskScriptTime_us = m_TaskScript.front().TimePause_us;
 //
-//		m_TaskScriptSentMsg = false;
+//		m_TaskScriptActive = false;
 //		m_TaskScript.pop_front();
 //
 //

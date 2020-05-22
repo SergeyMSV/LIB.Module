@@ -27,13 +27,13 @@ struct tGnssTaskScriptBase
 {
 	enum class tID : unsigned char
 	{
-		Cmd,
 		GPI,
 		GPO,
+		REQ,
 	};
 
 private:
-	tID m_ID = tID::Cmd;
+	tID m_ID = tID::REQ;
 
 	tGnssTaskScriptBase() = delete;
 
@@ -46,7 +46,7 @@ public:
 	tID GetID() { return m_ID; }
 };
 
-struct tGnssTaskScriptCmd: public tGnssTaskScriptBase
+struct tGnssTaskScriptREQ: public tGnssTaskScriptBase
 {
 	//enum class tCase_NoRsp: unsigned char//C++11
 	//{
@@ -64,7 +64,7 @@ struct tGnssTaskScriptCmd: public tGnssTaskScriptBase
 	int TimePause_us = 0;
 	//tCase_NoRsp Case_NoRsp = tCase_NoRsp::Continue;
 
-	tGnssTaskScriptCmd() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::Cmd) {}
+	tGnssTaskScriptREQ() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::REQ) {}
 };
 
 struct tGnssTaskScriptGPI : public tGnssTaskScriptBase

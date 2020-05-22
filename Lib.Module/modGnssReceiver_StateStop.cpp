@@ -4,61 +4,45 @@ namespace mod
 {
 
 tGnssReceiver::tStateStop::tStateStop(tGnssReceiver* obj, const std::string& value)
-	:tState(obj)
+	:tState(obj, "StateStop")
 {
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateStop: %s", value.c_str());
-
-	//m_pObj->m_pDataSet->SetDataValue1("tState-Stop");
 }
 
-/*bool tGnssReceiver::tStateStop::operator()()
+void tGnssReceiver::tStateStop::OnTaskScriptDone()
 {
-	auto TimeStart = std::chrono::high_resolution_clock::now();
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptDone");
 
-	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "[");
+	ChangeState(new tStateHalt(m_pObj, "stop"));
+	return;
+}
 
-	while (true)//Step 1
-	{
-		//do some work...
-		{
-			m_pObj->m_pLog->Write(false, utils::tLogColour::LightYellow, ".");
-		}
+void tGnssReceiver::tStateStop::OnTaskScriptFailed()
+{
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed");
 
-		auto TimeNow = std::chrono::high_resolution_clock::now();
+	ChangeState(new tStateStop(m_pObj, "stop"));//[TBD] cycle
+	return;
+}
 
-		std::chrono::duration<double, std::milli> TimeSpan = TimeNow - TimeStart;
+void tGnssReceiver::tStateStop::OnTaskScriptFailed(const std::string& msg)
+{
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed: " + msg);
 
-		if (TimeSpan.count() > 100)
-		{
-			//Exit with ERROR...
-			break;
-		}
+	ChangeState(new tStateStop(m_pObj, "stop"));//[TBD] cycle
+	return;
+}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
+void tGnssReceiver::tStateStop::Go()
+{
 
-	m_pObj->m_pLog->Write(false, utils::tLogColour::Yellow, "]");
+}
 
-	if (++m_Counter > 10)
-	{
-		m_pObj->m_pLog->WriteLine();
+void tGnssReceiver::tStateStop::OnReceived(const tPacketNMEA_Template& value)
+{
+	std::string Payload = value.GetPayload();
 
-
-		if (m_pObj->IsControlRestart())
-		{
-			ChangeState(new tStateStart(m_pObj, "restart"));
-			return true;
-		}
-		if (m_pObj->IsControlHalt())
-		{
-			ChangeState(new tStateHalt(m_pObj, "stop"));
-			return true;
-		}
-	}
-
-	m_pObj->m_pLog->Write(false, utils::tLogColour::LightRed, "h");
-
-	return true;
-}*/
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnReceived: " + Payload);
+}
 
 }

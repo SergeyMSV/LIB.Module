@@ -95,12 +95,6 @@ bool tGnssReceiver::tState::TaskScript()
 		{
 			switch (Ptr->GetID())
 			{
-			case tGnssTaskScriptBase::tID::Cmd:
-			{
-				if (TaskScript_Handle(static_cast<tGnssTaskScriptCmd*>(Ptr)))
-					return true;
-				break;
-			}
 			case tGnssTaskScriptBase::tID::GPI:
 			{
 				if (TaskScript_Handle(static_cast<tGnssTaskScriptGPI*>(Ptr)))
@@ -110,6 +104,12 @@ bool tGnssReceiver::tState::TaskScript()
 			case tGnssTaskScriptBase::tID::GPO:
 			{
 				if (TaskScript_Handle(static_cast<tGnssTaskScriptGPO*>(Ptr)))
+					return true;
+				break;
+			}
+			case tGnssTaskScriptBase::tID::REQ:
+			{
+				if (TaskScript_Handle(static_cast<tGnssTaskScriptREQ*>(Ptr)))
 					return true;
 				break;
 			}
@@ -126,8 +126,10 @@ bool tGnssReceiver::tState::TaskScript()
 			}
 		}
 	}
-	else if (m_TaskScriptTime_us > 0 && m_TaskScriptTime_us < Time_us)
+	else if (m_TaskScriptActive && m_TaskScriptTime_us < Time_us)
 	{
+		m_TaskScriptActive = false;
+
 		m_TaskScriptTime_us = 0;
 
 		OnTaskScriptDone();
@@ -137,11 +139,11 @@ bool tGnssReceiver::tState::TaskScript()
 	return false;
 }
 
-bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptCmd* ptr)
+bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptREQ* ptr)
 {
-	if (!m_TaskScriptSentMsg)
+	if (!m_TaskScriptActive)
 	{
-		m_TaskScriptSentMsg = !ptr->RspHead.empty();
+		m_TaskScriptActive = true;
 
 		m_TaskScriptStartTime = tClock::now();
 
@@ -181,10 +183,14 @@ bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptGPO* ptr)
 {
 	if (ptr->ID == "PWR")
 	{
+		m_TaskScriptActive = true;
+
 		m_pObj->Board_PowerSupply(ptr->State);
 	}
 	else if (ptr->ID == "RST")
 	{
+		m_TaskScriptActive = true;
+
 		m_pObj->Board_Reset(ptr->State);
 	}
 	else
@@ -201,9 +207,9 @@ bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptGPO* ptr)
 
 bool tGnssReceiver::tState::TaskScript_OnReceived(const tPacketNMEA_Template& value)
 {
-	if (!m_TaskScript.empty() && m_TaskScript.front().get()->GetID() == tGnssTaskScriptBase::tID::Cmd && m_TaskScriptSentMsg)
+	if (!m_TaskScript.empty() && m_TaskScript.front().get()->GetID() == tGnssTaskScriptBase::tID::REQ && m_TaskScriptActive)
 	{
-		tGnssTaskScriptCmd* Ptr = static_cast<tGnssTaskScriptCmd*>(m_TaskScript.front().get());
+		tGnssTaskScriptREQ* Ptr = static_cast<tGnssTaskScriptREQ*>(m_TaskScript.front().get());
 
 		if (value.GetPayload().find(Ptr->RspHead) == 0)
 		{
@@ -218,7 +224,7 @@ bool tGnssReceiver::tState::TaskScript_OnReceived(const tPacketNMEA_Template& va
 
 			m_TaskScriptTime_us = Ptr->TimePause_us;
 
-			m_TaskScriptSentMsg = false;
+			m_TaskScriptActive = false;
 
 			if (value.GetPayload() == Ptr->RspHead + Ptr->RspBody || Ptr->CaseRspWrong.empty())
 			{

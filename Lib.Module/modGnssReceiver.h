@@ -41,7 +41,7 @@ class tGnssReceiver
 
 		std::string m_TaskScriptCaseRspWrongLast;
 
-		bool m_TaskScriptSentMsg = false;
+		bool m_TaskScriptActive = false;
 
 		int m_TaskScriptTime_us = 0;
 
@@ -53,6 +53,7 @@ class tGnssReceiver
 	public:
 		explicit tState(tGnssReceiver* obj);
 		tState(tGnssReceiver* obj, const std::string& taskScriptID);
+		virtual ~tState() = default;
 
 		bool operator()();
 
@@ -65,7 +66,7 @@ class tGnssReceiver
 
 	private:
 		bool TaskScript();//ChangeState
-		bool TaskScript_Handle(tGnssTaskScriptCmd* ptr);//ChangeState
+		bool TaskScript_Handle(tGnssTaskScriptREQ* ptr);//ChangeState
 		bool TaskScript_Handle(tGnssTaskScriptGPI* ptr);//ChangeState
 		bool TaskScript_Handle(tGnssTaskScriptGPO* ptr);//ChangeState
 		bool TaskScript_OnReceived(const tPacketNMEA_Template& value);//ChangeState
@@ -87,7 +88,7 @@ class tGnssReceiver
 
 		tGnssTaskScript m_TaskScript;
 
-		bool m_TaskScriptSentMsg = false;
+		bool m_TaskScriptActive = false;
 
 		int m_TaskScriptTime_us = 0;
 
@@ -159,7 +160,7 @@ class tGnssReceiver
 
 		std::string m_CaseRspWrongLast;
 
-		bool m_TaskScriptSentMsg = false;
+		bool m_TaskScriptActive = false;
 
 		int m_TaskScriptTime_us = 0;
 
@@ -173,17 +174,39 @@ class tGnssReceiver
 		void OnReceived(const tPacketNMEA_Template& value) override;
 	};*/
 
+	class tStateOperation :public tState
+	{
+	public:
+		explicit tStateOperation(tGnssReceiver* obj);
+
+		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
+
+	protected:
+		void OnTaskScriptDone() override;
+		void OnTaskScriptFailed() override;
+		void OnTaskScriptFailed(const std::string& msg) override;
+
+		void Go() override;
+		void OnReceived(const tPacketNMEA_Template& value) override;
+	};
+
 	class tStateStop :public tState
 	{
 	public:
 		tStateStop(tGnssReceiver* obj, const std::string& value);
 
-		//bool operator()() override;
-
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Deinit; }
+
+	protected:
+		void OnTaskScriptDone() override;
+		void OnTaskScriptFailed() override;
+		void OnTaskScriptFailed(const std::string& msg) override;
+
+		void Go() override;
+		void OnReceived(const tPacketNMEA_Template& value) override;
 	};
 
 	class tStateStart :public tState

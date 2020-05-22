@@ -18,7 +18,7 @@ void tGnssReceiver::tStateStart::OnTaskScriptDone()
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptDone");
 
-	ChangeState(new tStateStart(m_pObj, "start"));
+	ChangeState(new tStateOperation(m_pObj));
 	return;
 }
 
@@ -26,7 +26,7 @@ void tGnssReceiver::tStateStart::OnTaskScriptFailed()
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed");
 
-	ChangeState(new tStateStart(m_pObj, "start"));
+	ChangeState(new tStateStart(m_pObj, "start"));//[TBD] cycle
 	return;
 }
 
@@ -34,7 +34,7 @@ void tGnssReceiver::tStateStart::OnTaskScriptFailed(const std::string& msg)
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed: " + msg);
 
-	ChangeState(new tStateStart(m_pObj, "start"));
+	ChangeState(new tStateStart(m_pObj, "start"));//[TBD] cycle
 	return;
 }
 
