@@ -49,7 +49,8 @@ bool tGnssReceiver::tState::operator()()
 			if (TaskScript_OnReceived(Packet))//ChangeState
 				return true;
 
-			OnReceived(Packet);
+			OnReceived(Packet);//ChangeState
+			return true;
 		}
 	}
 
