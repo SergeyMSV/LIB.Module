@@ -23,7 +23,7 @@
 namespace mod
 {
 
-struct tGnssTaskScriptBase
+struct tGnssTaskScriptCmd
 {
 	enum class tID : unsigned char
 	{
@@ -35,18 +35,18 @@ struct tGnssTaskScriptBase
 private:
 	tID m_ID = tID::REQ;
 
-	tGnssTaskScriptBase() = delete;
+	tGnssTaskScriptCmd() = delete;
 
 protected:
-	explicit tGnssTaskScriptBase(tID id) :m_ID(id) {}
+	explicit tGnssTaskScriptCmd(tID id) :m_ID(id) {}
 
 public:
-	virtual ~tGnssTaskScriptBase() = default;
+	virtual ~tGnssTaskScriptCmd() = default;
 
 	tID GetID() { return m_ID; }
 };
 
-struct tGnssTaskScriptREQ: public tGnssTaskScriptBase
+struct tGnssTaskScriptCmdREQ : public tGnssTaskScriptCmd
 {
 	//enum class tCase_NoRsp: unsigned char//C++11
 	//{
@@ -60,31 +60,31 @@ struct tGnssTaskScriptREQ: public tGnssTaskScriptBase
 	std::string RspBody;
 	std::string CaseRspWrong;
 	int RspWait_us = 0;
-
-	int TimePause_us = 0;
+	int Pause_us = 0;
 	//tCase_NoRsp Case_NoRsp = tCase_NoRsp::Continue;
 
-	tGnssTaskScriptREQ() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::REQ) {}
+	tGnssTaskScriptCmdREQ() :tGnssTaskScriptCmd(tGnssTaskScriptCmd::tID::REQ) {}
 };
 
-struct tGnssTaskScriptGPI : public tGnssTaskScriptBase
+struct tGnssTaskScriptCmdGPI : public tGnssTaskScriptCmd
 {
 	std::string ID;
 	bool State = 0;
 	int Wait_us = 0;
 
-	tGnssTaskScriptGPI() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::GPI) {}
+	tGnssTaskScriptCmdGPI() :tGnssTaskScriptCmd(tGnssTaskScriptCmd::tID::GPI) {}
 };
 
-struct tGnssTaskScriptGPO : public tGnssTaskScriptBase
+struct tGnssTaskScriptCmdGPO : public tGnssTaskScriptCmd
 {
 	std::string ID;
 	bool State = 0;
+	int Pause_us = 0;
 
-	tGnssTaskScriptGPO() :tGnssTaskScriptBase(tGnssTaskScriptBase::tID::GPO) {}
+	tGnssTaskScriptCmdGPO() :tGnssTaskScriptCmd(tGnssTaskScriptCmd::tID::GPO) {}
 };
 
-typedef std::deque<std::unique_ptr<tGnssTaskScriptBase>> tGnssTaskScript;
+typedef std::deque<std::unique_ptr<tGnssTaskScriptCmd>> tGnssTaskScript;
 
 typedef utils::packet_NMEA::Type::tGNSS_State tGNSS_State;
 typedef utils::packet_NMEA::Type::tSatellite tGNSS_Satellite;

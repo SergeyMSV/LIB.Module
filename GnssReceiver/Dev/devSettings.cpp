@@ -67,14 +67,13 @@ mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id)
 			{
 				if (auto Attr = i.second.get_child_optional("<xmlattr>"))
 				{
-					auto Value = std::make_unique<mod::tGnssTaskScriptREQ>();
+					auto Value = std::make_unique<mod::tGnssTaskScriptCmdREQ>();
 					Value->Msg = Attr->get<std::string>("Msg");
 					Value->RspHead = Attr->get<std::string>("RspHead");
 					Value->RspBody = Attr->get<std::string>("RspBody");
 					Value->CaseRspWrong = Attr->get<std::string>("CaseRspWrong");
 					Value->RspWait_us = Attr->get<decltype(Value->RspWait_us)>("RspWait_us");
-
-					Value->TimePause_us = Attr->get<decltype(Value->TimePause_us)>("TimePause_us");
+					Value->Pause_us = Attr->get<decltype(Value->Pause_us)>("Pause_us");
 					Script.push_back(std::move(Value));
 				}
 			}
@@ -82,7 +81,7 @@ mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id)
 			{
 				if (auto Attr = i.second.get_child_optional("<xmlattr>"))
 				{
-					auto Value = std::make_unique<mod::tGnssTaskScriptGPI>();
+					auto Value = std::make_unique<mod::tGnssTaskScriptCmdGPI>();
 					Value->ID = Attr->get<std::string>("ID");
 					Value->State = Attr->get<decltype(Value->State)>("State");
 					Value->Wait_us = Attr->get<decltype(Value->Wait_us)>("Wait_us");
@@ -93,9 +92,10 @@ mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id)
 			{
 				if (auto Attr = i.second.get_child_optional("<xmlattr>"))
 				{
-					auto Value = std::make_unique<mod::tGnssTaskScriptGPO>();
+					auto Value = std::make_unique<mod::tGnssTaskScriptCmdGPO>();
 					Value->ID = Attr->get<std::string>("ID");
 					Value->State = Attr->get<decltype(Value->State)>("State");
+					Value->Pause_us = Attr->get<decltype(Value->Pause_us)>("Pause_us");
 					Script.push_back(std::move(Value));
 				}
 			}

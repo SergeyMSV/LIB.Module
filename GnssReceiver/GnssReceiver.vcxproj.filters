@@ -80,6 +80,15 @@
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateStartInitialize.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
+    <ClCompile Include="..\Lib.Module\modGnssReceiver_State_CmdREQ.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modGnssReceiver_State_CmdGPI.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lib.Module\modGnssReceiver_State_CmdGPO.cpp">
+      <Filter>Lib.Module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Lib.Utils\utilsBase.h">

@@ -18,8 +18,16 @@ tGnssReceiver::tState::tState(tGnssReceiver* obj, const std::string& taskScriptI
 	m_TaskScript = m_pObj->GetTaskScript(taskScriptID);
 }
 
+tGnssReceiver::tState::~tState()
+{
+	delete m_pCmd;
+}
+
 bool tGnssReceiver::tState::operator()()
 {
+	if (m_pCmd && (*m_pCmd)())
+		return true;
+
 	if (m_pObj->IsReceivedData())
 	{
 		//	if (m_NoData)
@@ -46,7 +54,7 @@ bool tGnssReceiver::tState::operator()()
 
 		if (PacketSize)
 		{
-			if (TaskScript_OnReceived(Packet))//ChangeState
+			if (m_pCmd && m_pCmd->OnReceived(Packet))//ChangeState
 				return true;
 
 			OnReceived(Packet);//ChangeState
@@ -54,8 +62,7 @@ bool tGnssReceiver::tState::operator()()
 		}
 	}
 
-	if (TaskScript())//ChangeState
-		return true;
+	TaskScript();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
@@ -81,37 +88,29 @@ bool tGnssReceiver::tState::SetTaskScript(const std::string& taskScriptID)
 	return true;
 }
 
-bool tGnssReceiver::tState::TaskScript()
+void tGnssReceiver::tState::TaskScript()
 {
-	auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_TaskScriptStartTime).count();//C++11
-
-	if (Time_us < m_TaskScriptTime_us)
-		return false;
-
-	if (!m_TaskScript.empty())
+	if (m_pCmd == nullptr && !m_TaskScript.empty())
 	{
-		tGnssTaskScriptBase* Ptr = m_TaskScript.front().get();
+		tGnssTaskScriptCmd* Ptr = m_TaskScript.front().get();
 
 		if (Ptr != nullptr)
 		{
 			switch (Ptr->GetID())
 			{
-			case tGnssTaskScriptBase::tID::GPI:
+			case tGnssTaskScriptCmd::tID::GPI:
 			{
-				if (TaskScript_Handle(static_cast<tGnssTaskScriptGPI*>(Ptr)))
-					return true;
+				m_pCmd = new tCmdGPI(this, std::move(m_TaskScript.front()));
 				break;
 			}
-			case tGnssTaskScriptBase::tID::GPO:
+			case tGnssTaskScriptCmd::tID::GPO:
 			{
-				if (TaskScript_Handle(static_cast<tGnssTaskScriptGPO*>(Ptr)))
-					return true;
+				m_pCmd = new tCmdGPO(this, std::move(m_TaskScript.front()));
 				break;
 			}
-			case tGnssTaskScriptBase::tID::REQ:
+			case tGnssTaskScriptCmd::tID::REQ:
 			{
-				if (TaskScript_Handle(static_cast<tGnssTaskScriptREQ*>(Ptr)))
-					return true;
+				m_pCmd = new tCmdREQ(this, std::move(m_TaskScript.front()));
 				break;
 			}
 			default://ERROR
@@ -120,140 +119,180 @@ bool tGnssReceiver::tState::TaskScript()
 
 				//[TBD] throw an exception or do nothing
 
-				m_TaskScript.pop_front();
-
 				break;
 			}
 			}
+
+			m_TaskScript.pop_front();
 		}
 	}
-	else if (m_TaskScriptActive && m_TaskScriptTime_us < Time_us)
+}
+
+
+
+//bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptCmdGPI* ptr)
+//{
+//	m_TaskScript.pop_front();//[TBD] Wait for appearance of GPI
+//
+//	return false;
+//}
+//
+//bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptCmdGPO* ptr)
+//{
+//	if (ptr->ID == "PWR")
+//	{
+//		m_TaskScriptActive = true;
+//
+//		m_pObj->Board_PowerSupply(ptr->State);
+//	}
+//	else if (ptr->ID == "RST")
+//	{
+//		m_TaskScriptActive = true;
+//
+//		m_pObj->Board_Reset(ptr->State);
+//	}
+//	else
+//	{
+//		m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightRed, "ERR: unknown GPO");
+//
+//		//[TBD] throw an exception or do nothing
+//	}
+//
+//	m_TaskScript.pop_front();
+//
+//	return true;
+//}
+
+//bool tGnssReceiver::tState::TaskScript_OnReceived(const tPacketNMEA_Template& value)
+//{
+//	if (!m_TaskScript.empty() && m_TaskScript.front().get()->GetID() == tGnssTaskScriptCmd::tID::REQ && m_TaskScriptActive)
+//	{
+//		tGnssTaskScriptCmdREQ* Ptr = static_cast<tGnssTaskScriptCmdREQ*>(m_TaskScript.front().get());
+//
+//		if (value.GetPayload().find(Ptr->RspHead) == 0)
+//		{
+//			////
+//			{//[TEST]
+//				auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_TaskScriptStartTime).count();//C++11
+//				std::stringstream StrTime;
+//				StrTime << value.GetPayload() << " --- " << Time_us << " us";
+//				m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, StrTime.str());
+//			}
+//			////
+//
+//			m_TaskScriptTime_us = Ptr->TimePause_us;
+//
+//			m_TaskScriptActive = false;
+//
+//			if (value.GetPayload() == Ptr->RspHead + Ptr->RspBody || Ptr->CaseRspWrong.empty())
+//			{
+//				m_TaskScript.pop_front();
+//				return true;
+//			}
+//			else if (m_TaskScriptCaseRspWrongLast != Ptr->CaseRspWrong)
+//			{
+//				m_TaskScriptCaseRspWrongLast = Ptr->CaseRspWrong;
+//
+//				tGnssTaskScript Script = m_pObj->GetTaskScript(m_TaskScriptCaseRspWrongLast);
+//
+//				for (tGnssTaskScript::reverse_iterator i = Script.rbegin(); i != Script.rend(); ++i)//C++11
+//				{
+//					m_TaskScript.push_front(std::move(*i));
+//				}
+//			}
+//			else
+//			{
+//				OnTaskScriptFailed(m_TaskScriptCaseRspWrongLast);
+//				return true;
+//			}
+//
+//			return true;
+//		}
+//	}
+//
+//	return false;
+//}
+
+//bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptCmdREQ* ptr)
+//{
+//	//if (m_pCmd == nullptr)
+//	//{
+//	//	m_pCmd = new tCmdREQ(this, Queue.front());
+//	//}
+//	/*if (!m_TaskScriptActive)
+//	{
+//		m_TaskScriptActive = true;
+//
+//		m_TaskScriptStartTime = tClock::now();
+//
+//		std::string Msg = ptr->Msg;
+//
+//		if (!Msg.empty())
+//		{
+//			tPacketNMEA_Template Packet(Msg);
+//
+//			m_pObj->Board_Send(Packet.ToVector());
+//		}
+//
+//		m_TaskScriptTime_us = ptr->RspWait_us;
+//	}
+//	else if (m_TaskScriptTime_us > 0)
+//	{
+//		auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_TaskScriptStartTime).count();//C++11
+//
+//		if (m_TaskScriptTime_us < Time_us)
+//		{
+//			OnTaskScriptFailed();
+//			return true;
+//		}
+//	}*/
+//
+//	return false;
+//}
+
+bool tGnssReceiver::tState::OnCmdDone()
+{
+	if (m_TaskScript.empty())
 	{
-		m_TaskScriptActive = false;
-
-		m_TaskScriptTime_us = 0;
-
 		OnTaskScriptDone();
 		return true;
 	}
 
-	return false;
-}
-
-bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptREQ* ptr)
-{
-	if (!m_TaskScriptActive)
-	{
-		m_TaskScriptActive = true;
-
-		m_TaskScriptStartTime = tClock::now();
-
-		std::string Msg = ptr->Msg;
-
-		if (!Msg.empty())
-		{
-			tPacketNMEA_Template Packet(Msg);
-
-			m_pObj->Board_Send(Packet.ToVector());
-		}
-
-		m_TaskScriptTime_us = ptr->RspWait_us;
-	}
-	else if (m_TaskScriptTime_us > 0)
-	{
-		auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_TaskScriptStartTime).count();//C++11
-
-		if (m_TaskScriptTime_us < Time_us)
-		{
-			OnTaskScriptFailed();
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptGPI* ptr)
-{
-	m_TaskScript.pop_front();//[TBD] Wait for appearance of GPI
-
-	return false;
-}
-
-bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptGPO* ptr)
-{
-	if (ptr->ID == "PWR")
-	{
-		m_TaskScriptActive = true;
-
-		m_pObj->Board_PowerSupply(ptr->State);
-	}
-	else if (ptr->ID == "RST")
-	{
-		m_TaskScriptActive = true;
-
-		m_pObj->Board_Reset(ptr->State);
-	}
-	else
-	{
-		m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightRed, "ERR: unknown GPO");
-
-		//[TBD] throw an exception or do nothing
-	}
-
-	m_TaskScript.pop_front();
-
+	ResetCmd();
 	return true;
 }
 
-bool tGnssReceiver::tState::TaskScript_OnReceived(const tPacketNMEA_Template& value)
+bool tGnssReceiver::tState::OnCmdFailed()
 {
-	if (!m_TaskScript.empty() && m_TaskScript.front().get()->GetID() == tGnssTaskScriptBase::tID::REQ && m_TaskScriptActive)
+	return false;
+}
+
+void tGnssReceiver::tState::OnCmdTaskScript(std::unique_ptr<tGnssTaskScriptCmd> cmd, const std::string& taskScriptID)
+{
+	m_TaskScript.push_front(std::move(cmd));
+
+	if (m_OnCmdTaskScriptIDLast != taskScriptID)
 	{
-		tGnssTaskScriptREQ* Ptr = static_cast<tGnssTaskScriptREQ*>(m_TaskScript.front().get());
+		m_OnCmdTaskScriptIDLast = taskScriptID;
 
-		if (value.GetPayload().find(Ptr->RspHead) == 0)
+		tGnssTaskScript Script = m_pObj->GetTaskScript(taskScriptID);
+
+		for (tGnssTaskScript::reverse_iterator i = Script.rbegin(); i != Script.rend(); ++i)//C++11
 		{
-			////
-			{//[TEST]
-				auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_TaskScriptStartTime).count();//C++11
-				std::stringstream StrTime;
-				StrTime << value.GetPayload() << " --- " << Time_us << " us";
-				m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, StrTime.str());
-			}
-			////
-
-			m_TaskScriptTime_us = Ptr->TimePause_us;
-
-			m_TaskScriptActive = false;
-
-			if (value.GetPayload() == Ptr->RspHead + Ptr->RspBody || Ptr->CaseRspWrong.empty())
-			{
-				m_TaskScript.pop_front();
-				return true;
-			}
-			else if (m_TaskScriptCaseRspWrongLast != Ptr->CaseRspWrong)
-			{
-				m_TaskScriptCaseRspWrongLast = Ptr->CaseRspWrong;
-
-				tGnssTaskScript Script = m_pObj->GetTaskScript(m_TaskScriptCaseRspWrongLast);
-
-				for (tGnssTaskScript::reverse_iterator i = Script.rbegin(); i != Script.rend(); ++i)//C++11
-				{
-					m_TaskScript.push_front(std::move(*i));
-				}
-			}
-			else
-			{
-				OnTaskScriptFailed(m_TaskScriptCaseRspWrongLast);
-				return true;
-			}
-
-			return true;
+			m_TaskScript.push_front(std::move(*i));
 		}
 	}
+	else
+	{
+		OnTaskScriptFailed(m_OnCmdTaskScriptIDLast);//ChangeState
+		return;
+	}
+}
 
-	return false;
+void tGnssReceiver::tState::ResetCmd()
+{
+	delete m_pCmd;
+	m_pCmd = nullptr;
 }
 
 }

@@ -35,17 +35,83 @@ class tGnssReceiver
 
 	class tState
 	{
-		std::chrono::time_point<tClock> m_TaskScriptStartTime;
+		class tCmd
+		{
+		protected:
+			tState* m_pObjState = nullptr;
+
+			std::unique_ptr<tGnssTaskScriptCmd> m_Cmd;
+
+			std::chrono::time_point<tClock> m_StartTime;
+
+		public:
+			tCmd() = delete;
+			tCmd(tState* objState, std::unique_ptr<tGnssTaskScriptCmd> cmd) :m_pObjState(objState), m_Cmd(std::move(cmd)) {}
+			tCmd(const tCmd&) = delete;
+			tCmd(tCmd&&) = delete;
+			virtual ~tCmd() = default;
+
+			tCmd& operator=(const tCmd&) = delete;
+			tCmd& operator=(tCmd&&) = delete;
+
+			virtual bool operator()() = 0;
+			virtual bool OnReceived(const tPacketNMEA_Template& value) { return false; };
+		};
+
+		class tCmdGPI : public tCmd
+		{
+		public:
+			tCmdGPI(tState* objState, std::unique_ptr<tGnssTaskScriptCmd> cmd);
+
+			bool operator()() override;
+		};
+
+		class tCmdGPO : public tCmd
+		{
+			enum class tStep : unsigned char
+			{
+				SetGPO,
+				Pause,
+			};
+
+			tStep m_Step = tStep::SetGPO;
+
+			int m_WaitTime_us = 0;
+
+		public:
+			tCmdGPO(tState* objState, std::unique_ptr<tGnssTaskScriptCmd> cmd);
+
+			bool operator()() override;
+		};
+
+		class tCmdREQ : public tCmd
+		{
+			enum class tStep : unsigned char
+			{
+				SendMsg,
+				WaitRsp,
+				PauseSet,
+				PauseWait,
+			};
+
+			tStep m_Step = tStep::SendMsg;
+
+			int m_WaitTime_us = 0;
+
+		public:
+			tCmdREQ(tState* objState, std::unique_ptr<tGnssTaskScriptCmd> cmd);
+
+			bool operator()() override;
+			bool OnReceived(const tPacketNMEA_Template& value) override;
+		};
 
 		tGnssTaskScript m_TaskScript;
 
-		std::string m_TaskScriptCaseRspWrongLast;
-
-		bool m_TaskScriptActive = false;
-
-		int m_TaskScriptTime_us = 0;
+		std::string m_OnCmdTaskScriptIDLast;
 
 		utils::tVectorUInt8 m_ReceivedData;
+
+		tCmd* m_pCmd = nullptr;
 
 	protected:
 		tGnssReceiver* m_pObj = nullptr;
@@ -53,7 +119,7 @@ class tGnssReceiver
 	public:
 		explicit tState(tGnssReceiver* obj);
 		tState(tGnssReceiver* obj, const std::string& taskScriptID);
-		virtual ~tState() = default;
+		virtual ~tState();
 
 		bool operator()();
 
@@ -65,16 +131,18 @@ class tGnssReceiver
 		bool SetTaskScript(const std::string& taskScriptID);
 
 	private:
-		bool TaskScript();//ChangeState
-		bool TaskScript_Handle(tGnssTaskScriptREQ* ptr);//ChangeState
-		bool TaskScript_Handle(tGnssTaskScriptGPI* ptr);//ChangeState
-		bool TaskScript_Handle(tGnssTaskScriptGPO* ptr);//ChangeState
-		bool TaskScript_OnReceived(const tPacketNMEA_Template& value);//ChangeState
+		void TaskScript();
+
+		bool OnCmdDone();//ChangeState
+		bool OnCmdFailed();//ChangeState
+		void OnCmdTaskScript(std::unique_ptr<tGnssTaskScriptCmd> cmd, const std::string& taskScriptID);
 
 	protected:
-		virtual void OnTaskScriptDone() {};
-		virtual void OnTaskScriptFailed() {};
-		virtual void OnTaskScriptFailed(const std::string& msg) {};
+		void ResetCmd();
+
+		virtual void OnTaskScriptDone() {};//ChangeState
+		virtual void OnTaskScriptFailed() {};//ChangeState
+		virtual void OnTaskScriptFailed(const std::string& msg) {};//ChangeState
 
 		virtual void Go() {}//ChangeState
 		virtual void OnReceived(const tPacketNMEA_Template& value) {}//ChangeState

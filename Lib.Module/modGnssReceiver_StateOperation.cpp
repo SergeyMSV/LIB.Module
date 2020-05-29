@@ -17,17 +17,20 @@ tGnssReceiver::tStateOperation::tStateOperation(tGnssReceiver* obj)
 
 void tGnssReceiver::tStateOperation::OnTaskScriptDone()
 {
-
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "OnTaskScriptDone");
+	//ChangeState(new tStateStop(m_pObj, "operation"));//[TEST]
+	//return;
 }
 
 void tGnssReceiver::tStateOperation::OnTaskScriptFailed()
 {
-
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "OnTaskScriptFailed");
+	//ResetCmd();
 }
 
 void tGnssReceiver::tStateOperation::OnTaskScriptFailed(const std::string& msg)
 {
-
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "OnTaskScriptFailed: " + msg);
 }
 
 void tGnssReceiver::tStateOperation::Go()
