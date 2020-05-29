@@ -58,7 +58,7 @@ class tGnssReceiver
 			virtual bool OnReceived(const tPacketNMEA_Template& value) { return false; };
 		};
 
-		class tCmdGPI : public tCmd
+		class tCmdGPI :public tCmd
 		{
 		public:
 			tCmdGPI(tState* objState, std::unique_ptr<tGnssTaskScriptCmd> cmd);
@@ -66,9 +66,9 @@ class tGnssReceiver
 			bool operator()() override;
 		};
 
-		class tCmdGPO : public tCmd
+		class tCmdGPO :public tCmd
 		{
-			enum class tStep : unsigned char
+			enum class tStep :unsigned char
 			{
 				SetGPO,
 				Pause,
@@ -84,9 +84,9 @@ class tGnssReceiver
 			bool operator()() override;
 		};
 
-		class tCmdREQ : public tCmd
+		class tCmdREQ :public tCmd
 		{
-			enum class tStep : unsigned char
+			enum class tStep :unsigned char
 			{
 				SendMsg,
 				WaitRsp,
@@ -145,7 +145,7 @@ class tGnssReceiver
 		virtual void OnTaskScriptFailed(const std::string& msg) {};//ChangeState
 
 		virtual void Go() {}//ChangeState
-		virtual void OnReceived(const tPacketNMEA_Template& value) {}//ChangeState
+		virtual void OnReceived(const tPacketNMEA_Template& value);// {}//ChangeState
 
 		void ChangeState(tState* state) { m_pObj->ChangeState(state); }
 	};
@@ -272,9 +272,6 @@ class tGnssReceiver
 		void OnTaskScriptDone() override;
 		void OnTaskScriptFailed() override;
 		void OnTaskScriptFailed(const std::string& msg) override;
-
-		void Go() override;
-		void OnReceived(const tPacketNMEA_Template& value) override;
 	};
 
 	class tStateStart :public tState
@@ -288,9 +285,6 @@ class tGnssReceiver
 		void OnTaskScriptDone() override;
 		void OnTaskScriptFailed() override;
 		void OnTaskScriptFailed(const std::string& msg) override;
-
-		void Go() override;
-		void OnReceived(const tPacketNMEA_Template& value) override;
 	};
 
 	utils::tLog* m_pLog = nullptr;

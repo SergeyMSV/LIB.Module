@@ -38,16 +38,4 @@ void tGnssReceiver::tStateStart::OnTaskScriptFailed(const std::string& msg)
 	return;
 }
 
-void tGnssReceiver::tStateStart::Go()
-{
-
-}
-
-void tGnssReceiver::tStateStart::OnReceived(const tPacketNMEA_Template& value)
-{
-	std::string Payload = value.GetPayload();
-
-	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnReceived: " + Payload);
-}
-
 }

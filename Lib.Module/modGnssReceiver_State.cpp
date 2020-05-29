@@ -128,128 +128,6 @@ void tGnssReceiver::tState::TaskScript()
 	}
 }
 
-
-
-//bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptCmdGPI* ptr)
-//{
-//	m_TaskScript.pop_front();//[TBD] Wait for appearance of GPI
-//
-//	return false;
-//}
-//
-//bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptCmdGPO* ptr)
-//{
-//	if (ptr->ID == "PWR")
-//	{
-//		m_TaskScriptActive = true;
-//
-//		m_pObj->Board_PowerSupply(ptr->State);
-//	}
-//	else if (ptr->ID == "RST")
-//	{
-//		m_TaskScriptActive = true;
-//
-//		m_pObj->Board_Reset(ptr->State);
-//	}
-//	else
-//	{
-//		m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightRed, "ERR: unknown GPO");
-//
-//		//[TBD] throw an exception or do nothing
-//	}
-//
-//	m_TaskScript.pop_front();
-//
-//	return true;
-//}
-
-//bool tGnssReceiver::tState::TaskScript_OnReceived(const tPacketNMEA_Template& value)
-//{
-//	if (!m_TaskScript.empty() && m_TaskScript.front().get()->GetID() == tGnssTaskScriptCmd::tID::REQ && m_TaskScriptActive)
-//	{
-//		tGnssTaskScriptCmdREQ* Ptr = static_cast<tGnssTaskScriptCmdREQ*>(m_TaskScript.front().get());
-//
-//		if (value.GetPayload().find(Ptr->RspHead) == 0)
-//		{
-//			////
-//			{//[TEST]
-//				auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_TaskScriptStartTime).count();//C++11
-//				std::stringstream StrTime;
-//				StrTime << value.GetPayload() << " --- " << Time_us << " us";
-//				m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, StrTime.str());
-//			}
-//			////
-//
-//			m_TaskScriptTime_us = Ptr->TimePause_us;
-//
-//			m_TaskScriptActive = false;
-//
-//			if (value.GetPayload() == Ptr->RspHead + Ptr->RspBody || Ptr->CaseRspWrong.empty())
-//			{
-//				m_TaskScript.pop_front();
-//				return true;
-//			}
-//			else if (m_TaskScriptCaseRspWrongLast != Ptr->CaseRspWrong)
-//			{
-//				m_TaskScriptCaseRspWrongLast = Ptr->CaseRspWrong;
-//
-//				tGnssTaskScript Script = m_pObj->GetTaskScript(m_TaskScriptCaseRspWrongLast);
-//
-//				for (tGnssTaskScript::reverse_iterator i = Script.rbegin(); i != Script.rend(); ++i)//C++11
-//				{
-//					m_TaskScript.push_front(std::move(*i));
-//				}
-//			}
-//			else
-//			{
-//				OnTaskScriptFailed(m_TaskScriptCaseRspWrongLast);
-//				return true;
-//			}
-//
-//			return true;
-//		}
-//	}
-//
-//	return false;
-//}
-
-//bool tGnssReceiver::tState::TaskScript_Handle(tGnssTaskScriptCmdREQ* ptr)
-//{
-//	//if (m_pCmd == nullptr)
-//	//{
-//	//	m_pCmd = new tCmdREQ(this, Queue.front());
-//	//}
-//	/*if (!m_TaskScriptActive)
-//	{
-//		m_TaskScriptActive = true;
-//
-//		m_TaskScriptStartTime = tClock::now();
-//
-//		std::string Msg = ptr->Msg;
-//
-//		if (!Msg.empty())
-//		{
-//			tPacketNMEA_Template Packet(Msg);
-//
-//			m_pObj->Board_Send(Packet.ToVector());
-//		}
-//
-//		m_TaskScriptTime_us = ptr->RspWait_us;
-//	}
-//	else if (m_TaskScriptTime_us > 0)
-//	{
-//		auto Time_us = std::chrono::duration_cast<std::chrono::microseconds>(tClock::now() - m_TaskScriptStartTime).count();//C++11
-//
-//		if (m_TaskScriptTime_us < Time_us)
-//		{
-//			OnTaskScriptFailed();
-//			return true;
-//		}
-//	}*/
-//
-//	return false;
-//}
-
 bool tGnssReceiver::tState::OnCmdDone()
 {
 	if (m_TaskScript.empty())
@@ -264,6 +142,7 @@ bool tGnssReceiver::tState::OnCmdDone()
 
 bool tGnssReceiver::tState::OnCmdFailed()
 {
+	//[TBD] do something...
 	return false;
 }
 
@@ -293,6 +172,11 @@ void tGnssReceiver::tState::ResetCmd()
 {
 	delete m_pCmd;
 	m_pCmd = nullptr;
+}
+
+void tGnssReceiver::tState::OnReceived(const tPacketNMEA_Template& value)
+{
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnReceived: " + value.GetPayload());
 }
 
 }

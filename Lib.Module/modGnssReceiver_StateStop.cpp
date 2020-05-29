@@ -33,16 +33,4 @@ void tGnssReceiver::tStateStop::OnTaskScriptFailed(const std::string& msg)
 	return;
 }
 
-void tGnssReceiver::tStateStop::Go()
-{
-
-}
-
-void tGnssReceiver::tStateStop::OnReceived(const tPacketNMEA_Template& value)
-{
-	std::string Payload = value.GetPayload();
-
-	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnReceived: " + Payload);
-}
-
 }
