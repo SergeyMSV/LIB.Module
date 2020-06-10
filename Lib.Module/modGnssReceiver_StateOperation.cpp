@@ -42,11 +42,97 @@ void tGnssReceiver::tStateOperation::Go()
 	}
 }
 
+template<class T, class U>
+void SetParam(T& valDst, U valSrc, bool& check)
+{
+	if (valSrc.Absent)
+	{
+		check = false;
+	}
+	else
+	{
+		valDst = valSrc.Value;
+	}
+}
+
 void tGnssReceiver::tStateOperation::OnReceived(const tPacketNMEA_Template& value)
 {
 	std::string Payload = value.GetPayload();
 
-	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightCyan, "OnReceived: " + Payload);
+	tPacketNMEA::payload_type PacketData(Payload.cbegin(), Payload.cend());
+
+	std::stringstream StrTime;
+
+	StrTime << "; ";
+	m_pObj->SetStrBaudrate(StrTime, m_StartTime, Payload.size());
+	m_StartTime = tClock::now();
+
+	//[TBD] it's possible to use std::map instead of following statement... just reg in map new handler...
+	if (tMsgGSV::Try(PacketData.Data))
+	{
+		tMsgGSV Msg(PacketData.Data);
+
+		for (auto& i : Msg.Satellite)//C++11
+		{
+			m_DataSet.Satellite.push_back(std::forward<tGNSS_Satellite>(i));
+		}
+
+		StrTime << "; ";
+		m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
+		m_StartTime = tClock::now();
+
+		m_pObj->m_pLog->Write(true, utils::tLogColour::LightMagenta, PacketData.Data[0] + " " + Msg.MsgQty.ToString() + " " + Msg.MsgNum.ToString() + " " + Msg.SatelliteQty.ToString());
+		m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
+	}
+	else if (tMsgRMC::Try(PacketData.Data))
+	{
+		tMsgRMC Msg(PacketData.Data);
+
+		if (!Msg.Date.Absent)
+		{
+			m_DataSet.Year = Msg.Date.Year;
+			m_DataSet.Month = Msg.Date.Month;
+			m_DataSet.Day = Msg.Date.Day;
+		}
+
+		if (!Msg.Time.Absent)
+		{
+			m_DataSet.Hour = Msg.Time.Hour;
+			m_DataSet.Minute = Msg.Time.Minute;
+			m_DataSet.Second = Msg.Time.Second;
+		}
+
+		m_DataSet.Check_DateTime = !Msg.Date.Absent && !Msg.Time.Absent;
+
+		SetParam(m_DataSet.Valid, Msg.Valid, m_DataSet.Check_Position);
+		SetParam(m_DataSet.Latitude, Msg.Latitude, m_DataSet.Check_Position);
+		SetParam(m_DataSet.Longitude, Msg.Longitude, m_DataSet.Check_Position);
+		SetParam(m_DataSet.Speed, Msg.Speed, m_DataSet.Check_Position);
+		SetParam(m_DataSet.Course, Msg.Course, m_DataSet.Check_Position);
+
+		StrTime << "; ";
+		m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
+		m_StartTime = tClock::now();
+
+		m_pObj->m_pLog->Write(true, utils::tLogColour::LightMagenta, PacketData.Data[0] + " " + Msg.Date.ToString() + " " + Msg.Time.ToString());
+		m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
+
+		m_pObj->OnChanged(m_DataSet);//TEST
+		m_DataSet = tGnssDataSet();//TEST
+	}
+	else
+	{
+		StrTime << "; ";
+		m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
+		m_StartTime = tClock::now();
+
+		m_pObj->m_pLog->Write(true, utils::tLogColour::Yellow, PacketData.Data[0]);
+		m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
+
+		m_DataSet.Satellite.clear();//[TEST]
+	}
+
+	m_StartTime = tClock::now();
 }
 
 }
@@ -71,18 +157,7 @@ tGnssReceiver::tStateOperation::tStateOperation(tGnssReceiver* obj)
 
 }
 
-template<class T, class U>
-void SetParam(T& valDst, U valSrc, bool& check)
-{
-	if (valSrc.Absent)
-	{
-		check = false;
-	}
-	else
-	{
-		valDst = valSrc.Value;
-	}
-}
+
 //
 //bool tGnssReceiver::tStateOperation::operator()()
 //{

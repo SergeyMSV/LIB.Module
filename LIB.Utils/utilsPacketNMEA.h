@@ -9,7 +9,8 @@
 // |      2     |   2019 02 07  | Added tPacket(std::string& address, int payloadItemQty, bool encapsulation = false);
 // |      3     |   2019 05 01  | Refactored
 // |      4     |   2019 09 20  | Refactored
-// |      5     |   2020 09 06  | Corrected tFormat::Append(tVectorUInt8& dst, const TPayload& payload) const
+// |      5     |   2020 05 08  | Corrected tFormat::Append(tVectorUInt8& dst, const TPayload& payload) const
+// |      6     |   2020 06 10  | Added template <class It> void AppendData(It begin, It end)
 // |            |               | 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
@@ -201,22 +202,12 @@ struct tPayloadCommon
 
 	tPayloadCommon(tVectorUInt8::const_iterator cbegin, tVectorUInt8::const_iterator cend)
 	{
-		std::string LocalString;
+		AppendData(cbegin, cend);
+	}
 
-		for (tVectorUInt8::const_iterator i = cbegin; i != cend; ++i)
-		{
-			if (*i == ',')
-			{
-				Data.push_back(LocalString);
-				LocalString.clear();
-			}
-			else
-			{
-				LocalString.push_back(static_cast<char>(*i));
-			}
-		}
-
-		Data.push_back(LocalString);
+	tPayloadCommon(std::string::const_iterator cbegin, std::string::const_iterator cend)
+	{
+		AppendData(cbegin, cend);
 	}
 
 	std::size_t size() const
@@ -244,6 +235,28 @@ struct tPayloadCommon
 	iterator end() const
 	{
 		return iterator(this, false);
+	}
+
+	private:
+	template <class It>
+	void AppendData(It begin, It end)
+	{
+		std::string LocalString;
+
+		for (It i = begin; i != end; ++i)
+		{
+			if (*i == ',')
+			{
+				Data.push_back(LocalString);
+				LocalString.clear();
+			}
+			else
+			{
+				LocalString.push_back(static_cast<char>(*i));
+			}
+		}
+
+		Data.push_back(LocalString);
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////

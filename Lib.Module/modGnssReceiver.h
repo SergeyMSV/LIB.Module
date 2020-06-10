@@ -244,6 +244,12 @@ class tGnssReceiver
 
 	class tStateOperation :public tState
 	{
+		std::chrono::time_point<tClock> m_StartTime;
+
+		//bool m_NoData = true;
+
+		tGnssDataSet m_DataSet;
+
 	public:
 		explicit tStateOperation(tGnssReceiver* obj);
 

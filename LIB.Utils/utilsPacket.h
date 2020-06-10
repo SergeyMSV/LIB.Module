@@ -7,6 +7,7 @@
 // |------------|---------------|---------------------------------
 // |      1     |   2019 06 20  |
 // |      2     |   2020 03 26  | std::size_t Find(tVectorUInt8& receivedData, tPacket& packet) instead of bool Find(tVectorUInt8& receivedData, tPacket& packet)
+// |      3     |   2020 06 10  | Added typedef typename TPayload payload_type;
 // |            |               | 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
@@ -28,6 +29,7 @@ template
 class tPacket : private TFormat<TPayload>, private TPayload
 {
 public:
+	typedef typename TPayload payload_type;
 	typedef typename TPayload::value_type payload_value_type;
 
 	tPacket() { }
