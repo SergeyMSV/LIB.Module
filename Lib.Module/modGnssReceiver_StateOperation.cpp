@@ -33,13 +33,15 @@ void tGnssReceiver::tStateOperation::OnTaskScriptFailed(const std::string& msg)
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "OnTaskScriptFailed: " + msg);
 }
 
-void tGnssReceiver::tStateOperation::Go()
+bool tGnssReceiver::tStateOperation::Go()
 {
 	if (!m_pObj->IsControlOperation())
 	{
 		ChangeState(new tStateStop(m_pObj, "operation"));
-		return;
+		return true;
 	}
+
+	return true;
 }
 
 template<class T, class U>

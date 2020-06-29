@@ -217,8 +217,6 @@ bool tShell::HandlerDB(const std::vector<std::string>& data)
 
 bool tShell::HandlerEXIT(const std::vector<std::string>& data)
 {
-	tShell::m_Exit = true;
-
 	g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Exit;
 
 	return true;
@@ -266,13 +264,12 @@ void tShell::ShowReceivedCmd(const std::vector<std::string>& data)
 }
 
 bool tShell::Debug = false;
-bool tShell::m_Exit = false;
 
 void ThreadFunShell()
 {
 	dev::tShell Shell(g_ShellCommandList.data(), g_ShellCommandList.size());
 
-	while (Shell.Ready())
+	while (g_DataSetMainControl.Thread_GNSS_State != tDataSetMainControl::tStateGNSS::Exit)
 	{
 		int Byte = getchar();
 

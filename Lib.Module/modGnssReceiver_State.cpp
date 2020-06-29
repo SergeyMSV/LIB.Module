@@ -66,8 +66,7 @@ bool tGnssReceiver::tState::operator()()
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-	Go();//ChangeState
-	return true;
+	return Go();//ChangeState
 }
 
 bool tGnssReceiver::tState::Halt()

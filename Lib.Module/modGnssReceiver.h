@@ -144,7 +144,7 @@ class tGnssReceiver
 		virtual void OnTaskScriptFailed() {};//ChangeState
 		virtual void OnTaskScriptFailed(const std::string& msg) {};//ChangeState
 
-		virtual void Go() {}//ChangeState
+		virtual bool Go() { return true; }//ChangeState
 		virtual void OnReceived(const tPacketNMEA_Template& value);// {}//ChangeState
 
 		void ChangeState(tState* state) { m_pObj->ChangeState(state); }
@@ -168,7 +168,7 @@ class tGnssReceiver
 		tGnssStatus GetStatus() override { return tGnssStatus::Error; }
 
 	protected:
-		void Go() override;
+		bool Go() override;
 		void OnReceived(const tPacketNMEA_Template& value) override;
 	};*/
 
@@ -185,7 +185,7 @@ class tGnssReceiver
 		tGnssStatus GetStatus() override { return tGnssStatus::Halted; }
 
 	protected:
-		void Go() override;
+		bool Go() override;
 	};
 
 /*	class tStateOperation :public tState
@@ -260,7 +260,7 @@ class tGnssReceiver
 		void OnTaskScriptFailed() override;
 		void OnTaskScriptFailed(const std::string& msg) override;
 
-		void Go() override;
+		bool Go() override;
 		void OnReceived(const tPacketNMEA_Template& value) override;
 	};
 

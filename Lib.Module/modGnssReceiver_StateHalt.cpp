@@ -14,18 +14,20 @@ tGnssReceiver::tStateHalt::tStateHalt(tGnssReceiver* obj, const std::string& val
 	}
 }
 
-void tGnssReceiver::tStateHalt::Go()
+bool tGnssReceiver::tStateHalt::Go()
 {
-	if (!m_pObj->m_Control_Exit)
-	{
-		if (m_pObj->IsControlOperation())
-		{
-			ChangeState(new tStateStart(m_pObj, "start...s"));
-			return;
-		}
+	if (m_pObj->m_Control_Exit)
+		return false;
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	if (m_pObj->IsControlOperation())
+	{
+		ChangeState(new tStateStart(m_pObj, "start...s"));
+		return true;
 	}
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+	return true;
 }
 
 }
