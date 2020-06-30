@@ -47,6 +47,18 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 				case tDataSetMainControl::tStateGNSS::Halt: Dev.Halt(); break;
 				case tDataSetMainControl::tStateGNSS::Restart: Dev.Restart(); break;
 				case tDataSetMainControl::tStateGNSS::Exit: Dev.Exit(); break;
+				case tDataSetMainControl::tStateGNSS::UserTaskScriptStart:
+				{
+					std::lock_guard<std::mutex> Lock(g_DataSetMainControl.Thread_GNSS_State_UserTaskScriptIDMtx);
+
+					if (!g_DataSetMainControl.Thread_GNSS_State_UserTaskScriptID.empty())
+					{
+						Dev.StartUserTaskScript(g_DataSetMainControl.Thread_GNSS_State_UserTaskScriptID);
+
+						g_DataSetMainControl.Thread_GNSS_State_UserTaskScriptID.clear();
+					}
+					break;
+				}
 				}
 
 				if (g_DataSetMainControl.Thread_GNSS_State == tDataSetMainControl::tStateGNSS::Exit)

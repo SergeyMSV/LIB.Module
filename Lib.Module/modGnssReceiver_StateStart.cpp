@@ -18,6 +18,12 @@ void tGnssReceiver::tStateStart::OnTaskScriptDone()
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptDone");
 
+	if (m_NextState_Stop)
+	{
+		ChangeState(new tStateStop(m_pObj, "start single"));
+		return;
+	}
+
 	ChangeState(new tStateOperation(m_pObj));
 	return;
 }

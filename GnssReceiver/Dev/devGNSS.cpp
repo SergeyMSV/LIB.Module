@@ -56,6 +56,16 @@ void tGNSS::Exit()
 	}
 }
 
+bool tGNSS::StartUserTaskScript(const std::string& taskScriptID)
+{
+	if (m_pModFSMachine)
+	{
+		return m_pModFSMachine->StartUserTaskScript(taskScriptID);
+	}
+
+	return false;
+}
+
 mod::tGnssStatus tGNSS::GetStatus()
 {
 	if (m_pModFSMachine)

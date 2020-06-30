@@ -133,9 +133,21 @@ bool tShell::HandlerLog(const std::vector<std::string>& data)
 
 bool tShell::HandlerGNSS(const std::vector<std::string>& data)
 {
-	if (data.size() == 2 && data[1] == "start")
+	if (data.size() >= 2 && data[1] == "start")
 	{
-		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Start;
+		switch (data.size())
+		{
+		case 2: g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Start; break;
+		case 3:
+		{
+			g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::UserTaskScriptStart;
+
+			std::lock_guard<std::mutex> Lock(g_DataSetMainControl.Thread_GNSS_State_UserTaskScriptIDMtx);
+
+			g_DataSetMainControl.Thread_GNSS_State_UserTaskScriptID = data[2];
+			break;
+		}
+		}
 	}
 	else if (data.size() == 2 && data[1] == "restart")
 	{

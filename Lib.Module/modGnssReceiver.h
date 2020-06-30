@@ -128,7 +128,7 @@ class tGnssReceiver
 
 		virtual tGnssStatus GetStatus() = 0;
 
-		bool SetTaskScript(const std::string& taskScriptID);
+		virtual bool SetUserTaskScript(const std::string& taskScriptID) { return false; }
 
 	private:
 		void TaskScript();
@@ -139,6 +139,8 @@ class tGnssReceiver
 
 	protected:
 		void ResetCmd();
+
+		bool SetTaskScript(const std::string& taskScriptID, bool userTaskScript);
 
 		virtual void OnTaskScriptDone() {};//ChangeState
 		virtual void OnTaskScriptFailed() {};//ChangeState
@@ -255,6 +257,8 @@ class tGnssReceiver
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
 
+		bool SetUserTaskScript(const std::string& taskScriptID) override;
+
 	protected:
 		void OnTaskScriptDone() override;
 		void OnTaskScriptFailed() override;
@@ -282,6 +286,8 @@ class tGnssReceiver
 
 	class tStateStart :public tState
 	{
+		bool m_NextState_Stop = false;
+
 	public:
 		tStateStart(tGnssReceiver* obj, const std::string& value);
 
@@ -295,6 +301,7 @@ class tGnssReceiver
 
 	utils::tLog* m_pLog = nullptr;
 
+	//mutable std::mutex m_MtxState;
 	tState* m_pState = nullptr;
 
 	std::atomic_bool m_Control_Operation = false;
@@ -322,13 +329,15 @@ public:
 	void Halt();
 	void Exit();
 
+	bool StartUserTaskScript(const std::string& taskScriptID);
+
 	tGnssStatus GetStatus();
 
 	tGnssReceiverSettings GetSettings();
 	void SetSettings(const tGnssReceiverSettings& settings);
 
 protected:
-	virtual tGnssTaskScript GetTaskScript(const std::string& id) = 0;
+	virtual tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) = 0;
 
 	virtual void OnChanged(const tGnssDataSet& value) = 0;
 	//virtual void OnChanged(const tGnssReceiverProperty& value) = 0;

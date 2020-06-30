@@ -53,7 +53,7 @@ public:
 
 	std::string GetConfigFileName() { return ConfigFileName; }
 
-	mod::tGnssTaskScript GetTaskScript(const std::string& id);
+	mod::tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript);
 };
 
 extern tSettings g_Settings;

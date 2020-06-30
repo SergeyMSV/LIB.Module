@@ -17,9 +17,9 @@ tGNSS::tModGnssReceiver::~tModGnssReceiver()
 
 }
 
-mod::tGnssTaskScript tGNSS::tModGnssReceiver::GetTaskScript(const std::string& id)
+mod::tGnssTaskScript tGNSS::tModGnssReceiver::GetTaskScript(const std::string& id, bool userTaskScript)
 {
-	return g_Settings.GetTaskScript(id);
+	return g_Settings.GetTaskScript(id, userTaskScript);
 }
 
 void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)

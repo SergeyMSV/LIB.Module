@@ -77,9 +77,6 @@
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateStop.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lib.Module\modGnssReceiver_StateStartInitialize.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
     <ClCompile Include="..\Lib.Module\modGnssReceiver_State_CmdREQ.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>

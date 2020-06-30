@@ -52,14 +52,17 @@ tSettings::tSettings(const std::string& fileName)
 	}
 }
 
-mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id)
+mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id, bool userTaskScript)
 {
 	boost::property_tree::ptree PTree;
 	boost::property_tree::xml_parser::read_xml(ConfigFileName, PTree);
 
 	mod::tGnssTaskScript Script;
 
-	if (auto Value = PTree.get_child_optional("App.Settings.GNSS_Receiver.TaskScript." + id))
+	std::string Path = "App.Settings.GNSS_Receiver.";
+	Path += (userTaskScript ? "UserTaskScript." : "TaskScript.");
+
+	if (auto Value = PTree.get_child_optional(Path + id))
 	{
 		for (auto i : *Value)
 		{

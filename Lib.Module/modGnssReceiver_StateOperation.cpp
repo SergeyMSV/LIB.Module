@@ -15,9 +15,14 @@ tGnssReceiver::tStateOperation::tStateOperation(tGnssReceiver* obj)
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperation");
 }
 
+bool tGnssReceiver::tStateOperation::SetUserTaskScript(const std::string& taskScriptID)
+{
+	return SetTaskScript(taskScriptID, true);
+}
+
 void tGnssReceiver::tStateOperation::OnTaskScriptDone()
 {
-	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "OnTaskScriptDone");
+	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightGreen, "OnTaskScriptDone");
 	//ChangeState(new tStateStop(m_pObj, "operation"));//[TEST]
 	//return;
 }

@@ -52,7 +52,7 @@ class tGNSS
 		virtual ~tModGnssReceiver();
 
 	protected:
-		mod::tGnssTaskScript GetTaskScript(const std::string& id) override;
+		mod::tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) override;
 
 		void OnChanged(const mod::tGnssDataSet& value) override;
 
@@ -84,6 +84,8 @@ public:
 	void Restart();
 	void Halt();
 	void Exit();
+
+	bool StartUserTaskScript(const std::string& taskScriptID);
 
 	mod::tGnssStatus GetStatus();
 

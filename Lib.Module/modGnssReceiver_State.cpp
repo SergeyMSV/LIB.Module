@@ -15,7 +15,7 @@ tGnssReceiver::tState::tState(tGnssReceiver* obj)
 tGnssReceiver::tState::tState(tGnssReceiver* obj, const std::string& taskScriptID)
 	:tState(obj)
 {
-	m_TaskScript = m_pObj->GetTaskScript(taskScriptID);
+	m_TaskScript = m_pObj->GetTaskScript(taskScriptID, false);
 }
 
 tGnssReceiver::tState::~tState()
@@ -75,18 +75,6 @@ bool tGnssReceiver::tState::Halt()
 	return true;
 }
 
-bool tGnssReceiver::tState::SetTaskScript(const std::string& taskScriptID)
-{
-	tGnssTaskScript Script = m_pObj->GetTaskScript(taskScriptID);
-
-	for (auto& i : Script)
-	{
-		m_TaskScript.push_back(std::move(i));
-	}
-
-	return true;
-}
-
 void tGnssReceiver::tState::TaskScript()
 {
 	if (m_pCmd == nullptr && !m_TaskScript.empty())
@@ -129,13 +117,14 @@ void tGnssReceiver::tState::TaskScript()
 
 bool tGnssReceiver::tState::OnCmdDone()
 {
+	ResetCmd();
+
 	if (m_TaskScript.empty())
 	{
 		OnTaskScriptDone();
 		return true;
 	}
-
-	ResetCmd();
+	
 	return true;
 }
 
@@ -153,7 +142,7 @@ void tGnssReceiver::tState::OnCmdTaskScript(std::unique_ptr<tGnssTaskScriptCmd> 
 	{
 		m_OnCmdTaskScriptIDLast = taskScriptID;
 
-		tGnssTaskScript Script = m_pObj->GetTaskScript(taskScriptID);
+		tGnssTaskScript Script = m_pObj->GetTaskScript(taskScriptID, false);
 
 		for (tGnssTaskScript::reverse_iterator i = Script.rbegin(); i != Script.rend(); ++i)//C++11
 		{
@@ -171,6 +160,24 @@ void tGnssReceiver::tState::ResetCmd()
 {
 	delete m_pCmd;
 	m_pCmd = nullptr;
+}
+
+bool tGnssReceiver::tState::SetTaskScript(const std::string& taskScriptID, bool userTaskScript)
+{
+	tGnssTaskScript Script = m_pObj->GetTaskScript(taskScriptID, userTaskScript);
+
+	if (Script.empty())
+	{
+		m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "SetTaskScript - NO SCRIPT LOADED: " + taskScriptID);
+		return false;
+	}
+
+	for (auto& i : Script)
+	{
+		m_TaskScript.push_back(std::move(i));
+	}
+
+	return true;
 }
 
 void tGnssReceiver::tState::OnReceived(const tPacketNMEA_Template& value)

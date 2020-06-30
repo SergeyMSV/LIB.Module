@@ -24,7 +24,8 @@ tGnssReceiver::tGnssReceiver(utils::tLog* log, const tGnssReceiverSettings& sett
 
 tGnssError tGnssReceiver::operator()()
 {
-	//std::lock_guard<std::mutex> Lock(m_Mtx);
+	//std::lock_guard<std::mutex> Lock(m_MtxState);
+
 	while ((*m_pState)());
 
 	return tGnssError::OK;
@@ -51,9 +52,16 @@ void tGnssReceiver::Exit()
 	m_Control_Operation = false;
 }
 
+bool tGnssReceiver::StartUserTaskScript(const std::string& taskScriptID)
+{
+	//std::lock_guard<std::mutex> Lock(m_MtxState);
+
+	return m_pState->SetUserTaskScript(taskScriptID);
+}
+
 tGnssStatus tGnssReceiver::GetStatus()
 {
-	//std::lock_guard<std::mutex> Lock(m_Mtx);
+	//std::lock_guard<std::mutex> Lock(m_MtxState);
 
 	return m_pState->GetStatus();
 }

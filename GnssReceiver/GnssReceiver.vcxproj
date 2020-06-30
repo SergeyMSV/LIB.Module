@@ -173,7 +173,6 @@
     <ClCompile Include="..\Lib.Module\modGnssReceiver_State.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateError.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateHalt.cpp" />
-    <ClCompile Include="..\Lib.Module\modGnssReceiver_StateStartInitialize.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateOperation.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateOperationNoData.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateStart.cpp" />
