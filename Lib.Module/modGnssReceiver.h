@@ -33,8 +33,12 @@ class tGnssReceiver
 {
 	using tClock = std::chrono::high_resolution_clock;//C++11
 
+	class tStateError;
+
 	class tState
 	{
+		friend class tStateError;
+
 		class tCmd
 		{
 		protected:
@@ -133,14 +137,15 @@ class tGnssReceiver
 	private:
 		void TaskScript();
 
-		bool OnCmdDone();//ChangeState
-		bool OnCmdFailed();//ChangeState
+		bool OnCmdDone();//ChangeState - if ChangeState is inside then return is true
 		void OnCmdTaskScript(std::unique_ptr<tGnssTaskScriptCmd> cmd, const std::string& taskScriptID);
 
 	protected:
 		void ResetCmd();
 
 		bool SetTaskScript(const std::string& taskScriptID, bool userTaskScript);
+
+		virtual bool OnCmdFailed();//ChangeState - if ChangeState is inside then return is true
 
 		virtual void OnTaskScriptDone() {};//ChangeState
 		virtual void OnTaskScriptFailed() {};//ChangeState
@@ -152,34 +157,27 @@ class tGnssReceiver
 		void ChangeState(tState* state) { m_pObj->ChangeState(state); }
 	};
 
-	/*class tStateError :public tState
+	class tStateError :public tState
 	{
-		std::chrono::time_point<tClock> m_StartTime;
-
-		tGnssTaskScript m_TaskScript;
-
-		bool m_TaskScriptActive = false;
-
-		int m_TaskScriptTime_us = 0;
-
 	public:
 		tStateError(tGnssReceiver* obj, const std::string& value);
 
-		//bool operator()() override;
-
 		tGnssStatus GetStatus() override { return tGnssStatus::Error; }
 
+		bool Halt() override { return false; }
+
 	protected:
-		bool Go() override;
-		void OnReceived(const tPacketNMEA_Template& value) override;
-	};*/
+		bool OnCmdFailed() override;//ChangeState - if ChangeState is inside then return is true
+
+		void OnTaskScriptDone() override;
+		void OnTaskScriptFailed() override;
+		void OnTaskScriptFailed(const std::string& msg) override;
+	};
 
 	class tStateHalt :public tState
 	{
 	public:
 		tStateHalt(tGnssReceiver* obj, const std::string& value);
-
-		//bool operator()() override;
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
@@ -220,28 +218,6 @@ class tGnssReceiver
 		//bool operator()() override;
 
 		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
-	};
-
-	class tStateStart :public tState
-	{
-		std::chrono::time_point<tClock> m_StartTime;
-
-		tGnssTaskScript m_TaskScript;
-
-		std::string m_CaseRspWrongLast;
-
-		bool m_TaskScriptActive = false;
-
-		int m_TaskScriptTime_us = 0;
-
-	public:
-		tStateStart(tGnssReceiver* obj, const std::string& value);
-
-		tGnssStatus GetStatus() override { return tGnssStatus::Init; }
-
-	protected:
-		void Go() override;
-		void OnReceived(const tPacketNMEA_Template& value) override;
 	};*/
 
 	class tStateOperation :public tState

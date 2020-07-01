@@ -104,6 +104,7 @@ void tGnssReceiver::tState::TaskScript()
 			{
 				m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightRed, "ERR: unknown task");
 
+				throw std::invalid_argument("Unknown task");
 				//[TBD] throw an exception or do nothing
 
 				break;
@@ -126,12 +127,6 @@ bool tGnssReceiver::tState::OnCmdDone()
 	}
 	
 	return true;
-}
-
-bool tGnssReceiver::tState::OnCmdFailed()
-{
-	//[TBD] do something...
-	return false;
 }
 
 void tGnssReceiver::tState::OnCmdTaskScript(std::unique_ptr<tGnssTaskScriptCmd> cmd, const std::string& taskScriptID)
@@ -158,8 +153,11 @@ void tGnssReceiver::tState::OnCmdTaskScript(std::unique_ptr<tGnssTaskScriptCmd> 
 
 void tGnssReceiver::tState::ResetCmd()
 {
-	delete m_pCmd;
+	tCmd* Cmd = m_pCmd;
+
 	m_pCmd = nullptr;
+
+	delete Cmd;
 }
 
 bool tGnssReceiver::tState::SetTaskScript(const std::string& taskScriptID, bool userTaskScript)
@@ -177,6 +175,12 @@ bool tGnssReceiver::tState::SetTaskScript(const std::string& taskScriptID, bool 
 		m_TaskScript.push_back(std::move(i));
 	}
 
+	return true;
+}
+
+bool tGnssReceiver::tState::OnCmdFailed()
+{
+	ChangeState(new tStateError(m_pObj, "..."));
 	return true;
 }
 
