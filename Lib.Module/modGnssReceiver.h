@@ -298,7 +298,7 @@ public:
 	tGnssReceiver(tGnssReceiver&&) = delete;
 	virtual ~tGnssReceiver() {};// = 0;
 
-	tGnssError operator()();
+	void operator()();
 
 	void Start();
 	void Restart();
