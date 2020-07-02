@@ -99,14 +99,14 @@ enum class tGnssStatus : unsigned char
 	Unknown = 0xFF,
 };
 
-enum class tGnssError : unsigned char
-{
-	OK,
-
-	State_ErrTimer,
-
-	Unknown = 0xFF,
-};
+//enum class tGnssError : unsigned char
+//{
+//	OK,
+//
+//	State_ErrTimer,
+//
+//	Unknown = 0xFF,
+//};
 
 struct tGnssDataSet
 {

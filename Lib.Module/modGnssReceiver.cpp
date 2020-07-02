@@ -22,13 +22,9 @@ tGnssReceiver::tGnssReceiver(utils::tLog* log, const tGnssReceiverSettings& sett
 	}
 }
 
-tGnssError tGnssReceiver::operator()()
+void tGnssReceiver::operator()()
 {
-	//std::lock_guard<std::mutex> Lock(m_MtxState);
-
 	while ((*m_pState)());
-
-	return tGnssError::OK;
 }
 
 void tGnssReceiver::Start()
