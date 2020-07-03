@@ -169,7 +169,6 @@
   <ItemGroup>
     <ClCompile Include="..\Lib.Module\modGnss.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver.cpp" />
-    <ClCompile Include="..\Lib.Module\modGnssReceiver_Attribute.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_State.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateError.cpp" />
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateHalt.cpp" />
@@ -196,7 +195,6 @@
   <ItemGroup>
     <ClInclude Include="..\Lib.Module\modGnss.h" />
     <ClInclude Include="..\Lib.Module\modGnssReceiver.h" />
-    <ClInclude Include="..\Lib.Module\modGnssReceiver_Attribute.h" />
     <ClInclude Include="..\Lib.Utils\utilsBase.h" />
     <ClInclude Include="..\Lib.Utils\utilsCRC.h" />
     <ClInclude Include="..\Lib.Utils\utilsLog.h" />

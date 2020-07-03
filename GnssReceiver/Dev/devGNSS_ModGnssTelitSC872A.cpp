@@ -6,8 +6,8 @@
 namespace dev
 {
 
-tGNSS::tModGnssReceiver::tModGnssReceiver(tGNSS* obj, const mod::tGnssReceiverSettings& settings)
-	:mod::tGnssReceiver(obj->m_pLog, settings), m_pObj(obj), m_Board(this, *obj->m_pIO)
+tGNSS::tModGnssReceiver::tModGnssReceiver(tGNSS* obj)
+	:mod::tGnssReceiver(obj->m_pLog), m_pObj(obj), m_Board(this, *obj->m_pIO)
 {
 
 }

@@ -5,7 +5,7 @@
 namespace mod
 {
 
-tGnssReceiver::tGnssReceiver(utils::tLog* log, const tGnssReceiverSettings& settings, bool start)
+tGnssReceiver::tGnssReceiver(utils::tLog* log, bool start)
 	:m_pLog(log)
 {
 	m_Control_Operation = start;
@@ -60,22 +60,6 @@ tGnssStatus tGnssReceiver::GetStatus()
 	//std::lock_guard<std::mutex> Lock(m_MtxState);
 
 	return m_pState->GetStatus();
-}
-
-tGnssReceiverSettings tGnssReceiver::GetSettings()
-{
-	std::lock_guard<std::mutex> Lock(m_MtxSettings);
-
-	return m_Settings;
-}
-
-void tGnssReceiver::SetSettings(const tGnssReceiverSettings& settings)
-{
-	std::lock_guard<std::mutex> Lock(m_MtxSettings);
-
-	m_Settings = settings;
-
-	//[TBD] - put - need restart is needed....
 }
 
 void tGnssReceiver::Board_OnReceived(utils::tVectorUInt8& data)

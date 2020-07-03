@@ -53,9 +53,6 @@
     <ClCompile Include="..\Lib.Module\modGnssReceiver.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lib.Module\modGnssReceiver_Attribute.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
     <ClCompile Include="..\Lib.Module\modGnssReceiver_State.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
@@ -146,9 +143,6 @@
       <Filter>Dev</Filter>
     </ClInclude>
     <ClInclude Include="..\Lib.Module\modGnssReceiver.h">
-      <Filter>Lib.Module</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Lib.Module\modGnssReceiver_Attribute.h">
       <Filter>Lib.Module</Filter>
     </ClInclude>
   </ItemGroup>

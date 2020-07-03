@@ -48,7 +48,7 @@ class tGNSS
 		tBoard m_Board;
 
 	public:
-		tModGnssReceiver(tGNSS* obj, const mod::tGnssReceiverSettings& settings);
+		explicit tModGnssReceiver(tGNSS* obj);
 		virtual ~tModGnssReceiver();
 
 	protected:

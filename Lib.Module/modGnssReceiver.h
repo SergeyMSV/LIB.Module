@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <modGnssReceiver_Attribute.h>
+#include "modGnss.h"
 
 #include <utilsLog.h>
 #include <utilsPacketNMEA.h>
@@ -284,16 +284,12 @@ class tGnssReceiver
 	std::atomic_bool m_Control_Restart = false;
 	std::atomic_bool m_Control_Exit = false;
 
-	mutable std::mutex m_MtxSettings;
-	tGnssReceiverSettings m_Settings;
-	//tGnssReceiverProperty m_Property;
-
 	mutable std::mutex m_MtxReceivedData;
 	std::queue<utils::tVectorUInt8> m_ReceivedData;
 
 public:
 	tGnssReceiver() = delete;
-	tGnssReceiver(utils::tLog* log, const tGnssReceiverSettings& settings, bool start = false);
+	explicit tGnssReceiver(utils::tLog* log, bool start = false);
 	tGnssReceiver(const tGnssReceiver&) = delete;
 	tGnssReceiver(tGnssReceiver&&) = delete;
 	virtual ~tGnssReceiver() {};// = 0;
@@ -308,9 +304,6 @@ public:
 	bool StartUserTaskScript(const std::string& taskScriptID);
 
 	tGnssStatus GetStatus();
-
-	tGnssReceiverSettings GetSettings();
-	void SetSettings(const tGnssReceiverSettings& settings);
 
 protected:
 	virtual tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) = 0;

@@ -6,9 +6,7 @@ namespace dev
 tGNSS::tGNSS(utils::tLog* log, boost::asio::io_context& io)
 	:m_pLog(log), m_pIO(&io)
 {
-	mod::tGnssReceiverSettings Settings;
-
-	m_pModFSMachine = new tModGnssReceiver(this, Settings);
+	m_pModFSMachine = new tModGnssReceiver(this);
 }
 
 tGNSS::~tGNSS()
