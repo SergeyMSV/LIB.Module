@@ -78,6 +78,8 @@ public:
 	tGNSS(tGNSS&&) = delete;
 	~tGNSS();
 
+	tGNSS& operator=(const tGNSS&) = delete;
+	tGNSS& operator=(tGNSS&&) = delete;
 	void operator()();
 
 	void Start();
