@@ -25,7 +25,8 @@
 namespace dev
 {
 
-class tGNSS
+//template <class TModule, class TBoard>
+class tGNSS_A
 {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	class tModGnssReceiver : public mod::tGnssReceiver
@@ -36,19 +37,25 @@ class tGNSS
 			tModGnssReceiver* m_pObj = nullptr;
 
 		public:
-			tBoard(tModGnssReceiver* obj, boost::asio::io_context& io);
-			virtual ~tBoard();
+			tBoard(tModGnssReceiver* obj, boost::asio::io_context& io)
+				:m_pObj(obj), tCommunication(io, g_Settings.SerialPort.ID, g_Settings.SerialPort.BR)
+			{
+			}
+			virtual ~tBoard() {}
 
 		protected:
-			void OnReceived(utils::tVectorUInt8& data) override;
+			void OnReceived(utils::tVectorUInt8& data) override
+			{
+				m_pObj->OnReceived(data);
+			}
 		};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-		tGNSS* m_pObj = nullptr;
+		tGNSS_A* m_pObj = nullptr;
 
 		tBoard m_Board;
 
 	public:
-		explicit tModGnssReceiver(tGNSS* obj);
+		explicit tModGnssReceiver(tGNSS_A* obj);
 		virtual ~tModGnssReceiver();
 
 	protected:
@@ -73,28 +80,84 @@ class tGNSS
 
 public:
 	tGNSS() = delete;
-	tGNSS(utils::tLog* log, boost::asio::io_context& io);
+	tGNSS(utils::tLog* log, boost::asio::io_context& io)
+		:m_pLog(log), m_pIO(&io)
+	{
+		m_pModFSMachine = new tModGnssReceiver(this);
+	}
 	tGNSS(const tGNSS&) = delete;
 	tGNSS(tGNSS&&) = delete;
-	~tGNSS();
+	~tGNSS()
+	{
+		delete m_pModFSMachine;
+	}
 
 	tGNSS& operator=(const tGNSS&) = delete;
 	tGNSS& operator=(tGNSS&&) = delete;
-	void operator()();
-
-	void Start();
-	void Restart();
-	void Halt();
-	void Exit();
-
-	bool StartUserTaskScript(const std::string& taskScriptID);
-
-	mod::tGnssStatus GetStatus();
-
-	tModGnssReceiver* operator->()//[TEST]
+	void operator()()
 	{
-		return m_pModFSMachine;
+		if (m_pModFSMachine)
+		{
+			(*m_pModFSMachine)();
+		}
 	}
+
+	void Start()
+	{
+		if (m_pModFSMachine)
+		{
+			m_pModFSMachine->Start();
+		}
+	}
+	void Restart()
+	{
+		if (m_pModFSMachine)
+		{
+			m_pModFSMachine->Restart();
+		}
+	}
+	void Halt()
+	{
+		if (m_pModFSMachine)
+		{
+			m_pModFSMachine->Halt();
+		}
+	}
+	void Exit()
+	{
+		if (m_pModFSMachine)
+		{
+			m_pModFSMachine->Exit();
+		}
+	}
+
+	bool StartUserTaskScript(const std::string& taskScriptID)
+	{
+		if (m_pModFSMachine)
+		{
+			return m_pModFSMachine->StartUserTaskScript(taskScriptID);
+		}
+
+		return false;
+	}
+
+	mod::tGnssStatus GetStatus()
+	{
+		if (m_pModFSMachine)
+		{
+			return m_pModFSMachine->GetStatus();
+		}
+
+		return mod::tGnssStatus::Unknown;
+	}
+
+	//tModGnssReceiver* operator->()//[TEST]
+	//{
+	//	return m_pModFSMachine;
+	//}
 };
+
+typedef tGNSS_A tGNSS;
+//typedef tGNSS_A<mod::tGnssReceiver, int> tGNSS;
 
 }
