@@ -186,43 +186,9 @@ class tGnssReceiver
 		bool Go() override;
 	};
 
-/*	class tStateOperation :public tState
-	{
-		utils::tVectorUInt8 m_ReceivedData;
-		std::chrono::time_point<tClock> m_StartTime;
-
-		bool m_NoData = true;
-
-		tGnssDataSet m_DataSet;
-
-		tStateOperation(tGnssReceiver* obj, const std::chrono::time_point<tClock>& startTime, bool noData);//DEPRECATED
-
-	public:
-		tStateOperation(tGnssReceiver* obj, const std::chrono::time_point<tClock>& startTime);
-		explicit tStateOperation(tGnssReceiver* obj);
-		
-		//bool operator()() override;
-
-		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
-	};
-
-	class tStateOperationNoData :public tState
-	{
-		std::chrono::time_point<tClock> m_StartTime;
-
-	public:
-		tStateOperationNoData(tGnssReceiver* obj, const std::chrono::time_point<tClock>& startTime);
-
-		//bool operator()() override;
-
-		tGnssStatus GetStatus() override { return tGnssStatus::Operation; }
-	};*/
-
 	class tStateOperation :public tState
 	{
 		std::chrono::time_point<tClock> m_StartTime;
-
-		//bool m_NoData = true;
 
 		tGnssDataSet m_DataSet;
 

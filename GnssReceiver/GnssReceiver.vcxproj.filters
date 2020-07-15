@@ -65,9 +65,6 @@
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateOperation.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lib.Module\modGnssReceiver_StateOperationNoData.cpp">
-      <Filter>Lib.Module</Filter>
-    </ClCompile>
     <ClCompile Include="..\Lib.Module\modGnssReceiver_StateStart.cpp">
       <Filter>Lib.Module</Filter>
     </ClCompile>

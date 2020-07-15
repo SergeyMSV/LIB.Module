@@ -30,23 +30,9 @@ bool tGnssReceiver::tState::operator()()
 
 	if (m_pObj->IsReceivedData())
 	{
-		//	if (m_NoData)
-		//	{
-		//		m_NoData = false;
-
-		//		std::stringstream StrTime;
-		//		m_pObj->SetStrTimePeriod(StrTime, m_StartTime);
-		//		m_StartTime = tClock::now();
-
-		//		m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, StrTime.str());
-		//	}
-
 		utils::tVectorUInt8 DataChunk = m_pObj->GetReceivedDataChunk();
 
 		m_ReceivedData.insert(m_ReceivedData.end(), DataChunk.cbegin(), DataChunk.cend());//C++14
-
-	//	while (m_pObj->IsControlOperation())
-	//	{
 
 		tPacketNMEA_Template Packet;
 

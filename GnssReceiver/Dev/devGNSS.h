@@ -91,10 +91,10 @@ public:
 
 	mod::tGnssStatus GetStatus();
 
-	tModGnssReceiver* operator->()//[TEST]
-	{
-		return m_pModFSMachine;
-	}
+	//tModGnssReceiver* operator->()//[TEST]
+	//{
+	//	return m_pModFSMachine;
+	//}
 };
 
 }
