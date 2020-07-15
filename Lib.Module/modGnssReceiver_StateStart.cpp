@@ -32,7 +32,7 @@ void tGnssReceiver::tStateStart::OnTaskScriptFailed(const std::string& msg)
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed: " + msg);
 
-	ChangeState(new tStateStart(m_pObj, "start"));//[TBD] cycle
+	ChangeState(new tStateError(m_pObj, "start"));
 	return;
 }
 

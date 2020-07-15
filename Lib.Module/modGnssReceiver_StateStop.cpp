@@ -21,7 +21,7 @@ void tGnssReceiver::tStateStop::OnTaskScriptFailed(const std::string& msg)
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed: " + msg);
 
-	ChangeState(new tStateStop(m_pObj, "stop"));//[TBD] cycle
+	ChangeState(new tStateError(m_pObj, "stop"));
 	return;
 }
 
