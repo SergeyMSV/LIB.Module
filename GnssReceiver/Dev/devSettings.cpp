@@ -9,11 +9,10 @@ namespace dev
 tSettings g_Settings;
 
 tSettings::tSettings(const std::string& fileName)
+	:m_ConfigFileName(fileName)
 {
-	ConfigFileName = fileName;
-
 	boost::property_tree::ptree PTree;
-	boost::property_tree::xml_parser::read_xml(ConfigFileName, PTree);
+	boost::property_tree::xml_parser::read_xml(m_ConfigFileName, PTree);
 
 	if (auto Value = PTree.get_child_optional("App.Settings.DB"))
 	{
@@ -52,10 +51,10 @@ tSettings::tSettings(const std::string& fileName)
 	}
 }
 
-mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id, bool userTaskScript)
+mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id, bool userTaskScript) const
 {
 	boost::property_tree::ptree PTree;
-	boost::property_tree::xml_parser::read_xml(ConfigFileName, PTree);
+	boost::property_tree::xml_parser::read_xml(m_ConfigFileName, PTree);
 
 	mod::tGnssTaskScript Script;
 
@@ -107,5 +106,6 @@ mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id, bool userTa
 
 	return Script;
 }
+
 
 }

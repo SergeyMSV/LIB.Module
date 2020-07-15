@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// devConfig.h
+// devSettings.h
 //
 // Standard ISO/IEC 114882, C++11
 //
@@ -45,15 +45,15 @@ struct tSettings
 	}DB;
 
 private:
-	std::string ConfigFileName;
+	std::string m_ConfigFileName;
 
 public:
 	tSettings() {}
 	explicit tSettings(const std::string& fileName);
 
-	std::string GetConfigFileName() { return ConfigFileName; }
+	std::string GetConfigFileName() const { return m_ConfigFileName; }
 
-	mod::tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript);
+	mod::tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) const;
 };
 
 extern tSettings g_Settings;
