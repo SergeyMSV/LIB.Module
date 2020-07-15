@@ -24,14 +24,6 @@ void tGnssReceiver::tStateError::OnTaskScriptDone()
 	return;
 }
 
-void tGnssReceiver::tStateError::OnTaskScriptFailed()
-{
-	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed");
-
-	ChangeState(new tStateHalt(m_pObj, "error"));//[TBD] cycle
-	return;
-}
-
 void tGnssReceiver::tStateError::OnTaskScriptFailed(const std::string& msg)
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightYellow, "OnTaskScriptFailed: " + msg);

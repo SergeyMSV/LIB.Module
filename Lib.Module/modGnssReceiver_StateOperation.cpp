@@ -27,12 +27,6 @@ void tGnssReceiver::tStateOperation::OnTaskScriptDone()
 	//return;
 }
 
-void tGnssReceiver::tStateOperation::OnTaskScriptFailed()
-{
-	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "OnTaskScriptFailed");
-	//ResetCmd();
-}
-
 void tGnssReceiver::tStateOperation::OnTaskScriptFailed(const std::string& msg)
 {
 	m_pObj->m_pLog->WriteLine(false, utils::tLogColour::LightRed, "OnTaskScriptFailed: " + msg);

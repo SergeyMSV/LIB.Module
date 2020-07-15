@@ -148,7 +148,6 @@ class tGnssReceiver
 		virtual bool OnCmdFailed();//ChangeState - if ChangeState is inside then return is true
 
 		virtual void OnTaskScriptDone() {};//ChangeState
-		virtual void OnTaskScriptFailed() {};//ChangeState
 		virtual void OnTaskScriptFailed(const std::string& msg) {};//ChangeState
 
 		virtual bool Go() { return true; }//ChangeState
@@ -170,7 +169,6 @@ class tGnssReceiver
 		bool OnCmdFailed() override;//ChangeState - if ChangeState is inside then return is true
 
 		void OnTaskScriptDone() override;
-		void OnTaskScriptFailed() override;
 		void OnTaskScriptFailed(const std::string& msg) override;
 	};
 
@@ -237,7 +235,6 @@ class tGnssReceiver
 
 	protected:
 		void OnTaskScriptDone() override;
-		void OnTaskScriptFailed() override;
 		void OnTaskScriptFailed(const std::string& msg) override;
 
 		bool Go() override;
@@ -256,7 +253,6 @@ class tGnssReceiver
 
 	protected:
 		void OnTaskScriptDone() override;
-		void OnTaskScriptFailed() override;
 		void OnTaskScriptFailed(const std::string& msg) override;
 	};
 
@@ -271,7 +267,6 @@ class tGnssReceiver
 
 	protected:
 		void OnTaskScriptDone() override;
-		void OnTaskScriptFailed() override;
 		void OnTaskScriptFailed(const std::string& msg) override;
 	};
 
