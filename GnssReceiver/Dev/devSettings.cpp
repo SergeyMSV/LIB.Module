@@ -107,5 +107,27 @@ mod::tGnssTaskScript tSettings::GetTaskScript(const std::string& id, bool userTa
 	return Script;
 }
 
+std::string tSettings::GetNMEA_MsgLast() const
+{
+	boost::property_tree::ptree PTree;
+	boost::property_tree::xml_parser::read_xml(m_ConfigFileName, PTree);
+
+	if (auto Value = PTree.get_child_optional("App.Settings.GNSS_Receiver.NMEA"))
+	{
+		std::string LastMsg;
+
+		for (auto i : *Value)
+		{
+			if (i.first != "<xmlcomment>")
+			{
+				LastMsg = i.first;
+			}
+		}
+
+		return LastMsg;
+	}
+
+	return {};
+}
 
 }

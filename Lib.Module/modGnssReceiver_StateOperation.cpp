@@ -10,9 +10,11 @@ namespace mod
 {
 
 tGnssReceiver::tStateOperation::tStateOperation(tGnssReceiver* obj)
-	:tState(obj, "StateOperation")
+	:tState(obj, "StateOperation"), m_StartTime(tClock::now())
 {
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperation");
+
+	m_NMEA_MsgLast = m_pObj->GetNMEA_MsgLast();
 }
 
 bool tGnssReceiver::tStateOperation::SetUserTaskScript(const std::string& taskScriptID)
@@ -115,9 +117,6 @@ void tGnssReceiver::tStateOperation::OnReceived(const tPacketNMEA_Template& valu
 
 		m_pObj->m_pLog->Write(true, utils::tLogColour::LightMagenta, PacketData.Data[0] + " " + Msg.Date.ToString() + " " + Msg.Time.ToString());
 		m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
-
-		m_pObj->OnChanged(m_DataSet);//TEST
-		m_DataSet = tGnssDataSet();//TEST
 	}
 	else
 	{
@@ -127,11 +126,15 @@ void tGnssReceiver::tStateOperation::OnReceived(const tPacketNMEA_Template& valu
 
 		m_pObj->m_pLog->Write(true, utils::tLogColour::Yellow, PacketData.Data[0]);
 		m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
-
-		m_DataSet.Satellite.clear();//[TEST]
 	}
 
-	m_StartTime = tClock::now();
+	if (!m_NMEA_MsgLast.empty() && PacketData.Data.size() > 0 && PacketData.Data[0].find(m_NMEA_MsgLast) != std::string::npos)
+	{
+		m_pObj->OnChanged(m_DataSet);
+
+		ChangeState(new tStateOperation(m_pObj));
+		return;
+	}
 }
 
 }

@@ -22,6 +22,11 @@ mod::tGnssTaskScript tGNSS::tModGnssReceiver::GetTaskScript(const std::string& i
 	return g_Settings.GetTaskScript(id, userTaskScript);
 }
 
+std::string tGNSS::tModGnssReceiver::GetNMEA_MsgLast()
+{
+	return g_Settings.GetNMEA_MsgLast();
+}
+
 void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)
 {
 	std::string Timestamp = db::GetTimestampNow();
