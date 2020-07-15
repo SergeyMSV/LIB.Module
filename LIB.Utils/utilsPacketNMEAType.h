@@ -49,24 +49,22 @@ struct tGNSS
 	std::string ToString() const;
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-struct tValid
+struct tValid :public tEmptyAble
 {
 	bool Value = false;
-	bool Absent = true;
 
 	tValid() = default;
-	explicit tValid(bool val) :Value(val), Absent(false) {}
+	explicit tValid(bool val) :tEmptyAble(false), Value(val) {}
 	explicit tValid(const std::string& val);
 
 	std::string ToString() const;
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-struct tDate
+struct tDate :public tEmptyAble
 {
 	tUInt8 Year = 0;
 	tUInt8 Month = 0;
 	tUInt8 Day = 0;
-	bool Absent = true;
 
 	tDate() = default;//C++11
 	tDate(tUInt8 year, tUInt8 month, tUInt8 day);
@@ -76,7 +74,7 @@ struct tDate
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <int SizeFract>
-class tTime
+class tTime :public tEmptyAble
 {
 	static_assert(SizeFract >= 0, "tTime: SizeFract");//C++11
 	static const std::size_t Size = SizeFract == 0 ? 6 : 7 + SizeFract;//sizeof(hhmmss.)=7
@@ -85,15 +83,14 @@ public:
 	tUInt8 Hour = 0;
 	tUInt8 Minute = 0;
 	double Second = 0;
-	bool Absent = true;
 
 	tTime() = default;
-	tTime(tUInt8 hour, tUInt8 minute, double second) :Hour(hour), Minute(minute), Second(second), Absent(false) {}
+	tTime(tUInt8 hour, tUInt8 minute, double second) :tEmptyAble(false), Hour(hour), Minute(minute), Second(second) {}
 	explicit tTime(const std::string& val)
 	{
 		if (val.size() == Size)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			char Data[3]{};//C++11
 
@@ -125,7 +122,7 @@ public:
 
 	//std::string ToString() const
 	//{
-	//	if (!Absent && Hour < 24 && Minute < 60 && Second < 60)
+	//	if (!Empty && Hour < 24 && Minute < 60 && Second < 60)
 	//	{
 	//		std::stringstream Stream;
 
@@ -156,7 +153,7 @@ public:
 template <int SizeFract>
 std::ostream& operator<< (std::ostream& out, const tTime<SizeFract>& value)
 {
-	if (!value.Absent && value.Hour < 24 && value.Minute < 60 && value.Second < 60)
+	if (!value.Empty() && value.Hour < 24 && value.Minute < 60 && value.Second < 60)
 	{
 		out << std::setfill('0');
 		out << std::setw(2) << static_cast<int>(value.Hour);
@@ -178,21 +175,20 @@ std::ostream& operator<< (std::ostream& out, const tTime<SizeFract>& value)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <std::size_t SizeFract>
-class tLatitude
+class tLatitude :public tEmptyAble
 {
 	static const std::size_t Size = 5 + SizeFract;//sizeof(ddmm.)=5
 
 public:
 	double Value = 0;
-	bool Absent = true;
 
 	tLatitude() = default;
-	explicit tLatitude(double val) :Value(val), Absent(false) {}
+	explicit tLatitude(double val) :tEmptyAble(false), Value(val) {}
 	tLatitude(const std::string& val, const std::string& valSign)
 	{
 		if (val.size() == Size && valSign.size() == 1)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			char Data[3]{};
 
@@ -213,7 +209,7 @@ public:
 
 	std::string ToStringValue() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		double ValueAbs = std::abs(Value);
 
@@ -234,7 +230,7 @@ public:
 
 	std::string ToStringHemisphere() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		return Value < 0 ? "S" : "N";
 	}
@@ -246,21 +242,20 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <std::size_t SizeFract>
-class tLongitude
+class tLongitude :public tEmptyAble
 {
 	static const std::size_t Size = 6 + SizeFract;//sizeof(dddmm.)=6
 
 public:
 	double Value = 0;
-	bool Absent = true;
 
 	tLongitude() = default;
-	explicit tLongitude(double val) :Value(val), Absent(false) { }
+	explicit tLongitude(double val) :tEmptyAble(false), Value(val) { }
 	tLongitude(const std::string& val, const std::string& valSign)
 	{
 		if (val.size() == Size && valSign.size() == 1)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			char Data[4]{};
 
@@ -281,7 +276,7 @@ public:
 
 	std::string ToStringValue() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		double ValueAbs = std::abs(Value);
 
@@ -302,7 +297,7 @@ public:
 
 	std::string ToStringHemisphere() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		return Value < 0 ? "W" : "E";
 	}
@@ -314,21 +309,20 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <std::size_t SizeInt, std::size_t SizeFract>
-class tFloat
+class tFloat :public tEmptyAble
 {
 	static const std::size_t Size = SizeInt + SizeFract + 1;
 
 public:
 	double Value = 0;
-	bool Absent = true;
 
 	tFloat() = default;
-	explicit tFloat(double val) :Value(val), Absent(false) {}
+	explicit tFloat(double val) :tEmptyAble(false), Value(val) {}
 	tFloat(const std::string& val)
 	{
 		if (val.size() == Size)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			Value = std::strtod(val.c_str(), 0);
 		}
@@ -336,7 +330,7 @@ public:
 
 	std::string ToString() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		const char StrFormat[] = { '%', '0', static_cast<char>(0x30 + SizeInt + SizeFract + 1), '.', static_cast<char>(0x30 + SizeFract), 'f', 0 };
 
@@ -349,22 +343,21 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <std::size_t SizeFract>
-class tFloat<0, SizeFract>
+class tFloat<0, SizeFract> :public tEmptyAble
 {
 	static const std::size_t SizeInt = 6;
 	static const std::size_t SizeMax = SizeInt + SizeFract + 1;
 
 public:
 	double Value = 0;
-	bool Absent = true;
 
 	tFloat() = default;
-	explicit tFloat(double val) :Value(val), Absent(false) {}
+	explicit tFloat(double val) :tEmptyAble(false), Value(val) {}
 	tFloat(const std::string& val)
 	{
 		if (val.size() > 0 && val.size() < SizeMax)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			Value = std::strtod(val.c_str(), 0);
 		}
@@ -372,7 +365,7 @@ public:
 
 	std::string ToString() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		const char StrFormat[] = { '%', '.', static_cast<char>(0x30 + SizeFract), 'f', 0 };
 
@@ -389,7 +382,7 @@ template <> class tFloat<0, 0>;//Fractional part is just of max length (6 chars)
 template <std::size_t SizeInt> class tFloat<SizeInt, 0>;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <std::size_t SizeInt, std::size_t SizeFract>
-class tFloatUnit
+class tFloatUnit :public tEmptyAble
 {
 	typedef tFloat<SizeInt, SizeFract> value_type;
 
@@ -398,15 +391,14 @@ class tFloatUnit
 public:
 	value_type Value;
 	char Unit = 0;
-	bool Absent = true;
 
 	tFloatUnit() = default;
-	tFloatUnit(double val, char unit) :Value(val), Unit(Unit), Absent(false) {}
+	tFloatUnit(double val, char unit) :tEmptyAble(false), Value(val), Unit(Unit) {}
 	tFloatUnit(const std::string& val, const std::string& valSign)
 	{
 		if (val.size() == SizeValue && valSign.size() == 1)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			Value = value_type(val);
 
@@ -416,14 +408,14 @@ public:
 
 	std::string ToStringValue() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		return Value.ToString();
 	}
 
 	std::string ToStringUnit() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		char Str[2]{};
 
@@ -461,19 +453,18 @@ struct tPositioning
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename TValue, std::size_t Size>
-struct tUInt
+struct tUInt :public tEmptyAble
 {
 	TValue Value = static_cast<TValue>(0);
-	bool Absent = true;
 
 public:
 	tUInt() = default;
-	explicit tUInt(TValue val) :Value(val), Absent(false) {}
+	explicit tUInt(TValue val) :tEmptyAble(false), Value(val) {}
 	tUInt(const std::string& val)
 	{
 		if (val.size() == Size)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			Value = static_cast<TValue>(std::strtoul(val.c_str(), 0, 10));
 		}
@@ -481,7 +472,7 @@ public:
 
 	std::string ToString() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		const char StrFormat[] = { '%', '0', static_cast<char>(0x30 + Size), 'd', 0 };
 
@@ -494,19 +485,18 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename TValue>
-struct tUInt<TValue, 0>
+struct tUInt<TValue, 0> :public tEmptyAble
 {
 	TValue Value = static_cast<TValue>(0);
-	bool Absent = true;
 
 public:
 	tUInt() = default;
-	explicit tUInt(TValue val) :Value(val), Absent(false) {}
+	explicit tUInt(TValue val) :tEmptyAble(false), Value(val) {}
 	tUInt(const std::string& val)
 	{
 		if (val.size() > 0)
 		{
-			Absent = false;
+			m_Empty = false;
 
 			Value = static_cast<TValue>(std::strtoul(val.c_str(), 0, 10));
 		}
@@ -514,7 +504,7 @@ public:
 
 	std::string ToString() const
 	{
-		if (Absent) return "";
+		if (m_Empty) return "";
 
 		char Str[20]{};
 

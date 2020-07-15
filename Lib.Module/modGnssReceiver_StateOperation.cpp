@@ -52,7 +52,7 @@ bool tGnssReceiver::tStateOperation::Go()
 template<class T, class U>
 void SetParam(T& valDst, U valSrc, bool& check)
 {
-	if (valSrc.Absent)
+	if (valSrc.Empty())
 	{
 		check = false;
 	}
@@ -95,21 +95,21 @@ void tGnssReceiver::tStateOperation::OnReceived(const tPacketNMEA_Template& valu
 	{
 		tMsgRMC Msg(PacketData.Data);
 
-		if (!Msg.Date.Absent)
+		if (!Msg.Date.Empty())
 		{
 			m_DataSet.Year = Msg.Date.Year;
 			m_DataSet.Month = Msg.Date.Month;
 			m_DataSet.Day = Msg.Date.Day;
 		}
 
-		if (!Msg.Time.Absent)
+		if (!Msg.Time.Empty())
 		{
 			m_DataSet.Hour = Msg.Time.Hour;
 			m_DataSet.Minute = Msg.Time.Minute;
 			m_DataSet.Second = Msg.Time.Second;
 		}
 
-		m_DataSet.Check_DateTime = !Msg.Date.Absent && !Msg.Time.Absent;
+		m_DataSet.Check_DateTime = !Msg.Date.Empty() && !Msg.Time.Empty();
 
 		SetParam(m_DataSet.Valid, Msg.Valid, m_DataSet.Check_Position);
 		SetParam(m_DataSet.Latitude, Msg.Latitude, m_DataSet.Check_Position);

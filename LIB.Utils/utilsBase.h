@@ -177,6 +177,21 @@ struct tArray2 : public tArray1<size>
 
 }
 
+class tEmptyAble
+{
+protected:
+	bool m_Empty = true;
+
+public:
+	tEmptyAble() = default;
+	explicit tEmptyAble(bool empty) :m_Empty(empty) {}
+
+	bool Empty() const { return m_Empty; }
+
+protected:
+	~tEmptyAble() {}
+};
+
 //char FromBCD(char dataBCD); [TBD]
 //char ToBCD(char dataBCD); [TBD]
 }
