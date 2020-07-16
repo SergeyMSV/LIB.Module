@@ -200,10 +200,7 @@
     <ClInclude Include="..\Lib.Utils\utilsPacket.h" />
     <ClInclude Include="..\Lib.Utils\utilsPacketNMEA.h" />
     <ClInclude Include="..\Lib.Utils\utilsPacketNMEAPayload.h" />
-    <ClInclude Include="..\LIB.Utils\utilsPacketNMEAPayloadPMTK.h" />
-    <ClInclude Include="..\LIB.Utils\utilsPacketNMEAPayloadPTWS.h" />
     <ClInclude Include="..\LIB.Utils\utilsPacketNMEAType.h" />
-    <ClInclude Include="..\Lib.Utils\utilsPatternCommand.h" />
     <ClInclude Include="..\Lib.Utils\utilsShell.h" />
     <ClInclude Include="comSerialPort.h" />
     <ClInclude Include="devConfig.h" />

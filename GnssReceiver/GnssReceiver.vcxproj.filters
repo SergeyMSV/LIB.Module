@@ -96,9 +96,6 @@
     <ClInclude Include="..\Lib.Utils\utilsLog.h">
       <Filter>Lib.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lib.Utils\utilsPatternCommand.h">
-      <Filter>Lib.Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Lib.Utils\utilsPacketNMEA.h">
       <Filter>Lib.Utils</Filter>
     </ClInclude>
@@ -113,12 +110,6 @@
     </ClInclude>
     <ClInclude Include="Dev\devGNSS.h">
       <Filter>Dev</Filter>
-    </ClInclude>
-    <ClInclude Include="..\LIB.Utils\utilsPacketNMEAPayloadPMTK.h">
-      <Filter>Lib.Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\LIB.Utils\utilsPacketNMEAPayloadPTWS.h">
-      <Filter>Lib.Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\LIB.Utils\utilsPacketNMEAType.h">
       <Filter>Lib.Utils</Filter>
