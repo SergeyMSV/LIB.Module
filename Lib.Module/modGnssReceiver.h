@@ -20,6 +20,7 @@
 #include <chrono>
 #include <mutex>
 #include <queue>
+#include <thread>
 
 namespace mod
 {
@@ -243,9 +244,9 @@ class tGnssReceiver
 	//mutable std::mutex m_MtxState;
 	tState* m_pState = nullptr;
 
-	std::atomic_bool m_Control_Operation = false;
-	std::atomic_bool m_Control_Restart = false;
-	std::atomic_bool m_Control_Exit = false;
+	std::atomic_bool m_Control_Operation{ false };
+	std::atomic_bool m_Control_Restart{ false };
+	std::atomic_bool m_Control_Exit{ false };
 
 	mutable std::mutex m_MtxReceivedData;
 	std::queue<utils::tVectorUInt8> m_ReceivedData;

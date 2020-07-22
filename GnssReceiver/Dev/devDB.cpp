@@ -323,8 +323,6 @@ void InsertTablePosSatBulk(tTableSatBulk& table, int& cerr)
 	if (cerr)
 		return;
 
-	const std::size_t RowSize = sizeof(tTableSatBulkRow);
-
 	std::unique_ptr<MYSQL_BIND> Bind{ new MYSQL_BIND[ColumnQty] };
 
 	auto InsertBulk = [=, &table, &cerr](MYSQL_BIND* bind, std::size_t& count)->void
@@ -332,7 +330,8 @@ void InsertTablePosSatBulk(tTableSatBulk& table, int& cerr)
 		if (cerr || count >= table.size())
 			return;
 
-		std::size_t ArraySize = table.size();
+		const std::size_t RowSize = sizeof(tTableSatBulkRow);
+		const std::size_t ArraySize = table.size();
 		//std::size_t ArraySize = table.size() - count;
 		//if (ArraySize > 16)
 		//{
