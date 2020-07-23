@@ -113,7 +113,23 @@ int main(int argc, char* argv[])
 	}
 	////////////////////////////////
 
-	dev::db::Open();
+	try
+	{
+		unsigned int Cerr = dev::db::Open();
+
+		if (Cerr)
+		{
+			std::cerr << "ER DB Open(): " << Cerr << "\n";
+
+			return 1;//ERROR
+		}
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Exception: " << e.what() << "\n";
+
+		return 1;//ERROR
+	}
 
 	////////////////////////////////
 	std::thread Thread_Shell(dev::ThreadFunShell);

@@ -187,34 +187,41 @@ bool tShell::HandlerDB(const std::vector<std::string>& data)
 	}
 	else if (data.size() == 3 && data[1] == "get")
 	{
-		db::tTable Table;
+		std::variant<db::tTable, unsigned int> TableRes;
 
-		int Cerr = 0;
-		
 		if (data[2] == "pos")
 		{
-			Table = db::GetTablePos(Cerr);
+			TableRes = db::GetTablePos();
 		}
 		else if (data[2] == "rcv")
 		{
-			Table = db::GetTableRcv(Cerr);
+			TableRes = db::GetTableRcv();
 		}
 		else if (data[2] == "sat")
 		{
-			Table = db::GetTableSat(Cerr);
+			TableRes = db::GetTableSat();
 		}
 		else if (data[2] == "sys")
 		{
-			Table = db::GetTableSys(Cerr);
+			TableRes = db::GetTableSys();
 		}
 
-		for (db::tTableRow& row : Table)
+		if (std::holds_alternative<db::tTable>(TableRes))
 		{
-			for (std::string& i : row)
+			db::tTable Table = std::get<db::tTable>(TableRes);
+
+			for (db::tTableRow& row : Table)
 			{
-				std::cout << "[" << i << "]";
+				for (std::string& i : row)
+				{
+					std::cout << "[" << i << "]";
+				}
+				std::cout << '\n';
 			}
-			std::cout << '\n';
+		}
+		else
+		{
+			std::cout << "Failed cerr: " << std::get<unsigned int>(TableRes) << std::endl;
 		}
 	}
 	else

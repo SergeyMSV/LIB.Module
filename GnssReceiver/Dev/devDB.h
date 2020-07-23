@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // devDB.h
 //
-// Standard ISO/IEC 114882, C++11
+// Standard ISO/IEC 114882, C++17
 //
 // |   version  |    release    | Description
 // |------------|---------------|---------------------------------
@@ -20,6 +20,8 @@
 #include <vector>
 #include <utility>
 
+#include <variant>//C++17
+
 #include <ctime>
 
 namespace dev
@@ -34,10 +36,9 @@ std::string ToString(const std::tm& time);
 ////void DB_Create(int& cerr);
 ////bool DB_Create();
 
-bool Open(int& cerr);
-bool Open();
+unsigned int Open();
 
-my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course, int& cerr);
+std::variant<my_ulonglong, unsigned int> InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course);
 //my_ulonglong InsertTablePosSat(int pos_id, int sat_id, int elevation, int azimuth, int snr, int& cerr);
 
 struct tTableSatBulkRow
@@ -56,25 +57,21 @@ struct tTableSatBulkRow
 
 typedef std::vector<tTableSatBulkRow> tTableSatBulk;
 
-void InsertTablePosSatBulk(tTableSatBulk& table, int& cerr);
+unsigned int InsertTablePosSatBulk(tTableSatBulk& table);
 
-my_ulonglong InsertTableRcv(int& cerr);
+std::variant<my_ulonglong, unsigned int> InsertTableRcv();
 
 typedef std::vector<std::string> tTableRow;
 typedef std::list<tTableRow> tTable;
 
-tTable GetTablePos(int& cerr);
-tTable GetTableRcv(int& cerr);
-tTable GetTableSat(int& cerr);
-tTable GetTableSys(int& cerr);
+std::variant<tTable, unsigned int> GetTablePos();
+std::variant<tTable, unsigned int> GetTableRcv();
+std::variant<tTable, unsigned int> GetTableSat();
+std::variant<tTable, unsigned int> GetTableSys();
 
-void Clear(int& cerr);
-bool Clear();
+unsigned int Clear();
 
-void Drop(int& cerr);
-bool Drop();
-
-unsigned int GetERR();
+unsigned int Drop();
 
 void Close();
 

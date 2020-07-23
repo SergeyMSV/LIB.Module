@@ -1,6 +1,8 @@
 #include "devDB.h"
 #include "devSettings.h"
 
+#include <exception>
+
 #include <memory>//[TEST]
 #include <mutex>
 
@@ -33,7 +35,7 @@ typedef std::lock_guard<std::recursive_mutex> tLockGuard;
 typedef std::pair<std::string, std::string> tSQLQueryParamPair;
 typedef std::vector<tSQLQueryParamPair> tSQLQueryParam;
 
-my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm, int& cerr);
+std::variant<my_ulonglong, unsigned int> Insert(const std::string& table, const tSQLQueryParam& prm);
 
 #define DB_TEST
 #ifdef DB_TEST
@@ -83,7 +85,7 @@ std::string ToString(const std::time_t& timestamp)
 	return ToString(*std::gmtime(&timestamp));
 }
 
-bool Init(const std::string& host, const std::string& user, const std::string& passwd, const std::string& db, unsigned int port)
+unsigned int Init(const std::string& host, const std::string& user, const std::string& passwd, const std::string& db, unsigned int port)
 {
 	tLockGuard Lock(g_MySQL.Mtx);
 
@@ -93,161 +95,155 @@ bool Init(const std::string& host, const std::string& user, const std::string& p
 
 	mysql_real_connect(&g_MySQL.MySQL, host.c_str(), user.c_str(), passwd.c_str(), "", port, "", 0);//DB is not specified intentionally
 
-	return mysql_errno(&g_MySQL.MySQL) == 0;
+	return mysql_errno(&g_MySQL.MySQL);
 }
 
-void Create(int& cerr)
+unsigned int Create()
 {
 	tLockGuard Lock(g_MySQL.Mtx);
 
-	if (!cerr && mysql_errno(&g_MySQL.MySQL) == ER_BAD_DB_ERROR)
+	if (mysql_query(&g_MySQL.MySQL, std::string("CREATE DATABASE IF NOT EXISTS " + g_MySQL.DB).c_str()))
+		return mysql_errno(&g_MySQL.MySQL);
+
+	if (mysql_query(&g_MySQL.MySQL, std::string("USE " + g_MySQL.DB).c_str()))
+		return mysql_errno(&g_MySQL.MySQL);
+
+	const std::vector<std::string> ReqList
 	{
-		cerr = mysql_query(&g_MySQL.MySQL, std::string("CREATE DATABASE IF NOT EXISTS " + g_MySQL.DB).c_str());
+		"CREATE TABLE sys (update_id INT(2) NOT NULL AUTO_INCREMENT, version VARCHAR(20) NOT NULL DEFAULT '', PRIMARY KEY(update_id));",
+		"INSERT INTO sys (version) VALUE('" DEV_DB_VERSION "');",
+		"CREATE TABLE rcv (rcv_id INT(2) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, model VARCHAR(50) NOT NULL DEFAULT '', id VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(rcv_id), UNIQUE INDEX(id));",
+		"CREATE TABLE pos (pos_id INT(10) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, gnss INT(2), date_time DATETIME, valid BOOLEAN, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, speed FLOAT, course FLOAT, rcv_id INT(2) NOT NULL, update_id INT(2) NOT NULL, PRIMARY KEY(pos_id), INDEX(timestamp));",
+		"CREATE TABLE pos_sat (pos_id INT(10) NOT NULL, sat_id INT(3) NOT NULL, elevation INT(2), azimuth INT(3), snr INT(2), PRIMARY KEY(pos_id, sat_id));",
+		"CREATE TABLE sat (sat_id INT(3) NOT NULL, gnss VARCHAR(50) NOT NULL DEFAULT '', description VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(sat_id));",
+	};
 
-		if (!cerr)
-		{
-			cerr = mysql_query(&g_MySQL.MySQL, std::string("USE " + g_MySQL.DB).c_str());
-		}
+	for (auto& i : ReqList)
+	{
+		if (mysql_query(&g_MySQL.MySQL, i.c_str()))
+			return mysql_errno(&g_MySQL.MySQL);
+	}
 
-		const std::vector<std::string> ReqList
-		{
-			"CREATE TABLE sys (update_id INT(2) NOT NULL AUTO_INCREMENT, version VARCHAR(20) NOT NULL DEFAULT '', PRIMARY KEY(update_id));",
-			"INSERT INTO sys (version) VALUE('" DEV_DB_VERSION "');",
-			"CREATE TABLE rcv (rcv_id INT(2) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, model VARCHAR(50) NOT NULL DEFAULT '', id VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(rcv_id), UNIQUE INDEX(id));",
-			"CREATE TABLE pos (pos_id INT(10) NOT NULL AUTO_INCREMENT, timestamp DATETIME NOT NULL, gnss INT(2), date_time DATETIME, valid BOOLEAN, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, speed FLOAT, course FLOAT, rcv_id INT(2) NOT NULL, update_id INT(2) NOT NULL, PRIMARY KEY(pos_id), INDEX(timestamp));",
-			"CREATE TABLE pos_sat (pos_id INT(10) NOT NULL, sat_id INT(3) NOT NULL, elevation INT(2), azimuth INT(3), snr INT(2), PRIMARY KEY(pos_id, sat_id));",
-			"CREATE TABLE sat (sat_id INT(3) NOT NULL, gnss VARCHAR(50) NOT NULL DEFAULT '', description VARCHAR(50) NOT NULL DEFAULT '', PRIMARY KEY(sat_id));",
-		};
+	try
+	{
+		boost::property_tree::ptree PTree;
+		boost::property_tree::xml_parser::read_xml(g_Settings.GetConfigFileName(), PTree);
 
-		for (auto& i : ReqList)
+		if (auto Value = PTree.get_child_optional("App.DB_Init.Table"))
 		{
-			if (!cerr)
+			std::string TableID;
+
+			for (auto i : *Value)
 			{
-				mysql_query(&g_MySQL.MySQL, i.c_str());
-
-				cerr = mysql_errno(&g_MySQL.MySQL);
-			}
-		}
-
-		if (!cerr)
-		{
-			try
-			{
-				boost::property_tree::ptree PTree;
-				boost::property_tree::xml_parser::read_xml(g_Settings.GetConfigFileName(), PTree);
-
-				if (auto Value = PTree.get_child_optional("App.DB_Init.Table"))
+				if (i.first == "<xmlattr>")
 				{
-					std::string TableID;
-
-					for (auto i : *Value)
+					TableID = i.second.get<std::string>("ID");
+				}
+				else if (i.first == "Row")
+				{
+					if (TableID == "sat")
 					{
-						if (i.first == "<xmlattr>")
+						if (auto Attr = i.second.get_child_optional("<xmlattr>"))
 						{
-							TableID = i.second.get<std::string>("ID");
-						}
-						else if (i.first == "Row")
-						{
-							if (TableID == "sat")
+							std::string Sat_ID = Attr->get<std::string>("ID");
+							std::string GNSS = Attr->get<std::string>("GNSS");
+							std::string Descript = Attr->get<std::string>("Description");
+
+							const tSQLQueryParam Query
 							{
-								if (auto Attr = i.second.get_child_optional("<xmlattr>"))
-								{
-									std::string Sat_ID = Attr->get<std::string>("ID");
-									std::string GNSS = Attr->get<std::string>("GNSS");
-									std::string Descript = Attr->get<std::string>("Description");
+								{"sat_id", Sat_ID},
+								{"gnss", GNSS},
+								{"description", Descript},
+							};
 
-									const tSQLQueryParam Query
-									{
-										{"sat_id", Sat_ID},
-										{"gnss", GNSS},
-										{"description", Descript},
-									};
-
-									Insert("sat", Query, cerr);
-								}
-							}
-							//else if (TableID == "bat")
-							//{
-							//}
+							auto Res = Insert("sat", Query);
+							if (std::holds_alternative<unsigned int>(Res))
+								return std::get<unsigned int>(Res);
 						}
 					}
+					//else if (TableID == "bat")
+					//{
+					//}
 				}
-			}
-			catch (std::exception& e)
-			{
-				//[TBD] do something...
-				return;
 			}
 		}
 	}
-}
-
-bool Open(int& cerr)
-{
-	if (!cerr)
+	catch (...)//(std::exception& e)
 	{
-		tLockGuard Lock(g_MySQL.Mtx);
-
-		if (!cerr && Init(g_Settings.DB.Host, g_Settings.DB.User, g_Settings.DB.Passwd, g_Settings.DB.DB, g_Settings.DB.Port))
-		{
-			cerr = mysql_query(&g_MySQL.MySQL, std::string("USE " + g_MySQL.DB).c_str());
-		}
-
-		if (cerr)
-		{
-			cerr = 0;
-			Create(cerr);
-		}
-
-		if (!cerr)
-		{
-			tTable TableSys = GetTableSys(cerr);
-
-			if (TableSys.size() == 1 && TableSys.front().size() == 2 && TableSys.front()[1] == DEV_DB_VERSION)
-			{
-				g_MySQL.UpdateID = utils::Read<utils::tUInt8>(TableSys.front()[0].cbegin(), TableSys.front()[0].cend(), utils::tRadix_10);
-			}
-			else
-			{
-				return false;
-			}
-			
-			for (int i = 0; i < 2; ++i)//if the receiver is not on the list - insert it and repeate the search
-			{
-				tTable TableRCV = GetTableRcv(cerr);
-
-				for (tTableRow& row : TableRCV)
-				{
-					if (row.size() != 4)
-					{
-						return false;
-					}
-
-					if (row[2] == g_Settings.Main.Model && row[3] == g_Settings.Main.ID)
-					{
-						g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
-						return true;
-					}
-				}
-
-				dev::db::InsertTableRcv(cerr);
-			}
-		}
-	}
-	return false;
-}
-
-bool Open()
-{
-	int Cerr = 0;
-	return Open(Cerr);
-}
-
-my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm, int& cerr)
-{
-	if (cerr)
+		//[TBD] do something... maybe leave this exception thrown...
 		return 0;
+	}
 
+	return 0;
+}
+
+unsigned int Open()
+{
+	tLockGuard Lock(g_MySQL.Mtx);
+
+	unsigned int Cerr = Init(g_Settings.DB.Host, g_Settings.DB.User, g_Settings.DB.Passwd, g_Settings.DB.DB, g_Settings.DB.Port);
+
+	if (Cerr)
+		return Cerr;
+
+	if (mysql_query(&g_MySQL.MySQL, std::string("USE " + g_MySQL.DB).c_str()))
+		Cerr = mysql_errno(&g_MySQL.MySQL);
+
+	if (Cerr != ER_BAD_DB_ERROR)
+		return Cerr;
+
+	Cerr = Create();
+
+	if (Cerr)
+		return Cerr;
+
+	auto TableSysRes = GetTableSys();
+	if (std::holds_alternative<unsigned int>(TableSysRes))
+		return std::get<unsigned int>(TableSysRes);
+
+	tTable TableSys = std::get<tTable>(TableSysRes);
+
+	if (TableSys.size() == 1 && TableSys.front().size() == 2 && TableSys.front()[1] == DEV_DB_VERSION)
+	{
+		g_MySQL.UpdateID = utils::Read<utils::tUInt8>(TableSys.front()[0].cbegin(), TableSys.front()[0].cend(), utils::tRadix_10);
+	}
+	else
+	{
+		throw std::runtime_error{ "Wrong DEV_DB_VERSION" };
+	}
+
+	for (int i = 0; i < 2; ++i)//if the receiver is not on the list - insert it and repeate the search
+	{
+		auto TableRCVRes = GetTableRcv();
+		if (std::holds_alternative<unsigned int>(TableRCVRes))
+			return std::get<unsigned int>(TableRCVRes);
+
+		tTable TableRCV = std::get<tTable>(TableRCVRes);
+
+		for (tTableRow& row : TableRCV)
+		{
+			if (row.size() != 4)
+			{
+				throw std::runtime_error{ "Wrong TableRCV rows qty" };
+			}
+
+			if (row[2] == g_Settings.Main.Model && row[3] == g_Settings.Main.ID)
+			{
+				g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
+				return 0;
+			}
+		}
+
+		auto TableRCVInsertRes = InsertTableRcv();
+		if (std::holds_alternative<unsigned int>(TableRCVInsertRes))
+			return std::get<unsigned int>(TableRCVInsertRes);
+	}
+
+	return mysql_errno(&g_MySQL.MySQL);
+}
+
+std::variant<my_ulonglong, unsigned int> Insert(const std::string& table, const tSQLQueryParam& prm)
+{
 	char Str[256]{};
 
 	std::string StrPrm;
@@ -269,12 +265,13 @@ my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm, int& ce
 
 	tLockGuard Lock(g_MySQL.Mtx);
 
-	cerr = mysql_real_query(&g_MySQL.MySQL, Str, static_cast<unsigned long>(std::strlen(Str)));//Contrary to the mysql_query() function, mysql_real_query is binary safe.
+	if (mysql_real_query(&g_MySQL.MySQL, Str, static_cast<unsigned long>(std::strlen(Str))))//Contrary to the mysql_query() function, mysql_real_query is binary safe.
+		return mysql_errno(&g_MySQL.MySQL);
 
 	return mysql_insert_id(&g_MySQL.MySQL);
 }
 
-my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course, int& cerr)
+std::variant<my_ulonglong, unsigned int> InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course)
 {
 	std::string RcvID = ToString(g_MySQL.RcvID);
 
@@ -293,7 +290,7 @@ my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::
 		{"update_id", ToString(g_MySQL.UpdateID)},
 	};
 
-	return Insert("pos", Query, cerr);
+	return Insert("pos", Query);
 }
 
 //my_ulonglong InsertTablePosSat(int pos_id, int sat_id, int elevation, int azimuth, int snr, int& cerr)
@@ -310,25 +307,26 @@ my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::
 //	return Insert("pos_sat", Query, cerr);
 //}
 
-void InsertTablePosSatBulk(tTableSatBulk& table, int& cerr)
+unsigned int InsertTablePosSatBulk(tTableSatBulk& table)
 {
 	tLockGuard Lock(g_MySQL.Mtx);
 
 	MYSQL_STMT* Stmt = mysql_stmt_init(&g_MySQL.MySQL);
 
+	if (Stmt == nullptr)
+		return mysql_stmt_errno(Stmt);
+
 	const unsigned int ColumnQty = 5;
 
-	cerr = mysql_stmt_prepare(Stmt, "INSERT INTO pos_sat VALUES (?,?,?,?,?)", -1);//[TBD] - columns
-
-	if (cerr)
-		return;
+	if(mysql_stmt_prepare(Stmt, "INSERT INTO pos_sat VALUES (?,?,?,?,?)", -1))//[TBD] - columns
+		return mysql_stmt_errno(Stmt);
 
 	std::unique_ptr<MYSQL_BIND> Bind{ new MYSQL_BIND[ColumnQty] };
 
-	auto InsertBulk = [=, &table, &cerr](MYSQL_BIND* bind, std::size_t& count)->void
+	auto InsertBulk = [=, &table](MYSQL_BIND* bind, std::size_t& count)->unsigned int
 	{
-		if (cerr || count >= table.size())
-			return;
+		if (count >= table.size())
+			return 0;//No Error at least from DB
 
 		const std::size_t RowSize = sizeof(tTableSatBulkRow);
 		const std::size_t ArraySize = table.size();
@@ -360,31 +358,45 @@ void InsertTablePosSatBulk(tTableSatBulk& table, int& cerr)
 		bind[4].buffer_type = MYSQL_TYPE_LONG;
 		bind[4].u.indicator = &table[count].snr_ind;
 
-		mysql_stmt_attr_set(Stmt, STMT_ATTR_ARRAY_SIZE, &ArraySize);
-		mysql_stmt_attr_set(Stmt, STMT_ATTR_ROW_SIZE, &RowSize);
+		if (mysql_stmt_attr_set(Stmt, STMT_ATTR_ARRAY_SIZE, &ArraySize))
+			return mysql_stmt_errno(Stmt);
 
-		mysql_stmt_bind_param(Stmt, bind);
+		if (mysql_stmt_attr_set(Stmt, STMT_ATTR_ROW_SIZE, &RowSize))
+			return mysql_stmt_errno(Stmt);
 
-		cerr = mysql_stmt_execute(Stmt);
+		if (mysql_stmt_bind_param(Stmt, bind))
+			return mysql_stmt_errno(Stmt);
+
+		if (mysql_stmt_execute(Stmt))
+			return mysql_stmt_errno(Stmt);
 
 		count += ArraySize;
+
+		return 0;
 	};
 
+	unsigned int Cerr = 0;
 	std::size_t Count = 0;
-	while (!cerr && Count < table.size())
+	while (Count < table.size())
 	{
-		InsertBulk(Bind.get(), Count);
+		Cerr = InsertBulk(Bind.get(), Count);
+		if (Cerr)
+		{
+			break;
+		}
 	}
 
 #ifdef DB_TEST
-	if (cerr)
+	if (Cerr)
 		show_stmt_error(Stmt);
 #endif//DB_TEST
 
 	mysql_stmt_close(Stmt);
+
+	return Cerr;
 }
 
-my_ulonglong InsertTableRcv(int& cerr)
+std::variant<my_ulonglong, unsigned int> InsertTableRcv()
 {
 	std::string Timestamp = GetTimestamp(std::time(nullptr));
 
@@ -395,13 +407,11 @@ my_ulonglong InsertTableRcv(int& cerr)
 		{"id", g_Settings.Main.ID},
 	};
 
-	return Insert("rcv", Query, cerr);
+	return Insert("rcv", Query);
 }
 
-tTable GetTable(std::string table, int& cerr)
+std::variant<tTable, unsigned int> GetTable(const std::string& table)
 {
-	if (!cerr)
-	{
 		tTable List;
 
 		tLockGuard Lock(g_MySQL.Mtx);
@@ -409,9 +419,13 @@ tTable GetTable(std::string table, int& cerr)
 		std::string Query("SELECT * FROM ");
 		Query += table + ';';
 
-		cerr = mysql_query(&g_MySQL.MySQL, Query.c_str());
+		if (mysql_query(&g_MySQL.MySQL, Query.c_str()))
+			return mysql_errno(&g_MySQL.MySQL);
 
 		MYSQL_RES* Res = mysql_use_result(&g_MySQL.MySQL);
+
+		if (Res == nullptr)
+			return mysql_errno(&g_MySQL.MySQL);
 
 		unsigned int Count = mysql_num_fields(Res);
 
@@ -435,66 +449,45 @@ tTable GetTable(std::string table, int& cerr)
 		mysql_free_result(Res);
 
 		return List;
-	}
-
-	return tTable();
 }
 
-tTable GetTablePos(int& cerr)
+std::variant<tTable, unsigned int> GetTablePos()
 {
-	return GetTable("pos", cerr);
+	return GetTable("pos");
 }
 
-tTable GetTableRcv(int& cerr)
+std::variant<tTable, unsigned int> GetTableRcv()
 {
-	return GetTable("rcv", cerr);
+	return GetTable("rcv");
 }
 
-tTable GetTableSat(int& cerr)
+std::variant<tTable, unsigned int> GetTableSat()
 {
-	return GetTable("sat", cerr);
+	return GetTable("sat");
 }
 
-tTable GetTableSys(int& cerr)
+std::variant<tTable, unsigned int> GetTableSys()
 {
-	return GetTable("sys", cerr);
+	return GetTable("sys");
 }
 
-void Clear(int& cerr)
+unsigned int Clear()
 {
 	Close();
-	Drop(cerr);
-	Open(cerr);
+
+	unsigned int Res = Drop();
+
+	if (Res)
+		return Res;
+
+	return Open();
 }
 
-bool Clear()
-{
-	int Cerr = 0;
-	Clear(Cerr);
-	return Cerr == 0;
-}
-
-void Drop(int& cerr)
-{
-	if (!cerr)
-	{
-		tLockGuard Lock(g_MySQL.Mtx);
-
-		cerr = mysql_query(&g_MySQL.MySQL, std::string("DROP DATABASE IF EXISTS " + g_MySQL.DB).c_str());
-	}
-}
-
-bool Drop()
-{
-	int Cerr = 0;
-	Drop(Cerr);
-	return Cerr == 0;
-}
-
-unsigned int GetERR()
+unsigned int Drop()
 {
 	tLockGuard Lock(g_MySQL.Mtx);
 
+	mysql_query(&g_MySQL.MySQL, std::string("DROP DATABASE IF EXISTS " + g_MySQL.DB).c_str());
 	return mysql_errno(&g_MySQL.MySQL);
 }
 
