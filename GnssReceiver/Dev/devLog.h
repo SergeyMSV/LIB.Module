@@ -45,10 +45,10 @@ private:
 	tLog() = delete;
 
 public:
-	tLog(unsigned int id);
+	explicit tLog(unsigned int id);
 
 protected:
-	virtual void WriteLog(const std::string& msg);
+	void WriteLog(const std::string& msg) override;
 };
 
 }
