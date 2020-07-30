@@ -29,7 +29,7 @@ template
 class tPacket : private TFormat<TPayload>, private TPayload
 {
 public:
-	typedef typename TPayload payload_type;
+	typedef TPayload payload_type;
 	typedef typename TPayload::value_type payload_value_type;
 
 	tPacket() { }

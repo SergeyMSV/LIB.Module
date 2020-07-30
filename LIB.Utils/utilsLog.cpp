@@ -145,7 +145,7 @@ void tLog::WriteLog(bool timestamp, bool endl, tLogColour textColour, const std:
 
 		char Str[20];
 
-		std::sprintf(Str, "[%.5d.%.6d]", Time_s.count(), Tm_us);
+		std::sprintf(Str, "[%.5ld.%.6ld]", Time_s.count(), Tm_us);
 
 		WriteLog(Str);
 	}
