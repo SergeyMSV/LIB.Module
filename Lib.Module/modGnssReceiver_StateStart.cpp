@@ -6,7 +6,9 @@ namespace mod
 tGnssReceiver::tStateStart::tStateStart(tGnssReceiver* obj, const std::string& value)
 	:tState(obj, "StateStart")
 {
-	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateStart: %s", value.c_str());
+	std::stringstream SStr;
+	SStr << "tStateStart: " << value;
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, SStr.str());
 
 	if (m_pObj->IsControlRestart())
 	{

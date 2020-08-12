@@ -20,6 +20,7 @@
 #include <chrono>
 #include <mutex>
 #include <queue>
+#include <sstream>
 #include <thread>
 
 namespace mod

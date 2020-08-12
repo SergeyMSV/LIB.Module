@@ -6,7 +6,9 @@ namespace mod
 tGnssReceiver::tStateError::tStateError(tGnssReceiver* obj, const std::string& value)
 	:tState(obj, "StateError")
 {
-	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateError: %s", value.c_str());
+	std::stringstream SStr;
+	SStr << "tStateError: " << value;
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, SStr.str());
 
 	m_pObj->m_Control_Operation = false;
 }

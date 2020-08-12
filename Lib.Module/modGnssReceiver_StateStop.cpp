@@ -6,7 +6,9 @@ namespace mod
 tGnssReceiver::tStateStop::tStateStop(tGnssReceiver* obj, const std::string& value)
 	:tState(obj, "StateStop")
 {
-	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateStop: %s", value.c_str());
+	std::stringstream SStr;
+	SStr << "tStateStop: " << value;
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, SStr.str());
 }
 
 void tGnssReceiver::tStateStop::OnTaskScriptDone()
