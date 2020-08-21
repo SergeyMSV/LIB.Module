@@ -173,42 +173,40 @@ bool tShell::HandlerGNSS(const std::vector<std::string>& data)
 
 bool tShell::HandlerDB(const std::vector<std::string>& data)
 {
-	if (data.size() == 2 && data[1] == "clear")
+	try
 	{
-		db::Clear();
-	}
-	else if (data.size() == 2 && data[1] == "create")
-	{
-		db::Open();
-	}
-	else if (data.size() == 2 && data[1] == "drop")
-	{
-		db::Drop();
-	}
-	else if (data.size() == 3 && data[1] == "get")
-	{
-		std::variant<db::tTable, unsigned int> TableRes;
+		if (data.size() == 2 && data[1] == "clear")
+		{
+			db::Clear();
+		}
+		else if (data.size() == 2 && data[1] == "create")
+		{
+			db::Open();
+		}
+		else if (data.size() == 2 && data[1] == "drop")
+		{
+			db::Drop();
+		}
+		else if (data.size() == 3 && data[1] == "get")
+		{
+			db::tTable Table;
 
-		if (data[2] == "pos")
-		{
-			TableRes = db::GetTablePos();
-		}
-		else if (data[2] == "rcv")
-		{
-			TableRes = db::GetTableRcv();
-		}
-		else if (data[2] == "sat")
-		{
-			TableRes = db::GetTableSat();
-		}
-		else if (data[2] == "sys")
-		{
-			TableRes = db::GetTableSys();
-		}
-
-		if (std::holds_alternative<db::tTable>(TableRes))
-		{
-			db::tTable Table = std::get<db::tTable>(TableRes);
+			if (data[2] == "pos")
+			{
+				Table = db::GetTablePos();
+			}
+			else if (data[2] == "rcv")
+			{
+				Table = db::GetTableRcv();
+			}
+			else if (data[2] == "sat")
+			{
+				Table = db::GetTableSat();
+			}
+			else if (data[2] == "sys")
+			{
+				Table = db::GetTableSys();
+			}
 
 			for (db::tTableRow& row : Table)
 			{
@@ -221,16 +219,17 @@ bool tShell::HandlerDB(const std::vector<std::string>& data)
 		}
 		else
 		{
-			std::cout << "Failed cerr: " << std::get<unsigned int>(TableRes) << std::endl;
+			std::cout << std::setw(10) << std::setfill(' ') << std::left << "clear" << std::right << std::setw(20) << "clears Database\n";
+			std::cout << std::setw(10) << std::setfill(' ') << std::left << "create" << std::right << std::setw(20) << "comment...\n";
+			std::cout << std::setw(10) << std::setfill(' ') << std::left << "drop" << std::right << std::setw(20) << "drops Database\n";
+			//std::cout << std::setw(10) << std::setfill(' ') << std::left << "exit" << std::right << std::setw(20) << "comment...\n";
 		}
 	}
-	else
+	catch (std::exception& e)
 	{
-		std::cout << std::setw(10) << std::setfill(' ') << std::left << "clear" << std::right << std::setw(20) << "clears Database\n";
-		std::cout << std::setw(10) << std::setfill(' ') << std::left << "create" << std::right << std::setw(20) << "comment...\n";
-		std::cout << std::setw(10) << std::setfill(' ') << std::left << "drop" << std::right << std::setw(20) << "drops Database\n";
-		//std::cout << std::setw(10) << std::setfill(' ') << std::left << "exit" << std::right << std::setw(20) << "comment...\n";
+		std::cerr << "Exception: " << e.what() << "\n";
 	}
+
 	return true;
 }
 

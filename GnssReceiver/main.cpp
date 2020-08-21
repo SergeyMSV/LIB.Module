@@ -115,14 +115,7 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		unsigned int Cerr = dev::db::Open();
-
-		if (Cerr)
-		{
-			std::cerr << "ER DB Open(): " << Cerr << "\n";
-
-			return 1;//ERROR
-		}
+		dev::db::Open();
 	}
 	catch (std::exception& e)
 	{
