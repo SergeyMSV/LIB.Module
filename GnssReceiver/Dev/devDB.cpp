@@ -207,7 +207,7 @@ void Open()
 
 			if (row[2] == g_Settings.Main.Model && row[3] == g_Settings.Main.ID)
 			{
-				g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
+				g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend(), utils::tRadix_10);
 				return;
 			}
 		}
@@ -250,8 +250,6 @@ my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm)
 
 my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::string& dateTime, bool valid, double latitude, double longitude, double altitude, double speed, double course)
 {
-	std::string RcvID = ToString(g_MySQL.RcvID);
-
 	const tSQLQueryParam Query
 	{
 		{"timestamp", timestamp},
@@ -263,7 +261,7 @@ my_ulonglong InsertTablePos(const std::string& timestamp, char gnss, const std::
 		{"altitude", ToString(altitude)},
 		{"speed", ToString(speed)},
 		{"course", ToString(course)},
-		{"rcv_id", RcvID},
+		{"rcv_id", ToString(g_MySQL.RcvID)},
 		{"update_id", ToString(g_MySQL.UpdateID)},
 	};
 
