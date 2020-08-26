@@ -10,8 +10,6 @@
 #include <sstream>
 #include <utility>
 
-#include <cstdio>
-
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -221,28 +219,39 @@ void Open()
 
 my_ulonglong Insert(const std::string& table, const tSQLQueryParam& prm)
 {
-	char Str[256]{};
+	std::stringstream SStream;
 
-	std::string StrPrm;
-	std::string StrValue;
+	SStream << "INSERT INTO " << table << " (";
 
 	for (std::size_t i = 0; i < prm.size(); ++i)
 	{
-		StrPrm += prm[i].first;
-		StrValue += "'" + prm[i].second + "'";
+		SStream << prm[i].first;
 
 		if (i < prm.size() - 1)
 		{
-			StrPrm += ',';
-			StrValue += ',';
+			SStream << ',';
 		}
 	}
 
-	std::sprintf(Str, "INSERT INTO %s (%s) VALUE(%s);", table.c_str(), StrPrm.c_str(), StrValue.c_str());
+	SStream << ") VALUE(";
+
+	for (std::size_t i = 0; i < prm.size(); ++i)
+	{
+		SStream << "'" << prm[i].second << "'";
+
+		if (i < prm.size() - 1)
+		{
+			SStream << ',';
+		}
+	}
+
+	SStream << ");";
+
+	const std::string ReqStr = SStream.str();
 
 	tLockGuard Lock(g_MySQL.Mtx);
 
-	if (mysql_real_query(&g_MySQL.MySQL, Str, static_cast<unsigned long>(std::strlen(Str))))//Contrary to the mysql_query() function, mysql_real_query is binary safe.
+	if (mysql_real_query(&g_MySQL.MySQL, ReqStr.c_str(), static_cast<unsigned long>(ReqStr.size())))//Contrary to the mysql_query() function, mysql_real_query is binary safe.
 		throw std::runtime_error{ GetErrorMsg(&g_MySQL.MySQL) };
 
 	return mysql_insert_id(&g_MySQL.MySQL);
