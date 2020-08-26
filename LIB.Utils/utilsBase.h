@@ -12,6 +12,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
@@ -21,17 +22,14 @@
 namespace utils
 {
 
-typedef unsigned char tUInt8;
-typedef unsigned short tUInt16;
-typedef unsigned int tUInt32;
-typedef std::vector<tUInt8> tVectorUInt8;
+typedef std::vector<std::uint8_t> tVectorUInt8;
 
 template<typename T>
 typename std::enable_if<std::is_trivially_copyable<T>::value, void>::type Append(tVectorUInt8& dst, const T& value)
 {
-	const tUInt8* Begin = reinterpret_cast<const tUInt8*>(&value);
+	const std::uint8_t* Begin = reinterpret_cast<const std::uint8_t*>(&value);
 
-	dst.insert<const tUInt8*>(dst.end(), Begin, Begin + sizeof(value));
+	dst.insert<const std::uint8_t*>(dst.end(), Begin, Begin + sizeof(value));
 }
 
 template<typename T>
@@ -41,7 +39,7 @@ typename std::enable_if<std::is_trivially_copyable<T>::value, tVectorUInt8>::typ
 
 	Data.reserve(sizeof(value));
 
-	const tUInt8* Begin = reinterpret_cast<const tUInt8*>(&value);
+	const std::uint8_t* Begin = reinterpret_cast<const std::uint8_t*>(&value);
 
 	Data.insert(Data.end(), Begin, Begin + sizeof(value));
 
@@ -55,9 +53,9 @@ typename std::enable_if<std::is_trivially_copyable<T>::value, T>::type Read(Iter
 
 	auto Size = std::distance(first, last);
 
-	if (Size > 0 && Size <= static_cast<int>(sizeof(T)))
+	if (Size > 0 && Size <= static_cast<std::size_t>(sizeof(T)))
 	{
-		std::copy(first, last, reinterpret_cast<tUInt8*>(&Data));
+		std::copy(first, last, reinterpret_cast<std::uint8_t*>(&Data));
 	}
 
 	return Data;
@@ -127,9 +125,9 @@ typename std::enable_if<std::is_trivially_copyable<T>::value, T>::type Read(cons
 template<typename T>
 typename std::enable_if<std::is_trivially_copyable<T>::value, T>::type Reverse(T value)
 {
-	tUInt8* Begin = reinterpret_cast<tUInt8*>(&value);
+	std::uint8_t* Begin = reinterpret_cast<std::uint8_t*>(&value);
 
-	std::reverse<tUInt8*>(Begin, Begin + sizeof(value));
+	std::reverse<std::uint8_t*>(Begin, Begin + sizeof(value));
 
 	return value;
 }
@@ -141,14 +139,14 @@ template <unsigned int size>
 struct tArray1
 {
 	enum { Size = size };
-	tUInt8 Value[size];
+	std::uint8_t Value[size];
 
 	//tArray1() in union it's deleted by default
 	//{
 	//	std::memset(Value, 0, Size);
 	//}
 
-	tUInt8& operator [] (std::size_t i)
+	std::uint8_t& operator [] (std::size_t i)
 	{
 		assert(i < Size);
 

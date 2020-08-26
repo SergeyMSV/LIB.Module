@@ -13,15 +13,13 @@
 #include "utilsBase.h"
 
 #include <cmath>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#include <string>
-#include <vector>
-
 #include <iomanip>
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace utils
 {
@@ -30,7 +28,7 @@ namespace utils
 		namespace Type
 		{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-enum class tGNSS_State : tUInt8//It's like bitfield
+enum class tGNSS_State : std::uint8_t//It's like bitfield
 {
 	UNKNOWN = 0,
 	GPS = 1,    //0000'0001
@@ -62,12 +60,12 @@ struct tValid :public tEmptyAble
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 struct tDate :public tEmptyAble
 {
-	tUInt8 Year = 0;
-	tUInt8 Month = 0;
-	tUInt8 Day = 0;
+	std::uint8_t Year = 0;
+	std::uint8_t Month = 0;
+	std::uint8_t Day = 0;
 
 	tDate() = default;//C++11
-	tDate(tUInt8 year, tUInt8 month, tUInt8 day);
+	tDate(std::uint8_t year, std::uint8_t month, std::uint8_t day);
 	explicit tDate(const std::string& val);	
 
 	std::string ToString() const;
@@ -80,12 +78,12 @@ class tTime :public tEmptyAble
 	static const std::size_t Size = SizeFract == 0 ? 6 : 7 + SizeFract;//sizeof(hhmmss.)=7
 
 public:
-	tUInt8 Hour = 0;
-	tUInt8 Minute = 0;
+	std::uint8_t Hour = 0;
+	std::uint8_t Minute = 0;
 	double Second = 0;
 
 	tTime() = default;
-	tTime(tUInt8 hour, tUInt8 minute, double second) :tEmptyAble(false), Hour(hour), Minute(minute), Second(second) {}
+	tTime(std::uint8_t hour, std::uint8_t minute, double second) :tEmptyAble(false), Hour(hour), Minute(minute), Second(second) {}
 	explicit tTime(const std::string& val)
 	{
 		if (val.size() == Size)
@@ -97,12 +95,12 @@ public:
 			Data[0] = val[0];
 			Data[1] = val[1];
 
-			Hour = static_cast<tUInt8>(std::strtoul(Data, 0, 10));
+			Hour = static_cast<std::uint8_t>(std::strtoul(Data, 0, 10));
 
 			Data[0] = val[2];
 			Data[1] = val[3];
 
-			Minute = static_cast<tUInt8>(std::strtoul(Data, 0, 10));
+			Minute = static_cast<std::uint8_t>(std::strtoul(Data, 0, 10));
 
 			Second = std::strtod(val.c_str() + 4, 0);
 		}
@@ -196,7 +194,7 @@ public:
 
 			Value = std::strtod(Data, 0);
 
-			double Rest = std::strtod(val.c_str() + 2, 0);
+			const double Rest = std::strtod(val.c_str() + 2, 0);
 
 			Value += Rest / 60;
 
@@ -211,21 +209,23 @@ public:
 	{
 		if (m_Empty) return "";
 
-		double ValueAbs = std::abs(Value);
+		const double ValueAbs = std::abs(Value);
 
-		tUInt8 Deg = static_cast<tUInt8>(ValueAbs);
-		double Min = (ValueAbs - Deg) * 60;
+		const std::int8_t Deg = static_cast<std::int8_t>(ValueAbs);
+		const double Min = (ValueAbs - Deg) * 60;
 
-		char Str[Size + 1]{};
+		std::stringstream SStream;
 
 		if (Deg < 100)
 		{
-			const char StrFormat[] = { '%','0', '2', 'd' , '%', '0', static_cast<char>(0x30 + Size - 2), '.', static_cast<char>(0x30 + SizeFract), 'f', 0 };
-
-			std::sprintf(Str, StrFormat, Deg, Min);
+			SStream << std::setfill('0');
+			SStream << std::setw(2) << static_cast<int>(Deg);
+			SStream.setf(std::ios::fixed);
+			SStream << std::setw(3 + SizeFract) << std::setprecision(SizeFract) << Min;
+			SStream.unsetf(std::ios::fixed);
 		}
 
-		return Str;
+		return SStream.str();
 	}
 
 	std::string ToStringHemisphere() const
@@ -278,26 +278,29 @@ public:
 	{
 		if (m_Empty) return "";
 
-		double ValueAbs = std::abs(Value);
+		const double ValueAbs = std::abs(Value);
 
-		tUInt16 Deg = static_cast<tUInt16>(ValueAbs);
-		double Min = (ValueAbs - Deg) * 60;
+		const std::int16_t Deg = static_cast<std::int16_t>(ValueAbs);
+		const double Min = (ValueAbs - Deg) * 60;
 
-		char Str[Size + 1]{};
+		std::stringstream SStream;
 
 		if (Deg < 1000)
 		{
-			const char StrFormat[] = { '%','0', '3', 'd' , '%', '0', static_cast<char>(0x30 + Size - 3), '.', static_cast<char>(0x30 + SizeFract), 'f', 0 };
-
-			std::sprintf(Str, StrFormat, Deg, Min);
+			SStream << std::setfill('0');
+			SStream << std::setw(3) << static_cast<int>(Deg);
+			SStream.setf(std::ios::fixed);
+			SStream << std::setw(3 + SizeFract) << std::setprecision(SizeFract) << Min;
+			SStream.unsetf(std::ios::fixed);
 		}
 
-		return Str;
+		return SStream.str();
 	}
 
 	std::string ToStringHemisphere() const
 	{
-		if (m_Empty) return "";
+		if (m_Empty)
+			return "";
 
 		return Value < 0 ? "W" : "E";
 	}
@@ -332,13 +335,14 @@ public:
 	{
 		if (m_Empty) return "";
 
-		const char StrFormat[] = { '%', '0', static_cast<char>(0x30 + SizeInt + SizeFract + 1), '.', static_cast<char>(0x30 + SizeFract), 'f', 0 };
+		std::stringstream SStream;
 
-		char Str[Size + 1]{};
+		SStream << std::setfill('0');
+		SStream.setf(std::ios::fixed);
+		SStream << std::setw(SizeInt + SizeFract + 1) << std::setprecision(SizeFract) << Value;
+		SStream.unsetf(std::ios::fixed);
 
-		std::sprintf(Str, StrFormat, Value);
-
-		return Str;
+		return SStream.str();
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,13 +371,13 @@ public:
 	{
 		if (m_Empty) return "";
 
-		const char StrFormat[] = { '%', '.', static_cast<char>(0x30 + SizeFract), 'f', 0 };
+		std::stringstream SStream;
 
-		char Str[SizeMax + 1]{};
+		SStream.setf(std::ios::fixed);
+		SStream << std::setw(SizeFract + 1) << std::setprecision(SizeFract) << Value;
+		SStream.unsetf(std::ios::fixed);
 
-		std::sprintf(Str, StrFormat, Value);
-
-		return Str;
+		return SStream.str();
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -432,7 +436,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 struct tPositioning
 {
-	enum class tPositioning_State : tUInt8
+	enum class tPositioning_State : std::uint8_t
 	{
 		UNKNOWN = 0,
 		Autonomous,
@@ -474,13 +478,12 @@ public:
 	{
 		if (m_Empty) return "";
 
-		const char StrFormat[] = { '%', '0', static_cast<char>(0x30 + Size), 'd', 0 };
+		std::stringstream SStream;
 
-		char Str[Size + 1]{};
+		SStream << std::setfill('0');
+		SStream << std::setw(Size) << static_cast<unsigned int>(Value);
 
-		std::sprintf(Str, StrFormat, Value);
-
-		return Str;
+		return SStream.str();
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -506,20 +509,20 @@ public:
 	{
 		if (m_Empty) return "";
 
-		char Str[20]{};
+		std::stringstream SStream;
 
-		std::sprintf(Str, "%d", Value);
+		SStream << Value;
 
-		return Str;
+		return SStream.str();
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 struct tSatellite
 {
-	typedef tUInt<tUInt8, 2> id_type;
-	typedef tUInt<tUInt8, 2> elevation_type;
-	typedef tUInt<tUInt16, 3> azimuth_type;
-	typedef tUInt<tUInt8, 2> snr_type;
+	typedef tUInt<std::uint8_t, 2> id_type;
+	typedef tUInt<std::uint8_t, 2> elevation_type;
+	typedef tUInt<std::uint16_t, 3> azimuth_type;
+	typedef tUInt<std::uint8_t, 2> snr_type;
 
 	id_type ID;
 	elevation_type Elevation;
@@ -527,7 +530,7 @@ struct tSatellite
 	snr_type SNR;
 
 	tSatellite() = default;//C++11
-	tSatellite(tUInt8 id, tUInt8 elevation, tUInt16 azimuth, tUInt8 snr);
+	tSatellite(std::uint8_t id, std::uint8_t elevation, std::uint16_t azimuth, std::uint8_t snr);
 	explicit tSatellite(const std::string& valID, const std::string& valElevation, const std::string& valAzimuth, const std::string& valSNR);
 
 	std::string ToStringID() const;

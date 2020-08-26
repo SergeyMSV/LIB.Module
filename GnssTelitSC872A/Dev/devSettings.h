@@ -30,7 +30,7 @@ struct tSettings
 	struct
 	{
 		std::string ID;
-		utils::tUInt32 BR = 0;
+		std::uint32_t BR = 0;
 	}SerialPort;
 
 	struct

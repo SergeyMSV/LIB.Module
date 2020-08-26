@@ -24,8 +24,8 @@ struct tMYSQL
 	MYSQL MySQL{};
 	std::string DB;
 
-	utils::tUInt8 UpdateID = 0xFF;
-	utils::tUInt8 RcvID = 0xFF;
+	std::uint8_t UpdateID = 0xFF;
+	std::uint8_t RcvID = 0xFF;
 }g_MySQL;
 
 typedef std::lock_guard<std::recursive_mutex> tLockGuard;
@@ -221,7 +221,7 @@ bool Open(int& cerr)
 
 			if (TableSys.size() == 1 && TableSys.front().size() == 2 && TableSys.front()[1] == DEV_DB_VERSION)
 			{
-				g_MySQL.UpdateID = utils::Read<utils::tUInt8>(TableSys.front()[0].cbegin(), TableSys.front()[0].cend(), utils::tRadix_10);
+				g_MySQL.UpdateID = utils::Read<std::uint8_t>(TableSys.front()[0].cbegin(), TableSys.front()[0].cend(), utils::tRadix_10);
 			}
 			else
 			{
@@ -241,7 +241,7 @@ bool Open(int& cerr)
 
 					if (row[2] == g_Settings.Main.Model && row[3] == g_Settings.Main.ID)
 					{
-						g_MySQL.RcvID = utils::Read<utils::tUInt8>(row[0].cbegin(), row[0].cend());
+						g_MySQL.RcvID = utils::Read<std::uint8_t>(row[0].cbegin(), row[0].cend());
 						return true;
 					}
 				}

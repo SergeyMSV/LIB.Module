@@ -74,7 +74,7 @@ class tGnssReceiver
 
 		class tCmdGPO :public tCmd
 		{
-			enum class tStep :unsigned char
+			enum class tStep :std::uint8_t
 			{
 				SetGPO,
 				Pause,
@@ -92,7 +92,7 @@ class tGnssReceiver
 
 		class tCmdREQ :public tCmd
 		{
-			enum class tStep :unsigned char
+			enum class tStep :std::uint8_t
 			{
 				SendMsg,
 				WaitRsp,
@@ -268,7 +268,7 @@ public:
 
 	bool StartUserTaskScript(const std::string& taskScriptID);
 
-	tGnssStatus GetStatus();
+	tGnssStatus GetStatus() const;
 
 protected:
 	virtual tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) = 0;

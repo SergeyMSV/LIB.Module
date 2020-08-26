@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // utilsCRC
 //
-// Standard ISO/IEC 114882, C++98
+// Standard ISO/IEC 114882, C++11
 //
 // |   version  |    release    | Description
 // |------------|---------------|---------------------------------
@@ -11,20 +11,20 @@
 // |      3     |   2011 02 21  | function CRC08GSM0710FCS was added
 // |      4     |   2012 12 11  | function CRC32 was added
 // |      5     |   2015 07 17  | namespace "comm"
-// |      6     |   2015 12 30  | Added unsigned short CRC16CCITT(std::vector<char>::iterator dataBegin, std::vector<char>::iterator dataEnd, unsigned short prevCRC = 0xFFFF);
-// |            |               | Added unsigned int CRC32(std::vector<char>::iterator dataBegin, std::vector<char>::iterator dataEnd, unsigned int prevCRC = 0);
+// |      6     |   2015 12 30  | Added std::uint16_t CRC16CCITT(std::vector<char>::iterator dataBegin, std::vector<char>::iterator dataEnd, std::uint16_t prevCRC = 0xFFFF);
+// |            |               | Added std::uint32_t CRC32(std::vector<char>::iterator dataBegin, std::vector<char>::iterator dataEnd, std::uint32_t prevCRC = 0);
 // |      7     |   2015 01 06  | Added #include <osSupport.h> for compatibility reasons (vector requires some libraries for MQX)
 // |      8     |   2016 03 04  | Replaced table for CRC8Dallas
-// |            |               | Added unsigned char CRC8Dallas2(char *data, int size)
+// |            |               | Added std::uint8_t CRC8Dallas2(char *data, int size)
 // |      9     |   2016 04 06  | libConfig
-// |     10     |   2016 05 18  | Added unsigned char CRC08GSM0710FCS(std::vector<char>::iterator dataBegin, std::vector<char>::iterator dataEnd, unsigned char prevCRC)
-// |     11     |   2016 06 01  | Added unsigned char CRC08GSM0710FCS(std::deque<char>::iterator dataBegin, std::deque<char>::iterator dataEnd, unsigned char prevCRC = 0xFF)
+// |     10     |   2016 05 18  | Added std::uint8_t CRC08GSM0710FCS(std::vector<char>::iterator dataBegin, std::vector<char>::iterator dataEnd, std::uint8_t prevCRC)
+// |     11     |   2016 06 01  | Added std::uint8_t CRC08GSM0710FCS(std::deque<char>::iterator dataBegin, std::deque<char>::iterator dataEnd, std::uint8_t prevCRC = 0xFF)
 // |     12     |   2017 03 14  | namespace utils
 // |     13     |   2017 03 20  | Added DEPRECATED to some functions
 // |     14     |   2017 04 04  | Added CRC08_BNTB
 // |            |               | Renamed other CRC-functions
 // |     15     |   2017 04 15  | Modified
-// |     16     |   2019 01 31  | Added CRC08_NMEA(unsigned char * pcBlock, unsigned short size)
+// |     16     |   2019 01 31  | Added CRC08_NMEA(std::uint8_t * pcBlock, std::uint16_t size)
 // |     17     |   2019 05 01  | Refactored
 // |     18     |   2019 08 25  | Updated
 // |            |               | 
@@ -32,6 +32,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 namespace utils
 {
@@ -47,9 +48,9 @@ namespace utils
 //MaxLen: 15 байт (127 бит) – обнаружение одинарных, двойных, тройных и всех нечетных ошибок
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename Iterator>
-unsigned char CRC08_BNTBX1(Iterator first, Iterator last, unsigned char prevCRC = 0xFF)
+std::uint8_t CRC08_BNTBX1(Iterator first, Iterator last, std::uint8_t prevCRC = 0xFF)
 {
-	const unsigned char CRC08_BNTBX1_Table[256] =
+	const std::uint8_t CRC08_BNTBX1_Table[256] =
 	{
 	0x00, 0x31, 0x62, 0x53, 0xC4, 0xF5, 0xA6, 0x97,
 	0xB9, 0x88, 0xDB, 0xEA, 0x7D, 0x4C, 0x1F, 0x2E,
@@ -87,13 +88,13 @@ unsigned char CRC08_BNTBX1(Iterator first, Iterator last, unsigned char prevCRC 
 
 	while (first != last)
 	{
-		prevCRC = CRC08_BNTBX1_Table[prevCRC ^ static_cast<unsigned char>(*first++)];
+		prevCRC = CRC08_BNTBX1_Table[prevCRC ^ static_cast<std::uint8_t>(*first++)];
 	}
 
 	return prevCRC;
 }
 
-static unsigned char CRC08_BNTBX1(const char* data, std::size_t dataSize, unsigned char prevCRC = 0xFF)
+static std::uint8_t CRC08_BNTBX1(const char* data, std::size_t dataSize, std::uint8_t prevCRC = 0xFF)
 {
 	return CRC08_BNTBX1<const char*>(data, data + dataSize, prevCRC);
 }
@@ -107,9 +108,9 @@ static unsigned char CRC08_BNTBX1(const char* data, std::size_t dataSize, unsign
 //MaxLen: 15 байт (127 бит) – обнаружение одинарных, двойных, тройных и всех нечетных ошибок
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename Iterator>
-unsigned char CRC08_DALLAS(Iterator first, Iterator last, unsigned char prevCRC = 0x00)
+std::uint8_t CRC08_DALLAS(Iterator first, Iterator last, std::uint8_t prevCRC = 0x00)
 {
-	const unsigned char CRC08_DALLAS_Table[256] =
+	const std::uint8_t CRC08_DALLAS_Table[256] =
 	{
 	0, 94, 188, 226, 97, 63, 221, 131, 194, 156, 126, 32, 163, 253, 31, 65,
 	157, 195, 33, 127, 252, 162, 64, 30, 95, 1, 227, 189, 62, 96, 130, 220,
@@ -131,13 +132,13 @@ unsigned char CRC08_DALLAS(Iterator first, Iterator last, unsigned char prevCRC 
 
 	while (first != last)
 	{
-		prevCRC = CRC08_DALLAS_Table[prevCRC ^ static_cast<unsigned char>(*first++)];
+		prevCRC = CRC08_DALLAS_Table[prevCRC ^ static_cast<std::uint8_t>(*first++)];
 	}
 
 	return prevCRC;
 }
 
-static unsigned char CRC08_DALLAS(const char* data, std::size_t dataSize, unsigned char prevCRC = 0x00)
+static std::uint8_t CRC08_DALLAS(const char* data, std::size_t dataSize, std::uint8_t prevCRC = 0x00)
 {
 	return CRC08_DALLAS<const char*>(data, data + dataSize, prevCRC);
 }
@@ -151,9 +152,9 @@ static unsigned char CRC08_DALLAS(const char* data, std::size_t dataSize, unsign
 //MaxLen: 15 байт (127 бит) – обнаружение одинарных, двойных, тройных и всех нечетных ошибок
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename Iterator>
-unsigned char CRC08_GSM0710FCS(Iterator first, Iterator last, unsigned char prevCRC = 0xFF)
+std::uint8_t CRC08_GSM0710FCS(Iterator first, Iterator last, std::uint8_t prevCRC = 0xFF)
 {
-	const unsigned char CRC08_GSM0710FCS_Table[256] = {
+	const std::uint8_t CRC08_GSM0710FCS_Table[256] = {
 		0x00, 0x91, 0xE3, 0x72, 0x07, 0x96, 0xE4, 0x75,
 		0x0E, 0x9F, 0xED, 0x7C, 0x09, 0x98, 0xEA, 0x7B,
 		0x1C, 0x8D, 0xFF, 0x6E, 0x1B, 0x8A, 0xF8, 0x69,
@@ -190,13 +191,13 @@ unsigned char CRC08_GSM0710FCS(Iterator first, Iterator last, unsigned char prev
 
 	while (first != last)
 	{
-		prevCRC = CRC08_GSM0710FCS_Table[prevCRC ^ static_cast<unsigned char>(*first++)];
+		prevCRC = CRC08_GSM0710FCS_Table[prevCRC ^ static_cast<std::uint8_t>(*first++)];
 	}
 
 	return 0xFF - prevCRC;
 }
 
-static unsigned char CRC08_GSM0710FCS(const char* data, std::size_t dataSize, unsigned char prevCRC = 0xFF)
+static std::uint8_t CRC08_GSM0710FCS(const char* data, std::size_t dataSize, std::uint8_t prevCRC = 0xFF)
 {
 	return CRC08_GSM0710FCS<const char*>(data, data + dataSize, prevCRC);
 }
@@ -210,17 +211,17 @@ static unsigned char CRC08_GSM0710FCS(const char* data, std::size_t dataSize, un
 //MaxLen: 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename Iterator>
-unsigned char CRC08_NMEA(Iterator first, Iterator last, unsigned char prevCRC = 0x00)
+std::uint8_t CRC08_NMEA(Iterator first, Iterator last, std::uint8_t prevCRC = 0x00)
 {
 	for (Iterator i = first; i != last; ++i)
 	{
-		prevCRC ^= static_cast<unsigned char>(*i);
+		prevCRC ^= static_cast<std::uint8_t>(*i);
 	}
 
 	return prevCRC;
 }
 
-static unsigned char CRC08_NMEA(const char* data, std::size_t dataSize, unsigned char prevCRC = 0x00)
+static std::uint8_t CRC08_NMEA(const char* data, std::size_t dataSize, std::uint8_t prevCRC = 0x00)
 {
 	return CRC08_NMEA<const char*>(data, data + dataSize, prevCRC);
 }
@@ -234,9 +235,9 @@ static unsigned char CRC08_NMEA(const char* data, std::size_t dataSize, unsigned
 //MaxLen: 4095 байт (32767 бит) - обнаружение одинарных, двойных, тройных и всех нечетных ошибок
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename Iterator>
-unsigned short CRC16_CCITT(Iterator first, Iterator last, unsigned short prevCRC = 0xFFFF)
+std::uint16_t CRC16_CCITT(Iterator first, Iterator last, std::uint16_t prevCRC = 0xFFFF)
 {
-	const unsigned int CRC16_CCITT_Table[0x100] =
+	const std::uint16_t CRC16_CCITT_Table[0x100] =
 	{
 	  0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	  0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -274,24 +275,24 @@ unsigned short CRC16_CCITT(Iterator first, Iterator last, unsigned short prevCRC
 
 	while (first != last)
 	{
-		prevCRC = (prevCRC << 8) ^ CRC16_CCITT_Table[(prevCRC >> 8) ^ static_cast<unsigned char>(*first++)];
+		prevCRC = (prevCRC << 8) ^ CRC16_CCITT_Table[(prevCRC >> 8) ^ static_cast<std::uint8_t>(*first++)];
 	}
 
 	return prevCRC;
 }
 
-static unsigned short CRC16_CCITT(const char* data, std::size_t dataSize, unsigned short prevCRC = 0xFFFF)
+static std::uint16_t CRC16_CCITT(const char* data, std::size_t dataSize, std::uint16_t prevCRC = 0xFFFF)
 {
 	return CRC16_CCITT<const char*>(data, data + dataSize, prevCRC);
 }
 
 template<typename Iterator>
-unsigned short CRC16_BNTBX2(Iterator first, Iterator last, unsigned short prevCRC = 0xFFFF)
+std::uint16_t CRC16_BNTBX2(Iterator first, Iterator last, std::uint16_t prevCRC = 0xFFFF)
 {
 	return CRC16_CCITT<Iterator>(first, last, prevCRC);
 }
 
-static unsigned short CRC16_BNTBX2(const char* data, std::size_t dataSize, unsigned short prevCRC = 0xFFFF)
+static std::uint16_t CRC16_BNTBX2(const char* data, std::size_t dataSize, std::uint16_t prevCRC = 0xFFFF)
 {
 	return CRC16_CCITT<const char*>(data, data + dataSize, prevCRC);
 }
@@ -305,9 +306,9 @@ static unsigned short CRC16_BNTBX2(const char* data, std::size_t dataSize, unsig
 //MaxLen: 4095 байт (32767 бит) - обнаружение одинарных, двойных, тройных и всех нечетных ошибок
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename Iterator>
-unsigned short CRC16_ANSI(Iterator first, Iterator last, unsigned short prevCRC = 0xFFFF)
+std::uint16_t CRC16_ANSI(Iterator first, Iterator last, std::uint16_t prevCRC = 0xFFFF)
 {
-	const unsigned short CRC16_ANSI_Table[256] =
+	const std::uint16_t CRC16_ANSI_Table[256] =
 	{
 		0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
 		0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -345,13 +346,13 @@ unsigned short CRC16_ANSI(Iterator first, Iterator last, unsigned short prevCRC 
 
 	while (first != last)
 	{
-		prevCRC = (prevCRC >> 8) ^ CRC16_ANSI_Table[(prevCRC & 0xFF) ^ static_cast<unsigned char>(*first++)];
+		prevCRC = (prevCRC >> 8) ^ CRC16_ANSI_Table[(prevCRC & 0xFF) ^ static_cast<std::uint8_t>(*first++)];
 	}
 
 	return prevCRC;
 }
 
-static unsigned short CRC16_ANSI(const char* data, std::size_t dataSize, unsigned short prevCRC = 0xFFFF)
+static std::uint16_t CRC16_ANSI(const char* data, std::size_t dataSize, std::uint16_t prevCRC = 0xFFFF)
 {
 	return CRC16_ANSI<const char*>(data, data + dataSize, prevCRC);
 }
@@ -366,9 +367,9 @@ static unsigned short CRC16_ANSI(const char* data, std::size_t dataSize, unsigne
 //MaxLen: = 256 КБ
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename Iterator>
-unsigned int CRC32_BNTBX2(Iterator first, Iterator last, unsigned int prevCRC = 0)
+std::uint32_t CRC32_BNTBX2(Iterator first, Iterator last, std::uint32_t prevCRC = 0)
 {
-	const unsigned int CRC32_BNTBX2_Table[256] =
+	const std::uint32_t CRC32_BNTBX2_Table[256] =
 	{
 		0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
 		0x706af48f, 0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4,
@@ -424,18 +425,18 @@ unsigned int CRC32_BNTBX2(Iterator first, Iterator last, unsigned int prevCRC = 
 		0x2d02ef8d
 	};
 
-	unsigned int CRC_MASK = 0xD202EF8D;
+	std::uint32_t CRC_MASK = 0xD202EF8D;
 
 	while (first != last)
 	{
-		prevCRC = (prevCRC >> 8) ^ CRC32_BNTBX2_Table[(prevCRC & 0xFF) ^ static_cast<unsigned char>(*first++)];
+		prevCRC = (prevCRC >> 8) ^ CRC32_BNTBX2_Table[(prevCRC & 0xFF) ^ static_cast<std::uint8_t>(*first++)];
 		prevCRC ^= CRC_MASK;
 	}
 
 	return prevCRC;
 }
 
-static unsigned int CRC32_BNTBX2(const char* data, std::size_t dataSize, unsigned int prevCRC = 0)
+static std::uint32_t CRC32_BNTBX2(const char* data, std::size_t dataSize, std::uint32_t prevCRC = 0)
 {
 	return CRC32_BNTBX2<const char*>(data, data + dataSize, prevCRC);
 }

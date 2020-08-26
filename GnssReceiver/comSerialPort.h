@@ -14,13 +14,13 @@ class tCommunication
 {
     boost::asio::serial_port m_Port;
 
-    unsigned char m_Data[DataSizeRecv];
+    std::uint8_t m_Data[DataSizeRecv];
 
 	mutable std::mutex m_Mtx;//[TBD] maybe scoped_mutex
 	std::queue<utils::tVectorUInt8> m_DataSent;
 
 public:
-    tCommunication(boost::asio::io_context& io_context, const std::string& portID, utils::tUInt32 portBR)
+    tCommunication(boost::asio::io_context& io_context, const std::string& portID, std::uint32_t portBR)
         : m_Port(io_context)
     {
         m_Port.open(portID);

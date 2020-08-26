@@ -12,6 +12,7 @@
 
 #include <utilsPacketNMEAType.h>
 
+#include <cstdint>
 #include <ctime>
 #include <deque>
 #include <iomanip>
@@ -25,7 +26,7 @@ namespace mod
 
 struct tGnssTaskScriptCmd
 {
-	enum class tID : unsigned char
+	enum class tID :std::uint8_t
 	{
 		GPI,
 		GPO,
@@ -43,10 +44,10 @@ protected:
 public:
 	virtual ~tGnssTaskScriptCmd() = default;
 
-	tID GetID() { return m_ID; }
+	tID GetID() const { return m_ID; }
 };
 
-struct tGnssTaskScriptCmdREQ : public tGnssTaskScriptCmd
+struct tGnssTaskScriptCmdREQ :public tGnssTaskScriptCmd
 {
 	//enum class tCase_NoRsp: unsigned char//C++11
 	//{
@@ -66,7 +67,7 @@ struct tGnssTaskScriptCmdREQ : public tGnssTaskScriptCmd
 	tGnssTaskScriptCmdREQ() :tGnssTaskScriptCmd(tGnssTaskScriptCmd::tID::REQ) {}
 };
 
-struct tGnssTaskScriptCmdGPI : public tGnssTaskScriptCmd
+struct tGnssTaskScriptCmdGPI :public tGnssTaskScriptCmd
 {
 	std::string ID;
 	bool State = 0;
@@ -75,7 +76,7 @@ struct tGnssTaskScriptCmdGPI : public tGnssTaskScriptCmd
 	tGnssTaskScriptCmdGPI() :tGnssTaskScriptCmd(tGnssTaskScriptCmd::tID::GPI) {}
 };
 
-struct tGnssTaskScriptCmdGPO : public tGnssTaskScriptCmd
+struct tGnssTaskScriptCmdGPO :public tGnssTaskScriptCmd
 {
 	std::string ID;
 	bool State = 0;
@@ -89,7 +90,7 @@ typedef std::deque<std::unique_ptr<tGnssTaskScriptCmd>> tGnssTaskScript;
 typedef utils::packet_NMEA::Type::tGNSS_State tGNSS_State;
 typedef utils::packet_NMEA::Type::tSatellite tGNSS_Satellite;
 
-enum class tGnssStatus : unsigned char
+enum class tGnssStatus :std::uint8_t
 {
 	Init,
 	Operation,
@@ -99,7 +100,7 @@ enum class tGnssStatus : unsigned char
 	Unknown = 0xFF,
 };
 
-//enum class tGnssError : unsigned char
+//enum class tGnssError : std::uint8_t
 //{
 //	OK,
 //
@@ -113,11 +114,11 @@ struct tGnssDataSet
 	tGNSS_State GNSS = tGNSS_State::UNKNOWN;
 
 	bool Check_DateTime = false;
-	utils::tUInt8 Year = 0;
-	utils::tUInt8 Month = 0;
-	utils::tUInt8 Day = 0;
-	utils::tUInt8 Hour = 0;
-	utils::tUInt8 Minute = 0;
+	std::uint8_t Year = 0;
+	std::uint8_t Month = 0;
+	std::uint8_t Day = 0;
+	std::uint8_t Hour = 0;
+	std::uint8_t Minute = 0;
 	double Second = 0;
 
 	bool Check_Position = false;

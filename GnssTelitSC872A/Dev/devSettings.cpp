@@ -70,7 +70,7 @@ tSettings::tSettings(const std::string& fileName)
 								if (c.first == "<xmlattr>")
 								{
 									SerialPort.ID = c.second.get<std::string>("ID");
-									SerialPort.BR = c.second.get<utils::tUInt32>("BR");
+									SerialPort.BR = c.second.get<std::uint32_t>("BR");
 								}
 							}
 						}

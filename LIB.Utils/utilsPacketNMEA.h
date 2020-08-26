@@ -18,6 +18,8 @@
 #include "utilsCRC.h"
 #include "utilsPacket.h"
 
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -26,10 +28,10 @@ namespace utils
 	namespace packet_NMEA
 	{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-template <class TPayload, unsigned char stx = '$'>
+template <class TPayload, std::uint8_t stx = '$'>
 struct tFormat
 {
-	enum : unsigned char { STX = stx, CTX = '*' };
+	enum : std::uint8_t { STX = stx, CTX = '*' };
 
 protected:
 	static tVectorUInt8 TestPacket(tVectorUInt8::const_iterator cbegin, tVectorUInt8::const_iterator cend)
@@ -38,12 +40,12 @@ protected:
 
 		if (Size >= GetSize(0) && *cbegin == STX)
 		{
-			tVectorUInt8::const_iterator Begin = cbegin + 1;
-			tVectorUInt8::const_iterator End = std::find(Begin, cend, CTX);
+			const tVectorUInt8::const_iterator Begin = cbegin + 1;
+			const tVectorUInt8::const_iterator End = std::find(Begin, cend, CTX);
 
 			if (End != cend)
 			{
-				std::size_t DataSize = std::distance(Begin, End);
+				const std::size_t DataSize = std::distance(Begin, End);
 
 				if (Size >= GetSize(DataSize) && VerifyCRC(Begin, DataSize))
 				{
@@ -59,12 +61,12 @@ protected:
 	{
 		if (packetVector.size() >= GetSize(0) && packetVector[0] == STX)
 		{
-			tVectorUInt8::const_iterator Begin = packetVector.cbegin() + 1;
-			tVectorUInt8::const_iterator End = std::find(Begin, packetVector.cend(), CTX);
+			const tVectorUInt8::const_iterator Begin = packetVector.cbegin() + 1;
+			const tVectorUInt8::const_iterator End = std::find(Begin, packetVector.cend(), CTX);
 
 			if (End != packetVector.cend())
 			{
-				std::size_t DataSize = std::distance(Begin, End);
+				const std::size_t DataSize = std::distance(Begin, End);
 
 				if (packetVector.size() == GetSize(DataSize) && VerifyCRC(Begin, DataSize))
 				{
@@ -91,24 +93,28 @@ protected:
 			dst.push_back(i);
 		}
 
-		unsigned char CRC = utils::crc::CRC08_NMEA(payload.begin(), payload.end());
+		const std::uint8_t CRC = utils::crc::CRC08_NMEA(payload.begin(), payload.end());
 
 		dst.push_back(CTX);
 
-		char StrCRC[10]{};
-		std::sprintf(StrCRC, "%02X\xd\xa", CRC);
+		std::stringstream SStream;
 
-		dst.insert(dst.end(), StrCRC, StrCRC + 4);
+		SStream << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << static_cast<unsigned int>(CRC);
+		SStream << "\xd\xa";
+
+		const std::string EndStr = SStream.str();
+
+		dst.insert(dst.end(), EndStr.cbegin(), EndStr.cend());
 	}
 
 private:
 	static bool VerifyCRC(tVectorUInt8::const_iterator begin, std::size_t crcDataSize)
 	{
-		auto CRC = utils::crc::CRC08_NMEA(begin, begin + crcDataSize);
+		const std::uint8_t CRC = utils::crc::CRC08_NMEA(begin, begin + crcDataSize);
 
-		tVectorUInt8::const_iterator CRCBegin = begin + crcDataSize + 1;//1 for '*'
+		const tVectorUInt8::const_iterator CRCBegin = begin + crcDataSize + 1;//1 for '*'
 
-		auto CRCReceived = utils::Read<unsigned char>(CRCBegin, CRCBegin + 2, utils::tRadix_16);
+		const std::uint8_t CRCReceived = utils::Read<std::uint8_t>(CRCBegin, CRCBegin + 2, utils::tRadix_16);
 
 		return CRC == CRCReceived;
 	}

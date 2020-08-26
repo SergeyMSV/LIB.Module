@@ -48,7 +48,7 @@ std::string tValid::ToString() const
 	return Value ? "A" : "V";
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-tDate::tDate(tUInt8 year, tUInt8 month, tUInt8 day)
+tDate::tDate(std::uint8_t year, std::uint8_t month, std::uint8_t day)
 	:tEmptyAble(false), Year(year), Month(month), Day(day)
 {
 
@@ -65,17 +65,17 @@ tDate::tDate(const std::string& val)
 		Data[0] = val[0];
 		Data[1] = val[1];
 
-		Day = static_cast<tUInt8>(std::strtoul(Data, 0, 10));
+		Day = static_cast<std::uint8_t>(std::strtoul(Data, 0, 10));
 
 		Data[0] = val[2];
 		Data[1] = val[3];
 
-		Month = static_cast<tUInt8>(std::strtoul(Data, 0, 10));
+		Month = static_cast<std::uint8_t>(std::strtoul(Data, 0, 10));
 
 		Data[0] = val[4];
 		Data[1] = val[5];
 
-		Year = static_cast<tUInt8>(std::strtoul(Data, 0, 10));
+		Year = static_cast<std::uint8_t>(std::strtoul(Data, 0, 10));
 	}
 }
 
@@ -83,14 +83,17 @@ std::string tDate::ToString() const
 {
 	if (m_Empty) return "";
 
-	char Str[10]{};
-
+	std::stringstream SStream;
+	
 	if (Year < 100 && Month < 13 && Day < 32)
 	{
-		std::sprintf(Str, "%02d%02d%02d", Day, Month, Year);
+		SStream << std::setfill('0');
+		SStream << std::setw(2) << static_cast<unsigned int>(Day);
+		SStream << std::setw(2) << static_cast<unsigned int>(Month);
+		SStream << std::setw(2) << static_cast<unsigned int>(Year);
 	}
 
-	return Str;
+	return SStream.str();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 tPositioning::tPositioning(const std::string& val)
@@ -123,7 +126,7 @@ std::string tPositioning::ToString() const
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-tSatellite::tSatellite(tUInt8 id, tUInt8 elevation, tUInt16 azimuth, tUInt8 snr)
+tSatellite::tSatellite(std::uint8_t id, std::uint8_t elevation, std::uint16_t azimuth, std::uint8_t snr)
 	:ID(id), Elevation(elevation), Azimuth(azimuth), SNR(snr)
 {
 

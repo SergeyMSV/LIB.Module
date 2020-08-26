@@ -15,7 +15,7 @@ class tCommunication
     unsigned char m_Data[DataSizeRecv];
 
 public:
-    tCommunication(boost::asio::io_context& io_context, const std::string& portID, utils::tUInt32 portBR)
+    tCommunication(boost::asio::io_context& io_context, const std::string& portID, std::uint32_t portBR)
         : m_Port(io_context)
     {
         m_Port.open(portID);

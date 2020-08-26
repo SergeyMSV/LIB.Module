@@ -46,7 +46,7 @@ tSettings::tSettings(const std::string& fileName)
 		if (ValueIter->first == "<xmlattr>")
 		{
 			SerialPort.ID = ValueIter->second.get<std::string>("ID");
-			SerialPort.BR = ValueIter->second.get<utils::tUInt32>("BR");
+			SerialPort.BR = ValueIter->second.get<std::uint32_t>("BR");
 		}
 	}
 }
