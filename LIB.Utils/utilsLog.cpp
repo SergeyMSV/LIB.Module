@@ -99,15 +99,26 @@ void tLog::WriteLog(bool timestamp, bool endl, tLogColour textColour, const std:
 
 	if (timestamp)
 	{
-		const auto TimeNow = std::chrono::high_resolution_clock::now();
+		const auto TimeNow = std::chrono::system_clock::now();
+		const auto Time_us = std::chrono::time_point_cast<std::chrono::microseconds>(TimeNow);
+		const auto TimeFract = static_cast<unsigned int>(Time_us.time_since_epoch().count() % 1000000);
 
-		const std::chrono::duration<unsigned long long, std::micro> Time_us = std::chrono::duration_cast<std::chrono::microseconds>(TimeNow.time_since_epoch());
+		const std::time_t Time = std::chrono::system_clock::to_time_t(TimeNow);
 
-		const std::chrono::duration<unsigned long> Time_s = std::chrono::duration_cast<std::chrono::seconds>(TimeNow.time_since_epoch());
+		Stream << '[';
+		Stream << std::put_time(std::localtime(&Time), "%T") << '.';
+		Stream << std::setfill('0');
+		Stream << std::setw(6) << TimeFract;
 
-		const unsigned long Tm_us = static_cast<decltype(Tm_us)>(Time_us.count() % 1000000);
+		const char* Sign = GetSign();
+		if (Sign)
+		{
+			Stream << ' ';
+			Stream << std::setfill(' ');
+			Stream << std::setw(4) << Sign;
+		}
 
-		Stream << '[' << std::setfill(' ') << std::setw(10) << Time_s.count() << '.' << std::setw(6) << Tm_us << ']';
+		Stream << ']';
 	}
 
 	if (m_ColourEnabled)

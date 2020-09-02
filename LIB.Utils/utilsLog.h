@@ -14,13 +14,15 @@
 
 #include <utilsBase.h>
 
+#include <cstdint>
+
 #include <string>
 #include <mutex>
 
 namespace utils
 {
 
-enum class tLogColour : unsigned char
+enum class tLogColour : std::uint8_t
 {
 	Black,
 	Red,
@@ -51,7 +53,7 @@ class tLog
 
 public:
 	tLog() = delete;
-	explicit tLog(bool colourEnabled = false);
+	explicit tLog(bool colourEnabled);
 	virtual ~tLog() { }
 
 	void ColourEnabled(bool state);
@@ -64,6 +66,8 @@ public:
 	void WriteHex(bool timestamp, tLogColour textColour, const std::string& msg, const tVectorUInt8& data);
 
 protected:
+	virtual const char* GetSign() const { return nullptr; }
+
 	virtual void WriteLog(const std::string& msg) = 0;
 
 private:
@@ -76,7 +80,7 @@ class tLog
 {
 public:
 	tLog() = delete;
-	explicit tLog(bool colourEnabled = false) { }
+	explicit tLog(bool colourEnabled) { }
 	virtual ~tLog() { }
 
 	void ColourEnabled(bool state) { }
@@ -89,6 +93,8 @@ public:
 	void WriteHex(bool timestamp, tLogColour textColour, const std::string& msg, const tVectorUInt8& data) { }
 
 protected:
+	virtual const char* GetSign() const { return nullptr; }
+
 	virtual void WriteLog(const std::string& msg) = 0;
 };
 
