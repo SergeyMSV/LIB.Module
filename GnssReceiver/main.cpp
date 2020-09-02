@@ -22,7 +22,7 @@ tDataSetMainControl g_DataSetMainControl;
 
 void Thread_GNSS_Handler(std::promise<std::string>& promise)
 {
-	dev::tLog Log(dev::tLog::LogId_GNSS);
+	dev::tLog Log(dev::tLog::tID::GNSS, "GNSS");
 
 	Log.LogSettings.Field.GNSS = 1;
 

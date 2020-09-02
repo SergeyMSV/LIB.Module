@@ -12,42 +12,50 @@
 
 #include <utilsLog.h>
 
+#include <cstdint>
+
 namespace dev
 {
 
 class tLog : public utils::tLog
 {
 public:
-	static const unsigned int LogId_0 = (1 << 0);
-	static const unsigned int LogId_1 = (1 << 1);
-	static const unsigned int LogId_GNSS = (1 << 2);
-	//...
+	enum class tID : std::uint32_t
+	{
+		NoID = 0,
+		Test_0 = (1 << 0),
+		Test_1 = (1 << 1),
+		GNSS = (1 << 2),
+	};
 
 	union tSettings
 	{
 		struct
 		{
-			unsigned int Log_0 : 1;
-			unsigned int Log_1 : 1;
-			unsigned int GNSS : 1;
+			std::uint32_t Log_0 : 1;
+			std::uint32_t Log_1 : 1;
+			std::uint32_t GNSS : 1;
 
-			unsigned int : 29;
+			std::uint32_t : 29;
 		}Field;
 
-		unsigned int Value = 0;
+		std::uint32_t Value = 0;
 	};
 
 	static tSettings LogSettings;
 
 private:
-	unsigned int m_Id;
+	tID m_ID = tID::NoID;
+	const char* m_Sign = nullptr;
 
 	tLog() = delete;
 
 public:
-	explicit tLog(unsigned int id);
+	explicit tLog(dev::tLog::tID id, const char* sign);
 
 protected:
+	const char* GetSign() const override;
+
 	void WriteLog(const std::string& msg) override;
 };
 
