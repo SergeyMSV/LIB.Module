@@ -116,6 +116,7 @@ class tGnssReceiver
 		std::string m_OnCmdTaskScriptIDLast;
 
 		utils::tVectorUInt8 m_ReceivedData;
+		bool m_ReceivedData_Parsed = false;
 
 		tCmd* m_pCmd = nullptr;
 

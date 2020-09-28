@@ -80,11 +80,16 @@ utils::tVectorUInt8 tGnssReceiver::GetReceivedDataChunk()
 {
 	std::lock_guard<std::mutex> Lock(m_MtxReceivedData);
 
-	utils::tVectorUInt8 Data(std::forward<utils::tVectorUInt8>(m_ReceivedData.front()));
+	if (m_ReceivedData.size() > 0)
+	{
+		utils::tVectorUInt8 Data(std::forward<utils::tVectorUInt8>(m_ReceivedData.front()));
 
-	m_ReceivedData.pop();
+		m_ReceivedData.pop();
 
-	return Data;
+		return Data;
+	}
+
+	return {};
 }
 
 void tGnssReceiver::ClearReceivedData()

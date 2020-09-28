@@ -32,11 +32,24 @@ bool tGnssReceiver::tState::operator()()
 	{
 		utils::tVectorUInt8 DataChunk = m_pObj->GetReceivedDataChunk();
 
-		m_ReceivedData.insert(m_ReceivedData.end(), DataChunk.cbegin(), DataChunk.cend());//C++14
+		if (DataChunk.size() > 0)
+		{
+			m_pObj->m_pLog->WriteHex(true, utils::tLogColour::LightRed, "Received", DataChunk);
 
+			m_ReceivedData.insert(m_ReceivedData.end(), DataChunk.cbegin(), DataChunk.cend());//C++14
+
+			m_ReceivedData_Parsed = false;
+		}		
+	}
+
+	if (!m_ReceivedData_Parsed)
+	{
 		tPacketNMEA_Template Packet;
 
 		std::size_t PacketSize = tPacketNMEA_Template::Find(m_ReceivedData, Packet);
+
+		//if something is parsed it's needed to try to parse the rest data because there can be one more packet
+		m_ReceivedData_Parsed = PacketSize == 0;
 
 		if (PacketSize)
 		{
