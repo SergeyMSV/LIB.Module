@@ -1,0 +1,5 @@
+﻿  Gnss.exe.* 
+  Не удается найти указанный файл.
+  Скопировано файлов:         0.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets(139,5): error MSB3073: The command "copy Gnss.exe.* D:\Workspace\LIB.Module\x64\Debug\
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets(139,5): error MSB3073: :VCEnd" exited with code 1.
