@@ -18,6 +18,13 @@ void tGNSS::operator()()
 {
 	if (m_pModFSMachine)
 	{
+		if (m_StartAuto)
+		{
+			m_StartAuto = false;
+
+			m_pModFSMachine->Start();
+		}
+
 		(*m_pModFSMachine)();
 	}
 }

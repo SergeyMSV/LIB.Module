@@ -72,6 +72,8 @@ class tGNSS
 
 	tModGnssReceiver *m_pModFSMachine = nullptr;
 
+	bool m_StartAuto = true;
+
 public:
 	tGNSS() = delete;
 	tGNSS(utils::tLog* log, boost::asio::io_context& io);
