@@ -14,17 +14,14 @@ tSettings::tSettings(const std::string& fileName)
 	boost::property_tree::ptree PTree;
 	boost::property_tree::xml_parser::read_xml(m_ConfigFileName, PTree);
 
-	if (auto Value = PTree.get_child_optional("App.Settings.DB"))
+	if (auto Value = PTree.get_child_optional("App.Settings.OutputFile"))
 	{
 		auto ValueIter = (*Value).begin();
 
 		if (ValueIter->first == "<xmlattr>")
 		{
-			DB.Host = ValueIter->second.get<std::string>("Host");
-			DB.User = ValueIter->second.get<std::string>("User");
-			DB.Passwd = ValueIter->second.get<std::string>("Passwd");
-			DB.DB = ValueIter->second.get<std::string>("Name");
-			DB.Port = ValueIter->second.get<unsigned int>("Port");
+			Output.Path = ValueIter->second.get<std::string>("Path");
+			Output.FileName = ValueIter->second.get<std::string>("FileName");
 		}
 	}
 

@@ -37,12 +37,9 @@ struct tSettings
 
 	struct
 	{
-		std::string Host;
-		std::string User;
-		std::string Passwd;
-		std::string DB;
-		std::uint32_t Port = 0;
-	}DB;
+		std::string Path;
+		std::string FileName;
+	}Output;
 
 private:
 	std::string m_ConfigFileName;

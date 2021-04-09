@@ -30,7 +30,8 @@ std::string tGNSS::tModGnssReceiver::GetNMEA_MsgLast()
 
 void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)
 {
-	std::fstream File = std::fstream("file.json", std::ios::out);
+	const std::string FileName = g_Settings.Output.Path + "/" + g_Settings.Output.FileName;
+	std::fstream File = std::fstream(FileName, std::ios::out);
 	if (File.is_open())
 	{
 		File << value.ToJSON();
