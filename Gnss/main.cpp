@@ -125,18 +125,9 @@ int main(int argc, char* argv[])
 
 	std::thread Thread_GNSS(Thread_GNSS_Handler, std::ref(Thread_GNSS_Promise));//C++11
 
-	bool Exit = false;
-
 	try
 	{
-		//while (true)
-		//{
-			std::string StrValue = Thread_GNSS_Future.get();
-
-			std::cout << StrValue << '\n';
-		//}
-
-		Exit = true;
+		Thread_GNSS_Future.get();
 	}
 	catch (std::exception & e)
 	{
@@ -146,9 +137,6 @@ int main(int argc, char* argv[])
 	}
 
 	Thread_GNSS.join();
-
-	if (!Exit)
-		std::cout << "Press ENTER...";
 
 	if (ShellEnabled)
 		Thread_Shell.join();
