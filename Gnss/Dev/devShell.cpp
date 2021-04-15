@@ -122,8 +122,6 @@ bool tShell::HandlerLog(const std::vector<std::string>& data)
 	else
 	{
 		std::cout << std::setw(10) << std::setfill('.') << std::left << "gnss" << std::right << std::setw(20) << tLog::LogSettings.Field.GNSS << '\n';
-		std::cout << std::setw(10) << std::setfill('.') << std::left << "log_1" << std::right << std::setw(20) << tLog::LogSettings.Field.Log_0 << '\n';
-		std::cout << std::setw(10) << std::setfill('.') << std::left << "log_2" << std::right << std::setw(20) << tLog::LogSettings.Field.Log_1 << '\n';
 		return true;
 	}
 }

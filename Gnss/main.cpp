@@ -102,6 +102,9 @@ int main(int argc, char* argv[])
 {
 	const bool ShellEnabled = argc >= 2 && !strcmp(argv[1], "shell");
 
+	dev::tLog::LogSettings.Value = 0;
+	dev::tLog::LogSettings.Field.Enabled = ShellEnabled ? 1 : 0;
+
 	try
 	{
 		dev::g_Settings = dev::tSettings(std::string(argv[0]) + ".cfg");

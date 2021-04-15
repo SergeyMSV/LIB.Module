@@ -23,17 +23,15 @@ public:
 	enum class tID : std::uint32_t
 	{
 		NoID = 0,
-		Test_0 = (1 << 0),
-		Test_1 = (1 << 1),
-		GNSS = (1 << 2),
+		Enabled = (1 << 0),
+		GNSS = (1 << 1),
 	};
 
 	union tSettings
 	{
 		struct
 		{
-			std::uint32_t Log_0 : 1;
-			std::uint32_t Log_1 : 1;
+			std::uint32_t Enabled : 1;//if it's equal to 0 no logs are shown
 			std::uint32_t GNSS : 1;
 
 			std::uint32_t : 29;

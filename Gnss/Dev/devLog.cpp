@@ -20,7 +20,7 @@ const char* tLog::GetSign() const
 
 void tLog::WriteLog(const std::string& msg)
 {
-	if (LogSettings.Value & static_cast<std::uint32_t>(m_ID))
+	if (LogSettings.Field.Enabled && LogSettings.Value & static_cast<std::uint32_t>(m_ID))
 	{
 		std::cout << msg;
 	}
