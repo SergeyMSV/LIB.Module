@@ -22,6 +22,12 @@ void tGnssReceiver::Start()
 	m_Control_Operation = true;
 }
 
+void tGnssReceiver::Start(bool exitOnError)
+{
+	m_Control_ExitOnError = exitOnError;
+	Start();
+}
+
 void tGnssReceiver::Restart()
 {
 	m_Control_Restart = true;

@@ -4,7 +4,13 @@ namespace mod
 {
 
 tGnssReceiver::tStateHalt::tStateHalt(tGnssReceiver* obj, const std::string& value)
-	:tState(obj)
+	:tStateHalt(obj, value, false)
+{
+
+}
+
+tGnssReceiver::tStateHalt::tStateHalt(tGnssReceiver* obj, const std::string& value, bool error)
+	:tState(obj), m_Error(error)
 {
 	std::stringstream SStr;
 	SStr << "tStateHalt: " << value;
@@ -19,6 +25,9 @@ tGnssReceiver::tStateHalt::tStateHalt(tGnssReceiver* obj, const std::string& val
 bool tGnssReceiver::tStateHalt::Go()
 {
 	if (m_pObj->m_Control_Exit)
+		return false;
+
+	if (m_Error && m_pObj->m_Control_ExitOnError)
 		return false;
 
 	if (m_pObj->IsControlOperation())

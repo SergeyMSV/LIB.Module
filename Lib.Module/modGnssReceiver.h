@@ -177,8 +177,11 @@ class tGnssReceiver
 
 	class tStateHalt :public tState
 	{
+		const bool m_Error = false;
+
 	public:
 		tStateHalt(tGnssReceiver* obj, const std::string& value);
+		tStateHalt(tGnssReceiver* obj, const std::string& value, bool error);
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
@@ -249,6 +252,7 @@ class tGnssReceiver
 	std::atomic_bool m_Control_Operation{ false };
 	std::atomic_bool m_Control_Restart{ false };
 	std::atomic_bool m_Control_Exit{ false };
+	std::atomic_bool m_Control_ExitOnError{ false };
 
 	mutable std::mutex m_MtxReceivedData;
 	std::queue<utils::tVectorUInt8> m_ReceivedData;
@@ -263,6 +267,7 @@ public:
 	void operator()();
 
 	void Start();
+	void Start(bool exitOnError);
 	void Restart();
 	void Halt();
 	void Exit();
