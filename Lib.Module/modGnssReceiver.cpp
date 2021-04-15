@@ -5,21 +5,11 @@
 namespace mod
 {
 
-tGnssReceiver::tGnssReceiver(utils::tLog* log, bool start)
+tGnssReceiver::tGnssReceiver(utils::tLog* log)
 	:m_pLog(log)
 {
-	m_Control_Operation = start;
-
-	if (m_Control_Operation)
-	{
-		ChangeState(new tStateStart(this, "the very start"));
-		return;
-	}
-	else
-	{
-		ChangeState(new tStateHalt(this, "the very start"));
-		return;
-	}
+	ChangeState(new tStateHalt(this, "the very start"));
+	return;
 }
 
 void tGnssReceiver::operator()()

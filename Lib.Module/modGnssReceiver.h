@@ -255,7 +255,7 @@ class tGnssReceiver
 
 public:
 	tGnssReceiver() = delete;
-	explicit tGnssReceiver(utils::tLog* log, bool start = false);
+	explicit tGnssReceiver(utils::tLog* log);
 	tGnssReceiver(const tGnssReceiver&) = delete;
 	tGnssReceiver(tGnssReceiver&&) = delete;
 	virtual ~tGnssReceiver() {};// = 0;
