@@ -100,6 +100,8 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 int main(int argc, char* argv[])
 {
+	const bool ShellEnabled = argc >= 2 && !strcmp(argv[1], "shell");
+
 	try
 	{
 		dev::g_Settings = dev::tSettings(std::string(argv[0]) + ".cfg");
@@ -112,7 +114,10 @@ int main(int argc, char* argv[])
 	}
 
 	////////////////////////////////
-	std::thread Thread_Shell(dev::ThreadFunShell);
+	std::thread Thread_Shell;
+
+	if (ShellEnabled)
+		Thread_Shell = std::thread(dev::ThreadFunShell);
 	////////////////////////////////
 
 	std::promise<std::string> Thread_GNSS_Promise;
@@ -145,7 +150,8 @@ int main(int argc, char* argv[])
 	if (!Exit)
 		std::cout << "Press ENTER...";
 
-	Thread_Shell.join();
+	if (ShellEnabled)
+		Thread_Shell.join();
 
 	return 0;
 }
