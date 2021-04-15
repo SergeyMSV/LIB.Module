@@ -22,7 +22,7 @@ void tGNSS::operator()()
 		{
 			m_StartAuto = false;
 
-			m_pModFSMachine->Start();
+			m_pModFSMachine->Start(true);
 		}
 
 		(*m_pModFSMachine)();
