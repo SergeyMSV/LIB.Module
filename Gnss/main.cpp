@@ -33,17 +33,18 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 		std::thread Thread_IO([&]() { IO.run(); });
 
-		bool Thread_Dev_Exception = false;
+		bool Thread_Dev_Exists = true;
 		std::thread Thread_Dev([&]()
 			{
 				try
 				{
 					Dev();
+					Thread_Dev_Exists = false;
+					promise.set_exception(std::current_exception());
 				}
 				catch (...)
 				{
-					Thread_Dev_Exception = true;
-
+					Thread_Dev_Exists = false;
 					promise.set_exception(std::current_exception());
 				}
 			});
@@ -52,6 +53,9 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 		while (true)
 		{
+			if (!Thread_Dev_Exists)
+				break;
+
 			if (g_DataSetMainControl.Thread_GNSS_State != tDataSetMainControl::tStateGNSS::Nothing)
 			{
 				switch (g_DataSetMainControl.Thread_GNSS_State)
@@ -89,7 +93,7 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 		Thread_IO.join();
 
-		if (!Thread_Dev_Exception)
+		if (!Thread_Dev_Exists)
 			promise.set_value("EXIT");
 	}
 	catch (...)
@@ -142,7 +146,7 @@ int main(int argc, char* argv[])
 	Thread_GNSS.join();
 
 	if (ShellEnabled)
-		Thread_Shell.join();
+		Thread_Shell.detach();
 
 	return 0;
 }
