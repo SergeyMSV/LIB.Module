@@ -51,7 +51,7 @@ public:
 	std::string GetConfigFileName() const { return m_ConfigFileName; }
 
 	mod::tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) const;
-	std::string GetNMEA_MsgLast() const;
+	mod::tGnssSettingsNMEA GetSettingsNMEA() const;
 };
 
 extern tSettings g_Settings;

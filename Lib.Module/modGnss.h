@@ -223,9 +223,10 @@ struct tGnssDataSet
 	}
 };
 
-//struct tGnssSettings
-//{
-
-//};
+struct tGnssSettingsNMEA
+{
+	std::string MsgLast;
+	std::uint32_t PeriodMax = 0;
+};
 
 }

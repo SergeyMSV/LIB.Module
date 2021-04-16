@@ -53,7 +53,7 @@ class tGNSS
 
 	protected:
 		mod::tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) override;
-		std::string GetNMEA_MsgLast() override;
+		mod::tGnssSettingsNMEA GetSettingsNMEA() override;
 
 		void OnChanged(const mod::tGnssDataSet& value) override;
 

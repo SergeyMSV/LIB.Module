@@ -23,9 +23,9 @@ mod::tGnssTaskScript tGNSS::tModGnssReceiver::GetTaskScript(const std::string& i
 	return g_Settings.GetTaskScript(id, userTaskScript);
 }
 
-std::string tGNSS::tModGnssReceiver::GetNMEA_MsgLast()
+mod::tGnssSettingsNMEA tGNSS::tModGnssReceiver::GetSettingsNMEA()
 {
-	return g_Settings.GetNMEA_MsgLast();
+	return g_Settings.GetSettingsNMEA();
 }
 
 void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)

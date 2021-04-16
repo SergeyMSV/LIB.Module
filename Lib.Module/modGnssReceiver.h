@@ -194,7 +194,7 @@ class tGnssReceiver
 
 	class tStateOperation :public tState
 	{
-		std::string m_NMEA_MsgLast;
+		const tGnssSettingsNMEA m_SettingsNMEA;
 
 		std::chrono::time_point<tClock> m_StartTime;
 
@@ -278,7 +278,7 @@ public:
 
 protected:
 	virtual tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) = 0;
-	virtual std::string GetNMEA_MsgLast() = 0;
+	virtual tGnssSettingsNMEA GetSettingsNMEA() = 0;
 
 	virtual void OnChanged(const tGnssDataSet& value) = 0;
 	//virtual void OnChanged(const tGnssReceiverProperty& value) = 0;

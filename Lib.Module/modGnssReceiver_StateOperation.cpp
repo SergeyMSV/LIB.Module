@@ -10,11 +10,9 @@ namespace mod
 {
 
 tGnssReceiver::tStateOperation::tStateOperation(tGnssReceiver* obj)
-	:tState(obj, "StateOperation"), m_StartTime(tClock::now())
+	:tState(obj, "StateOperation"), m_StartTime(tClock::now()), m_SettingsNMEA(m_pObj->GetSettingsNMEA())
 {
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, "tStateOperation");
-
-	m_NMEA_MsgLast = m_pObj->GetNMEA_MsgLast();
 }
 
 bool tGnssReceiver::tStateOperation::SetUserTaskScript(const std::string& taskScriptID)
@@ -40,6 +38,14 @@ bool tGnssReceiver::tStateOperation::Go()
 		return true;
 	}
 
+	const auto Time_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(tClock::now() - m_StartTime).count();//C++11
+	const double Time_us = static_cast<double>(Time_ns) / 1000;//C++11
+	if (Time_us > m_SettingsNMEA.PeriodMax)
+	{
+		ChangeState(new tStateError(m_pObj, "operation: no data within PeriodMAX"));
+		return true;
+	}
+	
 	return true;
 }
 
@@ -128,7 +134,7 @@ void tGnssReceiver::tStateOperation::OnReceived(const tPacketNMEA_Template& valu
 		m_pObj->m_pLog->WriteLine(false, utils::tLogColour::Default, StrTime.str());
 	}
 
-	if (!m_NMEA_MsgLast.empty() && PacketData.Data.size() > 0 && PacketData.Data[0].find(m_NMEA_MsgLast) != std::string::npos)
+	if (!m_SettingsNMEA.MsgLast.empty() && PacketData.Data.size() > 0 && PacketData.Data[0].find(m_SettingsNMEA.MsgLast) != std::string::npos)
 	{
 		m_pObj->OnChanged(m_DataSet);
 
