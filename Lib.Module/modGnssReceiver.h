@@ -300,7 +300,7 @@ protected:
 	void Board_OnReceived(utils::tVectorUInt8& data);
 
 private:
-	bool IsReceivedData();
+	bool IsReceivedData() const;
 	utils::tVectorUInt8 GetReceivedDataChunk();
 	bool IsControlOperation() { return m_Control_Operation && !m_Control_Restart; }
 	//bool IsControlStop() { return !m_Control_Operation && m_Control_Restart; }

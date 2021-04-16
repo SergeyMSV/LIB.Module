@@ -72,7 +72,7 @@ void tGnssReceiver::Board_OnReceived(utils::tVectorUInt8& data)
 	m_ReceivedData.push(data);
 }
 
-bool tGnssReceiver::IsReceivedData()
+bool tGnssReceiver::IsReceivedData() const
 {
 	std::lock_guard<std::mutex> Lock(m_MtxReceivedData);
 
