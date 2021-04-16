@@ -40,7 +40,11 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 				{
 					Dev();
 					Thread_Dev_Exists = false;
-					std::cerr << "Some communication error occured.";
+					const std::string ErrMsg = Dev.GetLastErrorMsg();
+					if (!ErrMsg.empty())
+					{
+						std::cerr << ErrMsg << "\n";
+					}
 				}
 				catch (...)
 				{

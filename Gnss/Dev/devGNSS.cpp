@@ -81,4 +81,14 @@ mod::tGnssStatus tGNSS::GetStatus()
 	return mod::tGnssStatus::Unknown;
 }
 
+std::string tGNSS::GetLastErrorMsg() const
+{
+	if (m_pModFSMachine)
+	{
+		return m_pModFSMachine->GetLastErrorMsg();
+	}
+
+	return {};
+}
+
 }

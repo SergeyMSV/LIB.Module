@@ -179,7 +179,7 @@ bool tGnssReceiver::tState::SetTaskScript(const std::string& taskScriptID, bool 
 
 bool tGnssReceiver::tState::OnCmdFailed()
 {
-	ChangeState(new tStateError(m_pObj, "..."));
+	ChangeState(new tStateError(m_pObj, "OnCmdFailed"));
 	return true;
 }
 

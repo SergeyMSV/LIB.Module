@@ -58,6 +58,13 @@ tGnssStatus tGnssReceiver::GetStatus() const
 	return m_pState->GetStatus();
 }
 
+std::string tGnssReceiver::GetLastErrorMsg() const
+{
+	//std::lock_guard<std::mutex> Lock(m_MtxState);
+
+	return m_LastErrorMsg;
+}
+
 void tGnssReceiver::Board_OnReceived(utils::tVectorUInt8& data)
 {
 	std::lock_guard<std::mutex> Lock(m_MtxReceivedData);

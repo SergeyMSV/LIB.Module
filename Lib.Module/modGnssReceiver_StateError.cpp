@@ -8,7 +8,8 @@ tGnssReceiver::tStateError::tStateError(tGnssReceiver* obj, const std::string& v
 {
 	std::stringstream SStr;
 	SStr << "tStateError: " << value;
-	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, SStr.str());
+	m_pObj->m_LastErrorMsg = SStr.str();
+	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::Default, m_pObj->m_LastErrorMsg);
 
 	m_pObj->m_Control_Operation = false;
 }

@@ -257,6 +257,8 @@ class tGnssReceiver
 	mutable std::mutex m_MtxReceivedData;
 	std::queue<utils::tVectorUInt8> m_ReceivedData;
 
+	std::string m_LastErrorMsg;
+
 public:
 	tGnssReceiver() = delete;
 	explicit tGnssReceiver(utils::tLog* log);
@@ -275,6 +277,7 @@ public:
 	bool StartUserTaskScript(const std::string& taskScriptID);
 
 	tGnssStatus GetStatus() const;
+	std::string GetLastErrorMsg() const;
 
 protected:
 	virtual tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) = 0;
