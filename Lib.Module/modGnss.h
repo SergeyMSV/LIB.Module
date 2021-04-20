@@ -162,6 +162,65 @@ struct tGnssDataSet
 
 		return Stream.str();
 	}
+
+	template <int SizeFractTime = 3, int SizeFractPosition = 6>
+	std::string ToJSON() const
+	{
+		std::stringstream Stream;
+		Stream << "{\n";
+		//Stream << " \"gnss\": \"" <<utils::packet_NMEA::Type::tGNSS(GNSS).ToString() << "\",\n";
+		Stream << " \"utc\": \"";
+		Stream << std::setfill('0');
+		Stream << std::setw(2) << static_cast<int>(Day) << ".";
+		Stream << std::setw(2) << static_cast<int>(Month) << ".";
+		Stream << std::setw(2) << static_cast<int>(Year) << " ";
+		Stream << std::setw(2) << static_cast<int>(Hour) << ".";
+		Stream << std::setw(2) << static_cast<int>(Minute) << ".";
+		Stream.setf(std::ios::fixed);
+		Stream << std::setw(2 + SizeFractTime + 1) << std::setprecision(SizeFractTime) << Second;
+		Stream << "\",\n";
+		Stream << " \"valid\": \"" << (Valid ? '1' : '0') << "\",\n";
+
+		Stream.setf(std::ios::fixed);
+
+		Stream << " \"latitude\": \"";
+		Stream << std::setprecision(SizeFractPosition) << Latitude;
+		Stream << "\",\n";
+		Stream << " \"longitude\": \"";
+		Stream << std::setprecision(SizeFractPosition) << Longitude;
+		Stream << "\",\n";
+		Stream << " \"altitude\": \"";
+		Stream << std::setprecision(SizeFractPosition) << Altitude;
+		Stream << "\",\n";
+
+		const int FixedFract = 2;
+		Stream << " \"speed\": \"";
+		Stream << std::setprecision(FixedFract) << Speed;
+		Stream << "\",\n";
+		Stream << " \"course\": \"";
+		Stream << std::setprecision(FixedFract) << Course;
+		Stream << "\",\n";
+		
+		Stream << " \"satellite\": [\n";
+		for (std::size_t i = 0; i < Satellite.size(); ++i)
+		{
+			Stream << "  {\n";
+			Stream << "   \"id\": \"" << static_cast<int>(Satellite[i].ID.Value) << "\",\n";
+			Stream << "   \"elevation\": \"" << static_cast<int>(Satellite[i].Elevation.Value) << "\",\n";
+			Stream << "   \"azimuth\": \"" << static_cast<int>(Satellite[i].Azimuth.Value) << "\",\n";
+			Stream << "   \"snr\": \"" << static_cast<int>(Satellite[i].SNR.Value) << "\"\n";
+			Stream << "  }";
+			if (i < Satellite.size() - 1)
+			{
+				Stream << ",";
+			}
+			Stream << "\n";
+		}
+		Stream << " ]\n";
+
+		Stream << "}";
+		return Stream.str();
+	}
 };
 
 //struct tGnssSettings
