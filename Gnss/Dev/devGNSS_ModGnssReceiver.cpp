@@ -2,6 +2,7 @@
 #include "devDataSet.h"
 #include "devSettings.h"
 
+#include <cstdio>
 #include <fstream>
 
 namespace dev
@@ -31,12 +32,15 @@ mod::tGnssSettingsNMEA tGNSS::tModGnssReceiver::GetSettingsNMEA()
 void tGNSS::tModGnssReceiver::OnChanged(const mod::tGnssDataSet& value)
 {
 	const std::string FileName = g_Settings.Output.Path + "/" + g_Settings.Output.FileName;
-	std::fstream File = std::fstream(FileName, std::ios::out);
+	const std::string FileNameTemp = FileName + ".tmp";
+	std::fstream File = std::fstream(FileNameTemp, std::ios::out);
 	if (File.is_open())
 	{
 		File << value.ToJSON();
 		File.close();
 	}
+	std::remove(FileName.c_str());
+	std::rename(FileNameTemp.c_str(), FileName.c_str());
 
 	m_pObj->m_pLog->WriteLine(true, utils::tLogColour::LightYellow, value.ToJSON());
 }
